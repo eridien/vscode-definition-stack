@@ -1,0 +1,113 @@
+{
+name: 'onopen'
+
+range: [16:12 -> 21:1)
+
+source: '() => {
+  console.log("opened websocket");
+  haveSocket = true;
+  for(const msg of waitingSends) ws.send(msg);
+  waitingSends.length = 0;
+}
+
+symbols: (78) [{…} ]
+
+0: {
+kind: 12
+name: 'URL'
+range: [0:6 -> 0:45)
+[[Prototype]]: Object
+
+1: {
+kind: 12
+name: 'ws'
+range: [2:4 -> 2:6)
+[[Prototype]]: Object
+
+2: {
+kind: 12
+name: 'openWs'
+range: [3:6 -> 3:46)
+
+[[Prototype]]: Object
+3: {name: 'handleMsg', kind: 12, range: ks}
+4: {name: 'haveSocket', kind: 12, range: ks}
+5: {name: 'waitingSends', kind: 12, range: ks}
+6: {name: 'onmessage', kind: 11, range: ks}
+7: {name: 'onopen', kind: 11, range: ks}
+8: {name: 'onclose', kind: 11, range: ks}
+9: {name: 'onerror', kind: 11, range: ks}
+10: {name: 'calls', kind: 12, range: ks}
+11: {name: 'fCallQueue', kind: 12, range: ks}
+12: {name: 'nextId', kind: 12, range: ks}
+13: {name: 'clint', kind: 12, range: ks}
+14: {name: 'fCall', kind: 12, range: ks}
+15: {name: 'id', kind: 12, range: ks}
+16: {name: 'msg', kind: 12, range: ks}
+17: {name: 'promise', kind: 12, range: ks}
+18: {name: '<function>', kind: 11, range: ks}
+19: {name: 'fname', kind: 6, range: ks}
+20: {name: 'id', kind: 6, range: ks}
+21: {name: 'param', kind: 6, range: ks}
+22: {name: 'reject', kind: 6, range: ks}
+23: {name: 'resolve', kind: 6, range: ks}
+24: {name: 'handleMsg', kind: 11, range: ks}
+25: {name: 'call', kind: 12, range: ks}
+26: {name: 'callIdx', kind: 12, range: ks}
+27: {name: 'calls.findIndex() callback', kind: 11, range: ks}
+28: {name: 'err', kind: 12, range: ks}
+29: {name: 'err', kind: 6, range: ks}
+30: {name: 'fname', kind: 12, range: ks}
+31: {name: 'fname', kind: 6, range: ks}
+32: {name: 'id', kind: 12, range: ks}
+33: {name: 'id', kind: 6, range: ks}
+34: {name: 'id', kind: 6, range: ks}
+35: {name: 'msg', kind: 12, range: ks}
+36: {name: 'param', kind: 12, range: ks}
+37: {name: 'param', kind: 6, range: ks}
+38: {name: 'parts', kind: 12, range: ks}
+39: {name: 'reject', kind: 12, range: ks}
+40: {name: 'res', kind: 12, range: ks}
+41: {name: 'resolve', kind: 12, range: ks}
+42: {name: 'result', kind: 12, range: ks}
+43: {name: 'result', kind: 6, range: ks}
+44: {name: 'result', kind: 6, range: ks}
+45: {name: 'status', kind: 12, range: ks}
+46: {name: 'status', kind: 6, range: ks}
+47: {name: 'text', kind: 12, range: ks}
+48: {name: 'deleteShowFromSrvr', kind: 11, range: ks}
+49: {name: 'lastViewedCache', kind: 12, range: ks}
+50: {name: 'updateLastViewedCache', kind: 12, range: ks}
+51: {name: 'lastViewed', kind: 12, range: ks}
+52: {name: 'getAllShows', kind: 11, range: ks}
+53: {name: 'deletePath', kind: 11, range: ks}
+54: {name: 'updateTvdb', kind: 11, range: ks}
+55: {name: 'getDevices', kind: 11, range: ks}
+56: {name: 'getLastViewed', kind: 11, range: ks}
+57: {name: 'getBlockedWaits', kind: 11, range: ks}
+58: {name: 'addBlockedWait', kind: 11, range: ks}
+59: {name: 'delBlockedWait', kind: 11, range: ks}
+60: {name: 'getBlockedGaps', kind: 11, range: ks}
+61: {name: 'addBlockedGap', kind: 11, range: ks}
+62: {name: 'delBlockedGap', kind: 11, range: ks}
+63: {name: 'getRejects', kind: 11, range: ks}
+64: {name: 'addReject', kind: 11, range: ks}
+65: {name: 'delReject', kind: 11, range: ks}
+66: {name: 'getPickups', kind: 11, range: ks}
+67: {name: 'addPickup', kind: 11, range: ks}
+68: {name: 'delPickup', kind: 11, range: ks}
+69: {name: 'getNoEmbys', kind: 11, range: ks}
+70: {name: 'addNoEmby', kind: 11, range: ks}
+71: {name: 'delNoEmby', kind: 11, range: ks}
+72: {name: 'getGaps', kind: 11, range: ks}
+73: {name: 'addGap', kind: 11, range: ks}
+74: {name: 'delGap', kind: 11, range: ks}
+75: {name: 'getAllTvdb', kind: 11, range: ks}
+76: {name: 'getNewTvdb', kind: 11, range: ks}
+77: {name: 'setTvdbFields', kind: 11, range: ks}
+length: 78
+[[Prototype]]: Array(0)
+[[Prototype]]: Object
+[[Prototype]]: Object
+}
+test done

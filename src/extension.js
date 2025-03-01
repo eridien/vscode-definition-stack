@@ -13,7 +13,8 @@ function activate(context) {
     const document = textEditor.document;
     const selection = textEditor.selection; 
     console.log(await 
-      sym.findSurroundingFunction( document, selection));
+        sym.findSymbolsInSurroundingFunction( 
+            document, selection));
     console.log('test done');
 		vscode.window.showInformationMessage('test done');
 	});
