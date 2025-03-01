@@ -10,11 +10,11 @@
     "Other"
   ],
   "activationEvents": [],
-  "main": "./extension.js",
+  "main": "./src/extension.js",
   "contributes": {
     "commands": [{
-      "command": "definition-stack.helloWorld",
-      "title": "Hello World"
+      "command": "definition-stack.test",
+      "title": "Definition Stack Test"
     }]
   },
   "scripts": {

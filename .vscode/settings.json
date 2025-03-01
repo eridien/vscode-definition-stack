@@ -1,0 +1,27 @@
+{
+  "workbench.colorCustomizations": {
+    "comment1": "https://code.visualstudio.com/api/references/theme-color",
+    "editor.selectionForeground": "#000000e5",
+    "editor.selectionBackground": "#a288ff6b",
+    "editor.selectionHighlightBackground": "#eeee8858",
+    "editor.selectionHighlightBorder": "#f00",
+    "editor.findMatchBackground": "#eeeeeed2",
+    "editor.findMatchHighlightBackground": "#fcc2",
+    "editorIndentGuide.background": "#8f8",
+    "terminal.inactiveSelectionBackground": "#00ff40",
+    "terminal.selectionBackground": "#ff0",
+    "diffEditor.insertedTextBackground": "#0f02",
+    "diffEditor.removedTextBackground": "#f002",
+    "widget.shadow": "#8ff",
+    "input.foreground": "#000",
+    "minimapSlider.background": "#f008",
+    "titleBar.activeForeground": "#800",
+    "titleBar.activeBackground": "#eee",
+    "tab.activeBackground": "#cfc",
+    "tab.inactiveBackground": "#fee",
+    "tab.inactiveModifiedBorder": "#00f",
+    "comment2": "input fields or text areas, not editor or terminal)",
+    "selection.background": "#ee0",
+    "selection.foreground": "#000"
+  }
+}
