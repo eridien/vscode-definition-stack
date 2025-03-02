@@ -68,18 +68,29 @@ async function findSymRefsInRange(document, docTopSymbols, rangeIn) {
   const locationIn = new vscode.Location(document.uri, rangeIn);
   const symRefsInRange = [];
   for(const symbol of docTopSymbols) {
-    const positionStart = new vscode.Position(
-                                symbol.range.start.line, 
-                                symbol.range.start.character);
-    const refs = await vscode.commands.executeCommand(
-        'vscode.executeReferenceProvider', 
-         document.uri, positionStart);
-    refs.forEach(refLocation => {
-      if (containsLocation(locationIn, refLocation)) {
-        const symRef = {symbol, refLocation};
-        symRefsInRange.push(symRef);
-      }
-    });
+
+
+
+    // should inner symbols be used?
+    // msg in onopen is an example
+    // could they be assigned to an outer variable?
+
+
+    const symbols = getSymbolsRecursive(symbol);
+    for(const symbol of symbols) {
+      const positionStart = new vscode.Position(
+                                  symbol.range.start.line, 
+                                  symbol.range.start.character);
+      const refs = await vscode.commands.executeCommand(
+          'vscode.executeReferenceProvider', 
+          document.uri, positionStart);
+      refs.forEach(refLocation => {
+        if (containsLocation(locationIn, refLocation)) {
+          const symRef = {symbol, refLocation};
+          symRefsInRange.push(symRef);
+        }
+      });
+    }
   }
   return symRefsInRange;
 }
