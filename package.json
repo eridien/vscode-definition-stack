@@ -2,6 +2,7 @@
   "name": "definition-stack",
   "displayName": "Definition Stack",
   "description": "Show a function and all definitions recursively in one tab.",
+  "publisher": "mark-hahn",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.97.0"

@@ -1,27 +1,6 @@
 const vscode = require('vscode');
-
-const outputChannel = 
-        vscode.window.createOutputChannel('Definition Stack');
-outputChannel.clear();
-outputChannel.show(true); // Make channel visible
-function out(msg, obj) {
-  outputChannel.appendLine(`${msg}:\n${JSON.stringify(obj, null, 2)}`);
-}
-
-function containsRange(outerRange, innerRange) {
-  return outerRange.start.isBefore(innerRange.start) && 
-         outerRange.end.isAfter(innerRange.end);
-}
-
-function containsLocation(outerLocation, innerLocation) {
-  if(outerLocation.uri.toString() !== 
-     innerLocation.uri.toString()) return false;
-  return containsRange(outerLocation.range, innerLocation.range);
-}
-
-function getRangeSize(range) {
-  return range.end.line - range.start.line;
-}
+const utils  = require('./utils.js');
+const log    = utils.log('symbols');
 
 function getSymbolsRecursive(symbolIn) {
   const symbols = [];
@@ -33,7 +12,6 @@ function getSymbolsRecursive(symbolIn) {
   recursPush(symbolIn);
   return symbols;
 }
-
 async function findSurroundingFunction(
                   document, docTopSymbols, selection) {
   try {
@@ -46,10 +24,9 @@ async function findSurroundingFunction(
 
     // Find the smallest containing function
     const containingFunction = allFunctions
-      .filter(func => containsRange(func.range, selection))
-      .sort((a, b) => getRangeSize(a.range) 
-                    - getRangeSize(b.range))[0];
-
+      .filter(func => utils.containsRange(func.range, selection))
+      .sort((a, b) => utils.getRangeSize(a.range) 
+                    - utils.getRangeSize(b.range))[0];
     if (containingFunction) {
       return {
         source: document.getText(containingFunction.range),
@@ -57,9 +34,9 @@ async function findSurroundingFunction(
       };
     }
     return {};
-  } catch (error) {
-    console.error(
-        'Error finding surrounding function:', error);
+  } 
+  catch (error) {
+    log('infoerr', error);
     return {};
   }
 }
@@ -85,7 +62,7 @@ async function findSymRefsInRange(document, docTopSymbols, rangeIn) {
           'vscode.executeReferenceProvider', 
           document.uri, positionStart);
       refs.forEach(refLocation => {
-        if (containsLocation(locationIn, refLocation)) {
+        if (utils.containsLocation(locationIn, refLocation)) {
           const symRef = {symbol, refLocation};
           symRefsInRange.push(symRef);
         }
@@ -104,10 +81,7 @@ async function findSymRefsInFunction(document, selection) {
   if(!func?.symbol) return [];
   const funcRefs = await findSymRefsInRange(
                       document, docTopSymbols, func.symbol.range);
-  out('funcRefs', funcRefs);
   return funcRefs;
 }
 
-module.exports = { 
-  findSymRefsInFunction 
-};
+module.exports = {findSymRefsInFunction };
