@@ -27,7 +27,8 @@ async function findSurroundingFunction(
       return {
         name: containingFunction.name,
         source: document.getText(containingFunction.range),
-        range: containingFunction.range
+        range: containingFunction.range,
+        symbol: containingFunction,
       };
     }
     return { range: selection };
@@ -61,32 +62,86 @@ function getRangeSize(range) {
   return range.end.line - range.start.line;
 }
 
+function getAllNestedSymbols(symbol) {
+  const symbols = [];
+  if (symbol.children) {
+    symbol.children.forEach(child => {
+      symbols.push(child);
+      symbols.push(...getAllNestedSymbols(child));
+    });
+  }
+  return symbols;
+}
+
+function isRangeWithin(outer, inner) {
+  return (
+    (inner.start.line > outer.start.line || 
+     (inner.start.line === outer.start.line && 
+      inner.start.character >= outer.start.character)) &&
+    (inner.end.line < outer.end.line || 
+     (inner.end.line === outer.end.line && 
+      inner.end.character <= outer.end.character))
+  );
+}
+
 async function findSymbolsInRange(document, range) {
   try {
+    // Get all defined symbols first
     const symbols = await vscode.commands.executeCommand(
       'vscode.executeDocumentSymbolProvider',
       document.uri
     );
 
-    if (!symbols) return [];
-
-    const allSymbols = symbols.flatMap(symbol => 
-      getAllSymbols(symbol)
+    // Get all references in the document
+    const allReferences = await Promise.all(
+      (symbols || []).map(async symbol => {
+        const symRange = new vscode.Range(
+          symbol.range.start.line, 
+          symbol.range.start.character,
+          symbol.range.start.line, 
+          symbol.range.start.character + symbol.name.length
+        );
+        const refs = await vscode.commands.executeCommand(
+          'vscode.executeReferenceProvider',
+          document.uri,
+          symRange.start
+        ) || [];
+        return { symbol, references: refs };
+      })
     );
 
-    return allSymbols
-      .filter(symbol => {
-        const symbolRange = symbol.range;
-        return !containsRange(range, symbolRange);
-      })
-      .map(symbol => ({
-        name: symbol.name,
-        kind: symbol.kind,
-        range: symbol.range
-      }));
+    // Get definitions and references within our range
+    const symbolsInRange = new Set();
+    
+    // Add defined symbols in range
+    const definedSymbols = (symbols || [])
+      .flatMap(symbol => getAllSymbols(symbol))
+      .filter(symbol => isRangeWithin(range, symbol.range));
+    
+    definedSymbols.forEach(s => symbolsInRange.add(s));
+
+    // Add references in range
+    allReferences.forEach(({ symbol, references }) => {
+      references.forEach(ref => {
+        if (isRangeWithin(range, ref.range)) {
+          symbolsInRange.add({
+            name: symbol.name,
+            kind: symbol.kind,
+            range: ref.range,
+            isReference: true
+          });
+        }
+      });
+    });
+
+    return Array.from(symbolsInRange).map(symbol => ({
+      name: symbol.name,
+      kind: symbol.kind,
+      range: symbol.range,
+      isReference: symbol.isReference || false
+    }));
   } catch (error) {
-    console.error(
-        'Error finding symbols in range:', error);
+    console.error('Error finding symbols in range:', error);
     return [];
   }
 }
@@ -101,15 +156,34 @@ function getAllSymbols(symbol) {
   return symbols;
 }
 
-async function findSymbolsInSurroundingFunction(document, selection) {
-  const functionInfo = await findSurroundingFunction(document, selection);
-  const symbols = await findSymbolsInRange(document, functionInfo.range);
+async function findSymbolsInFunction(document, selection) {
+  const funcInfo = await findSurroundingFunction(document, selection);
+  if (!funcInfo.symbol) return { ...funcInfo, symbols: [] };
+
+  // Get symbols from both approaches
+  const nestedSymbols = getAllNestedSymbols(funcInfo.symbol);
+  const rangeSymbols = await findSymbolsInRange(document, funcInfo.range);
+
+  // Combine and deduplicate symbols
+  const allSymbols = [...nestedSymbols, ...rangeSymbols]
+    .filter((symbol, index, self) => 
+      index === self.findIndex(s => 
+        s.name === symbol.name && 
+        s.range.start.line === symbol.range.start.line
+      )
+    )
+    .map(symbol => ({
+      name: symbol.name,
+      kind: symbol.kind,
+      range: symbol.range
+    }));
+
   return {
-    ...functionInfo,
-    symbols
+    ...funcInfo,
+    symbols: allSymbols
   };
 }
 
 module.exports = { 
-  findSymbolsInSurroundingFunction 
+  findSymbolsInFunction 
 };
