@@ -60,8 +60,9 @@ async function findSymRefsInRange(document, docTopSymbols, rangeIn) {
                                   symbol.range.start.character);
       const refs = await vscode.commands.executeCommand(
           'vscode.executeReferenceProvider', 
-          document.uri, positionStart);
+           document.uri, positionStart);
       refs.forEach(refLocation => {
+        if (utils.containsLocation(locationIn, symbol.location)) return;
         if (utils.containsLocation(locationIn, refLocation)) {
           const symRef = {symbol, refLocation};
           symRefsInRange.push(symRef);
