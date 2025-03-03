@@ -58,10 +58,7 @@ async function findSurroundingFunction(document, selection) {
   }
 }
 
-//  log('executeDefinitionProvider', 
-//       vscode.executeDefinitionProvider(uri, position));
-
-function findWordsInText(langId, text) {
+function findWordsInText(langId, text, positionIn) {
   const lines = text.split('\n');
   const regexString = `\\b([\\w${
       langsWithDollarSign.includes(langId) ? '$' : ''}]+)\\b`;
@@ -71,22 +68,22 @@ function findWordsInText(langId, text) {
   while ((match = wordRegex.exec(text)) !== null) {
     const word = match[1];
     if (!isReservedWord(langId, word)) {
-      const charOfsStrt = wordRegex.lastIndex - word.length;
-      const charOfsEnd  = wordRegex.lastIndex;
-      let lineOfs  = 0;
-      let position = null;
-      for(const [lineNum, line] of lines.entries()) {
-        if(charOfsStrt < (lineOfs + line.length)) {
-          const start = charOfsStrt - lineOfs;
-          const end   = charOfsEnd  - lineOfs;
-          position = new vscode.Position(
-                      lineNum, start, lineNum, end);
+      let lineZeroCharOfs = positionIn.character;
+      let charOfs = wordRegex.lastIndex - word.length;
+      let lineOfs = 0;
+      let position;
+      for(const [lineNum, lineStr] of lines.entries()) {
+        if(charOfs < (lineOfs + lineStr.length)) {
+          const line = positionIn.line + lineNum;
+          const char = lineZeroCharOfs + charOfs - lineOfs;
+          position = new vscode.Position(line, char);
           break;
         }
-        lineOfs += line.length + 1;
+        lineZeroCharOfs = 0;
+        lineOfs += lineStr.length + 1;
       }
       const wordAndPos = {word, position};
-      log('word', {wordAndPos});
+      log('word', wordAndPosArr.length, {wordAndPos});
       wordAndPosArr.push(wordAndPos);
     }
   }
@@ -140,8 +137,15 @@ async function findSymRefsInFunction(document, selection) {
   if(extToLangId[ext]) langId = extToLangId[ext];
   else                 langId = document.languageId;
   const symRefs = [];
-  const wordLocations = findWordsInText(langId, func.text);
-  const words = wordLocations.map(wl => wl.word);
+  const wordAndPosArr = 
+      findWordsInText(langId, func.text, func.location.range.start);
+
+  log('executeDefinitionProvider', 
+       await vscode.commands.executeCommand(
+               'vscode.executeDefinitionProvider',
+                 document.uri, wordAndPosArr[15].position));
+
+  const words = wordAndPosArr.map(wordAndPos => wordAndPos.word);
   const docs  = await getAllDocumentsWithLangid(langId);
   for(const doc of docs) {
     const symRefsInDoc = 
