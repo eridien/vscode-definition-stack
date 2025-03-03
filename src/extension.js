@@ -11,10 +11,10 @@ function activate(context) {
 
     const textEditor = vscode.window.activeTextEditor;
     if (!textEditor) return;
-    const document = textEditor.document;
+    const document  = textEditor.document;
     const selection = textEditor.selection; 
 
-    log(await sym.findSymRefsInFrame(document, selection));
+    await sym.processFrames(document, selection);
 
     log('done');
 	});
