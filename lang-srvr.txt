@@ -1,0 +1,207 @@
+
+**Completion** (vscode.executeCompletionItemProvider)
+      Provides code completion suggestions.
+
+const completions = await vscode.commands.executeCommand(
+  'vscode.executeCompletionItemProvider',
+  document.uri,
+  position
+)
+     
+
+
+**Hover** (vscode.executeHoverProvider)
+      Provides hover information for the symbol under the cursor.
+
+const hover = await vscode.commands.executeCommand(
+  'vscode.executeHoverProvider',
+  document.uri,
+  position
+)
+     
+
+
+**Signature Help** (vscode.executeSignatureHelpProvider)
+      Provides signature help for function calls.
+
+const signatureHelp = await vscode.commands.executeCommand(
+  'vscode.executeSignatureHelpProvider',
+  document.uri,
+  position
+)
+     
+
+
+**Go to Definition** (vscode.executeDefinitionProvider)
+      Navigates to the definition of the symbol under the cursor.
+
+const definition = await vscode.commands.executeCommand(
+  'vscode.executeDefinitionProvider',
+  document.uri,
+  position
+)
+     
+
+
+**Find References** (vscode.executeReferenceProvider)
+      Finds all references to the symbol under the cursor.
+
+const references = await vscode.commands.executeCommand(
+  'vscode.executeReferenceProvider',
+  document.uri,
+  position
+)
+     
+
+
+**Document Symbols** (vscode.executeDocumentSymbolProvider)
+      Lists all symbols in the current document.
+
+const symbols = await vscode.commands.executeCommand(
+  'vscode.executeDocumentSymbolProvider',
+  document.uri
+)
+     
+
+
+**Workspace Symbols** (vscode.executeWorkspaceSymbolProvider)
+      Searches for symbols across the entire workspace.
+
+const symbols = await vscode.commands.executeCommand(
+  'vscode.executeWorkspaceSymbolProvider',
+  'searchQuery'
+)
+     
+
+
+**Code Actions** (vscode.executeCodeActionProvider)
+      Provides quick fixes and refactorings for issues in the code.
+
+const codeActions = await vscode.commands.executeCommand(
+  'vscode.executeCodeActionProvider',
+  document.uri,
+  range
+)
+     
+
+
+**Code Lens** (vscode.executeCodeLensProvider)
+      Displays inline information and actions, such as references and test status.
+
+const codeLenses = await vscode.commands.executeCommand(
+  'vscode.executeCodeLensProvider',
+  document.uri
+)
+     
+
+
+**Document Formatting** (vscode.executeFormatDocumentProvider)
+      Formats the entire document.
+
+const edits = await vscode.commands.executeCommand(
+  'vscode.executeFormatDocumentProvider',
+  document.uri
+)
+     
+
+
+**Range Formatting** (vscode.executeFormatRangeProvider)
+      Formats a specific range within the document.
+
+const edits = await vscode.commands.executeCommand(
+  'vscode.executeFormatRangeProvider',
+  document.uri,
+  range
+)
+     
+
+
+**Rename Symbol** (vscode.executeDocumentRenameProvider)
+      Renames a symbol and updates all references to it.
+
+const workspaceEdit = await vscode.commands.executeCommand(
+  'vscode.executeDocumentRenameProvider',
+  document.uri,
+  position,
+  newName
+)
+     
+     
+General Commands
+
+Initialize (initialize)
+      Initializes the language server with the client.
+Shutdown (shutdown)
+      Shuts down the language server.
+Exit (exit)
+      Exits the language server.
+
+Text Document Synchronization
+
+Did Open (textDocument/didOpen)
+      Notifies the server that a document has been opened.
+Did Change (textDocument/didChange)
+      Notifies the server that a document has changed.
+Did Close (textDocument/didClose)
+      Notifies the server that a document has been closed.
+Did Save (textDocument/didSave)
+      Notifies the server that a document has been saved.
+
+Language Features
+
+Completion (textDocument/completion)
+      Provides code completion suggestions.
+Hover (textDocument/hover)
+      Provides hover information for the symbol under the cursor.
+Signature Help (textDocument/signatureHelp)
+      Provides signature help for function calls.
+Go to Definition (textDocument/definition)
+      Navigates to the definition of the symbol under the cursor.
+Find References (textDocument/references)
+      Finds all references to the symbol under the cursor.
+Document Highlight (textDocument/documentHighlight)
+      Highlights all occurrences of the symbol under the cursor.
+Document Symbol (textDocument/documentSymbol)
+      Lists all symbols in the current document.
+Workspace Symbol (workspace/symbol)
+      Searches for symbols across the entire workspace.
+Code Action (textDocument/codeAction)
+      Provides quick fixes and refactorings for issues in the code.
+Code Lens (textDocument/codeLens)
+      Displays inline information and actions, such as references and test status.
+Document Link (textDocument/documentLink)
+      Provides links within the document.
+Document Formatting (textDocument/formatting)
+      Formats the entire document.
+Range Formatting (textDocument/rangeFormatting)
+      Formats a specific range within the document.
+On Type Formatting (textDocument/onTypeFormatting)
+      Formats the document as the user types.
+Rename (textDocument/rename)
+      Renames a symbol and updates all references to it.
+Prepare Rename (textDocument/prepareRename)
+      Prepares the rename operation.
+Folding Range (textDocument/foldingRange)
+      Provides folding ranges for the document.
+Selection Range (textDocument/selectionRange)
+      Provides selection ranges for the document.
+Semantic Tokens (textDocument/semanticTokens)
+      Provides detailed syntax highlighting based on semantic information.
+Linked Editing Range (textDocument/linkedEditingRange)
+      Provides ranges that should be edited together.
+
+Diagnostics
+
+Publish Diagnostics (textDocument/publishDiagnostics)
+      Reports errors, warnings, and other issues in the code.
+
+Workspace Commands
+
+Did Change Configuration (workspace/didChangeConfiguration)
+      Notifies the server that the workspace configuration has changed.
+Did Change Watched Files (workspace/didChangeWatchedFiles)
+      Notifies the server that watched files have changed.
+Execute Command (workspace/executeCommand)
+      Executes a command provided by the language server.
+Apply Edit (workspace/applyEdit)
+      Applies edits to the workspace.
