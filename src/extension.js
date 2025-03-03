@@ -14,7 +14,7 @@ function activate(context) {
     const document = textEditor.document;
     const selection = textEditor.selection; 
 
-    log(await sym.findSymRefsInFunction(document, selection));
+    log(await sym.findSymRefsInFrame(document, selection));
 
     log('done');
 	});

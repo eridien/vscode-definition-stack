@@ -30,24 +30,24 @@ function getSymbolsRecursive(symbolIn) {
   return symbols;
 }
 
-async function findSurroundingFunction(document, selection) {
+async function findSurroundingFrame(document, selection) {
   try {
     const docTopSymbols = await vscode.commands.executeCommand(
     'vscode.executeDocumentSymbolProvider', document.uri);
     if (!docTopSymbols) return {};
 
-    const allFunctions = docTopSymbols
+    const allFrames = docTopSymbols
               .flatMap(symbol => getSymbolsRecursive(symbol))
 
     // Find the smallest containing symbol
-    const containingFunctionSymbol = allFunctions
-      .filter(func => utils.containsRange(func.range, selection))
+    const containingFrameSymbol = allFrames
+      .filter(frame => utils.containsRange(frame.range, selection))
       .sort((a, b) => utils.getRangeSize(a.range) 
                     - utils.getRangeSize(b.range))[0];
-    if (containingFunctionSymbol) {
-      log({containingFunctionSymbol});
-      const text = document.getText(containingFunctionSymbol.range);
-      const location = containingFunctionSymbol.location;
+    if (containingFrameSymbol) {
+      log({containingFrameSymbol});
+      const text = document.getText(containingFrameSymbol.range);
+      const location = containingFrameSymbol.location;
       return {text, location};
     }
     return {};
@@ -105,7 +105,7 @@ async function getAllDocumentsWithLangid(langid) {
   return documents;
 }
 
-async function findSymRefsInDocument(document, words, funcLocation) {
+async function findSymRefsInDocument(document, words, frameLocation) {
   const allSymbols = await vscode.commands.executeCommand(
     'vscode.executeDocumentSymbolProvider', document.uri);
   if (!allSymbols) return [];
@@ -120,8 +120,8 @@ async function findSymRefsInDocument(document, words, funcLocation) {
         'vscode.executeReferenceProvider', 
           document.uri, positionStart);
     allRefs.forEach(refLocation => {
-      if (utils.containsLocation(funcLocation, symbol.location)) return;
-      if (utils.containsLocation(funcLocation, refLocation))
+      if (utils.containsLocation(frameLocation, symbol.location)) return;
+      if (utils.containsLocation(frameLocation, refLocation))
         refs.push(refLocation);
     });
     if(refs.length > 0) symRefs.push({symbol, refs});
@@ -129,16 +129,16 @@ async function findSymRefsInDocument(document, words, funcLocation) {
   return symRefs;
 }
 
-async function findSymRefsInFunction(document, selection) {
-  const func = await findSurroundingFunction(document, selection);
-  if(!func?.location) return [];
+async function findSymRefsInFrame(document, selection) {
+  const frame = await findSurroundingFrame(document, selection);
+  if(!frame?.location) return [];
   let langId;
   const ext = document.uri.path.split('.').slice(-1)[0];
   if(extToLangId[ext]) langId = extToLangId[ext];
   else                 langId = document.languageId;
   // const symRefs = [];
   const wordAndPosArr = 
-      findWordsInText(langId, func.text, func.location.range.start);
+      findWordsInText(langId, frame.text, frame.location.range.start);
 
   for(const wordAndPos of wordAndPosArr) {
     const def = await vscode.commands.executeCommand(
@@ -147,7 +147,7 @@ async function findSymRefsInFunction(document, selection) {
     if(def.length === 0) continue;
     const defLoc = new vscode.Location(
                           def[0].targetUri, def[0].targetRange);
-    if(utils.containsLocation(func.location, defLoc)) continue;
+    if(utils.containsLocation(frame.location, defLoc)) continue;
     // remove duplicates
     log(wordAndPos.word, def[0]);
   }
@@ -156,13 +156,13 @@ async function findSymRefsInFunction(document, selection) {
   // const docs  = await getAllDocumentsWithLangid(langId);
   // for(const doc of docs) {
   //   const symRefsInDoc = 
-  //           await findSymRefsInDocument(doc, words, func.location)
+  //           await findSymRefsInDocument(doc, words, frame.location)
   //   symRefs.push(...symRefsInDoc);
   // }
   // return symRefs;
 }
 
-module.exports = {findSymRefsInFunction };
+module.exports = {findSymRefsInFrame };
 
 
 /*
@@ -183,7 +183,7 @@ const symbolKinds = [
   ['Constructor', 8],
   ['Enum', 9],
   ['Interface', 10],
-  ['Function', 11],
+  ['Frame', 11],
   ['Variable', 12],
   ['Constant', 13],
   ['String', 14],
