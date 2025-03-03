@@ -1,11 +1,17 @@
-const vscode = require('vscode');
-const utils  = require('./utils.js');
-const log    = utils.log('symbols');
-
+const vscode        = require('vscode');
+const utils         = require('./utils.js');
+const log           = utils.log('symbols');
 const reservedWords = require('reserved-words');
+
+const langExts = '**/*.{js,ts,py,java,cpp,c,cs,go,rs,php,rb,vue}';
+const extToLangId         = {'vue': 'vue'}
+const langsWithDollarSign = ['javascript', 'typescript', 'vue'];
+
 const isReservedWord = function(langId, word) {
   switch(langId) {
     case 'javascript':
+    case 'typescript':
+    case 'vue':
       const version = 6;
       return reservedWords.check(word, version);
     default:
@@ -31,18 +37,15 @@ async function findSurroundingFunction(document, selection) {
     if (!docTopSymbols) return {};
 
     const allFunctions = docTopSymbols
-    .flatMap(symbol => getSymbolsRecursive(symbol))
-    .filter(symbol => 
-      symbol.kind === vscode.SymbolKind.Function || 
-      symbol.kind === vscode.SymbolKind.Method
-    );
+              .flatMap(symbol => getSymbolsRecursive(symbol))
 
-    // Find the smallest containing function
+    // Find the smallest containing symbol
     const containingFunctionSymbol = allFunctions
       .filter(func => utils.containsRange(func.range, selection))
       .sort((a, b) => utils.getRangeSize(a.range) 
                     - utils.getRangeSize(b.range))[0];
     if (containingFunctionSymbol) {
+      log({containingFunctionSymbol});
       const text = document.getText(containingFunctionSymbol.range);
       const location = containingFunctionSymbol.location;
       return {text, location};
@@ -55,29 +58,52 @@ async function findSurroundingFunction(document, selection) {
   }
 }
 
+//  log('executeDefinitionProvider', 
+//       vscode.executeDefinitionProvider(uri, position));
+
 function findWordsInText(langId, text) {
-  const regexString = 
-          `\\b([\\w${langId == 'javascript' ? '$' : ''}]+)\\b`;
+  const lines = text.split('\n');
+  const regexString = `\\b([\\w${
+      langsWithDollarSign.includes(langId) ? '$' : ''}]+)\\b`;
   const wordRegex = new RegExp(regexString, 'g');
-  const words = [];
+  const wordAndPosArr = [];
   let match;
   while ((match = wordRegex.exec(text)) !== null) {
     const word = match[1];
-    if (!isReservedWord(langId, word)) words.push(word);
+    if (!isReservedWord(langId, word)) {
+      const charOfsStrt = wordRegex.lastIndex - word.length;
+      const charOfsEnd  = wordRegex.lastIndex;
+      let lineOfs  = 0;
+      let position = null;
+      for(const [lineNum, line] of lines.entries()) {
+        if(charOfsStrt < (lineOfs + line.length)) {
+          const start = charOfsStrt - lineOfs;
+          const end   = charOfsEnd  - lineOfs;
+          position = new vscode.Position(
+                      lineNum, start, lineNum, end);
+          break;
+        }
+        lineOfs += line.length + 1;
+      }
+      const wordAndPos = {word, position};
+      log('word', {wordAndPos});
+      wordAndPosArr.push(wordAndPos);
+    }
   }
-  return words;
+  return wordAndPosArr;
 }
 
 async function getAllDocumentsWithLangid(langid) {
   const documents = [];
-  const files = await vscode.workspace.findFiles('**/*');
+  const files = (await vscode.workspace.findFiles(langExts)).filter(
+                    file => (!file.fsPath.includes('node_modules')));
   for(const file of files) {
     try {
       const doc = await vscode.workspace.openTextDocument(file);
       if(doc.languageId === langid) 
         documents.push(doc);
     }
-    catch (_err) {}
+    catch (err) {log('infoerr', err.message)}
   }
   return documents;
 }
@@ -101,7 +127,7 @@ async function findSymRefsInDocument(document, words, funcLocation) {
       if (utils.containsLocation(funcLocation, refLocation))
         refs.push(refLocation);
     });
-    symRefs.push({symbol, refs});
+    if(refs.length > 0) symRefs.push({symbol, refs});
   }
   return symRefs;
 }
@@ -109,9 +135,13 @@ async function findSymRefsInDocument(document, words, funcLocation) {
 async function findSymRefsInFunction(document, selection) {
   const func = await findSurroundingFunction(document, selection);
   if(!func?.location) return [];
-  const langId = document.languageId;
+  let langId;
+  const ext = document.uri.path.split('.').slice(-1)[0];
+  if(extToLangId[ext]) langId = extToLangId[ext];
+  else                 langId = document.languageId;
   const symRefs = [];
-  const words = findWordsInText(langId, func.text);
+  const wordLocations = findWordsInText(langId, func.text);
+  const words = wordLocations.map(wl => wl.word);
   const docs  = await getAllDocumentsWithLangid(langId);
   for(const doc of docs) {
     const symRefsInDoc = 
@@ -125,6 +155,43 @@ module.exports = {findSymRefsInFunction };
 
 
 /*
+executeDefinitionProvider (VS Code's built-in Go to Definition).
+Alternative: Use executeWorkspaceSymbolProvider to find symbols by name.
+
+const vscode = require('vscode');
+
+const symbolKinds = [
+  ['File', 0],
+  ['Module', 1],
+  ['Namespace', 2],
+  ['Package', 3],
+  ['Class', 4],
+  ['Method', 5],
+  ['Property', 6],
+  ['Field', 7],
+  ['Constructor', 8],
+  ['Enum', 9],
+  ['Interface', 10],
+  ['Function', 11],
+  ['Variable', 12],
+  ['Constant', 13],
+  ['String', 14],
+  ['Number', 15],
+  ['Boolean', 16],
+  ['Array', 17],
+  ['Object', 18],
+  ['Key', 19],
+  ['Null', 20],
+  ['EnumMember', 21],
+  ['Struct', 22],
+  ['Event', 23],
+  ['Operator', 24],
+  ['TypeParameter', 25]
+];
+
+console.log(symbolKinds);
+
+
 list of some common language IDs...
 plaintext: Plain Text
 abap: ABAP
