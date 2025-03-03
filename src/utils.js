@@ -1,3 +1,8 @@
+/*
+  options:
+    include node_modules
+*/
+
 const vscode = require('vscode');
 
 const outputChannel = 
@@ -23,14 +28,24 @@ function log(module) {
 }
 
 function containsRange(outerRange, innerRange) {
-  return outerRange.start.isBefore(innerRange.start) && 
-         outerRange.end.isAfter(innerRange.end);
+  if((innerRange.start.line < outerRange.start.line) ||
+     (innerRange.end.line   > outerRange.end.line)) 
+    return false;
+  if((innerRange.start.line == outerRange.start.line) &&
+     (innerRange.start.character < outerRange.start.character))
+    return false;
+  if((innerRange.end.line == outerRange.end.line) &&
+     (innerRange.end.character > outerRange.end.character))
+    return false;
+  return true;
 }
+
 function containsLocation(outerLocation, innerLocation) {
   if(outerLocation.uri.toString() !== 
      innerLocation.uri.toString()) return false;
   return containsRange(outerLocation.range, innerLocation.range);
 }
+
 function getRangeSize(range) {
   return range.end.line - range.start.line;
 }

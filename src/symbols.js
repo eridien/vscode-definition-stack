@@ -60,13 +60,13 @@ async function findSurroundingFunction(document, selection) {
 
 function findWordsInText(langId, text, positionIn) {
   const lines = text.split('\n');
-  const regexString = `\\b([\\w${
-      langsWithDollarSign.includes(langId) ? '$' : ''}]+)\\b`;
+  const ds = langsWithDollarSign.includes(langId) ? '$' : '';
+  const regexString = `\\b[a-zA-Z_${ds}][\\w${ds}]*?\\b`;
   const wordRegex = new RegExp(regexString, 'g');
   const wordAndPosArr = [];
   let match;
   while ((match = wordRegex.exec(text)) !== null) {
-    const word = match[1];
+    const word = match[0];
     if (!isReservedWord(langId, word)) {
       let lineZeroCharOfs = positionIn.character;
       let charOfs = wordRegex.lastIndex - word.length;
@@ -83,7 +83,7 @@ function findWordsInText(langId, text, positionIn) {
         lineOfs += lineStr.length + 1;
       }
       const wordAndPos = {word, position};
-      log('word', wordAndPosArr.length, {wordAndPos});
+      // log('word', wordAndPosArr.length, {wordAndPos});
       wordAndPosArr.push(wordAndPos);
     }
   }
@@ -136,23 +136,30 @@ async function findSymRefsInFunction(document, selection) {
   const ext = document.uri.path.split('.').slice(-1)[0];
   if(extToLangId[ext]) langId = extToLangId[ext];
   else                 langId = document.languageId;
-  const symRefs = [];
+  // const symRefs = [];
   const wordAndPosArr = 
       findWordsInText(langId, func.text, func.location.range.start);
 
-  log('executeDefinitionProvider', 
-       await vscode.commands.executeCommand(
-               'vscode.executeDefinitionProvider',
-                 document.uri, wordAndPosArr[15].position));
-
-  const words = wordAndPosArr.map(wordAndPos => wordAndPos.word);
-  const docs  = await getAllDocumentsWithLangid(langId);
-  for(const doc of docs) {
-    const symRefsInDoc = 
-            await findSymRefsInDocument(doc, words, func?.location)
-    symRefs.push(...symRefsInDoc);
+  for(const wordAndPos of wordAndPosArr) {
+    const def = await vscode.commands.executeCommand(
+                 'vscode.executeDefinitionProvider',
+                    document.uri, wordAndPos.position);
+    if(def.length === 0) continue;
+    const defLoc = new vscode.Location(
+                          def[0].targetUri, def[0].targetRange);
+    if(utils.containsLocation(func.location, defLoc)) continue;
+    // remove duplicates
+    log(wordAndPos.word, def[0]);
   }
-  return symRefs;
+
+  // const words = wordAndPosArr.map(wordAndPos => wordAndPos.word);
+  // const docs  = await getAllDocumentsWithLangid(langId);
+  // for(const doc of docs) {
+  //   const symRefsInDoc = 
+  //           await findSymRefsInDocument(doc, words, func.location)
+  //   symRefs.push(...symRefsInDoc);
+  // }
+  // return symRefs;
 }
 
 module.exports = {findSymRefsInFunction };

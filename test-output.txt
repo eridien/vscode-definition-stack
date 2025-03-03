@@ -1,0 +1,263 @@
+symbols: {
+  "containingFunctionSymbol": {
+    "name": "toggleWaiting",
+    "kind": "Variable",
+    "location": {
+      "uri": {
+        "$mid": 1,
+        "fsPath": "c:\\Users\\mark\\apps\\test-app\\src\\components\\list.vue",
+        "_sep": 1,
+        "external": "file:///c%3A/Users/mark/apps/test-app/src/components/list.vue",
+        "path": "/c:/Users/mark/apps/test-app/src/components/list.vue",
+        "scheme": "file"
+      },
+      "range": [
+        {
+          "line": 315,
+          "character": 10
+        },
+        {
+          "line": 326,
+          "character": 5
+        }
+      ]
+    },
+    "containerName": ""
+  }
+}
+
+
+symbols: toggleWaiting {
+  "targetUri": {
+    "$mid": 1,
+    "fsPath": "c:\\Users\\mark\\apps\\test-app\\src\\components\\list.vue",
+    "_sep": 1,
+    "external": "file:///c%3A/Users/mark/apps/test-app/src/components/list.vue",
+    "path": "/c:/Users/mark/apps/test-app/src/components/list.vue",
+    "scheme": "file"
+  },
+  "targetRange": [
+    {
+      "line": 315,
+      "character": 4
+    },
+    {
+      "line": 326,
+      "character": 6
+    }
+  ],
+  "targetSelectionRange": [
+    {
+      "line": 315,
+      "character": 10
+    },
+    {
+      "line": 315,
+      "character": 23
+    }
+  ],
+  "originSelectionRange": [
+    {
+      "line": 315,
+      "character": 10
+    },
+    {
+      "line": 315,
+      "character": 23
+    }
+  ]
+}
+
+
+symbols: saveVisShow {
+  "targetUri": {
+    "$mid": 1,
+    "external": "file:///c%3A/Users/mark/apps/test-app/node_modules/%40vue/runtime-core/dist/runtime-core.d.ts",
+    "path": "/c:/Users/mark/apps/test-app/node_modules/@vue/runtime-core/dist/runtime-core.d.ts",
+    "scheme": "file"
+  },
+  "targetRange": [
+    {
+      "line": 837,
+      "character": 4
+    },
+    {
+      "line": 837,
+      "character": 28
+    }
+  ],
+  "originSelectionRange": [
+    {
+      "line": 317,
+      "character": 11
+    },
+    {
+      "line": 317,
+      "character": 22
+    }
+  ]
+}
+
+
+symbols: srvr {
+  "targetUri": {
+    "$mid": 1,
+    "fsPath": "c:\\Users\\mark\\apps\\test-app\\src\\components\\list.vue",
+    "_sep": 1,
+    "external": "file:///c%3A/Users/mark/apps/test-app/src/components/list.vue",
+    "path": "/c:/Users/mark/apps/test-app/src/components/list.vue",
+    "scheme": "file"
+  },
+  "targetRange": [
+    {
+      "line": 282,
+      "character": 0
+    },
+    {
+      "line": 282,
+      "character": 35
+    }
+  ],
+  "targetSelectionRange": [
+    {
+      "line": 282,
+      "character": 12
+    },
+    {
+      "line": 282,
+      "character": 16
+    }
+  ],
+  "originSelectionRange": [
+    {
+      "line": 320,
+      "character": 8
+    },
+    {
+      "line": 320,
+      "character": 12
+    }
+  ]
+}
+
+
+symbols: addBlockedWait {
+  "targetUri": {
+    "$mid": 1,
+    "external": "file:///c%3A/Users/mark/apps/test-app/src/srvr.js",
+    "path": "/c:/Users/mark/apps/test-app/src/srvr.js",
+    "scheme": "file"
+  },
+  "targetRange": [
+    {
+      "line": 144,
+      "character": 0
+    },
+    {
+      "line": 145,
+      "character": 50
+    }
+  ],
+  "targetSelectionRange": [
+    {
+      "line": 144,
+      "character": 16
+    },
+    {
+      "line": 144,
+      "character": 30
+    }
+  ],
+  "originSelectionRange": [
+    {
+      "line": 320,
+      "character": 13
+    },
+    {
+      "line": 320,
+      "character": 27
+    }
+  ]
+}
+
+
+symbols: srvr {
+  "targetUri": {
+    "$mid": 1,
+    "fsPath": "c:\\Users\\mark\\apps\\test-app\\src\\components\\list.vue",
+    "_sep": 1,
+    "external": "file:///c%3A/Users/mark/apps/test-app/src/components/list.vue",
+    "path": "/c:/Users/mark/apps/test-app/src/components/list.vue",
+    "scheme": "file"
+  },
+  "targetRange": [
+    {
+      "line": 282,
+      "character": 0
+    },
+    {
+      "line": 282,
+      "character": 35
+    }
+  ],
+  "targetSelectionRange": [
+    {
+      "line": 282,
+      "character": 12
+    },
+    {
+      "line": 282,
+      "character": 16
+    }
+  ],
+  "originSelectionRange": [
+    {
+      "line": 324,
+      "character": 8
+    },
+    {
+      "line": 324,
+      "character": 12
+    }
+  ]
+}
+
+
+symbols: delBlockedWait {
+  "targetUri": {
+    "$mid": 1,
+    "external": "file:///c%3A/Users/mark/apps/test-app/src/srvr.js",
+    "path": "/c:/Users/mark/apps/test-app/src/srvr.js",
+    "scheme": "file"
+  },
+  "targetRange": [
+    {
+      "line": 146,
+      "character": 0
+    },
+    {
+      "line": 147,
+      "character": 50
+    }
+  ],
+  "targetSelectionRange": [
+    {
+      "line": 146,
+      "character": 16
+    },
+    {
+      "line": 146,
+      "character": 30
+    }
+  ],
+  "originSelectionRange": [
+    {
+      "line": 324,
+      "character": 13
+    },
+    {
+      "line": 324,
+      "character": 27
+    }
+  ]
+}
