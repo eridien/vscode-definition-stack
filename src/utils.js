@@ -1,8 +1,3 @@
-/*
-  options:
-    include node_modules
-*/
-
 const vscode = require('vscode');
 
 const outputChannel = 
@@ -10,11 +5,16 @@ const outputChannel =
 outputChannel.clear();
 outputChannel.show(true);
 
-function log(module) {
+function getLog(module) {
   const log = function(...args) {
-    const errFlag    = (typeof args[0] == 'string' && args[0].includes('err'));
-    const infoFlag   = (typeof args[0] == 'string' && args[0].includes('nomod'));
-    const moduleFlag = (typeof args[0] == 'string' && args[0].includes('info'));
+    let errFlag    = false;
+    let infoFlag   = false;
+    let moduleFlag = false;
+    if(typeof args[0] == 'string') {
+      errFlag    = args[0].includes('err');
+      infoFlag   = args[0].includes('nomod');
+      moduleFlag = args[0].includes('info');
+    }
     if(errFlag || infoFlag) args = args.slice(1);
     const par = args.map(a => 
       typeof a === 'object' ? JSON.stringify(a, null, 2) : a);
@@ -26,6 +26,30 @@ function log(module) {
     if(infoFlag) vscode.window.showInformationMessage(line);
   }
   return log;
+}
+const log = getLog('utils');
+
+function getWorkspaceFolderPath() {
+  const workspaceFolders = vscode.workspace.workspaceFolders;
+  if (workspaceFolders) {
+    return workspaceFolders[0].uri.fsPath;
+  } else {
+    return null;
+  }
+}
+
+async function getTextFromDoc(doc, location) {
+  try {
+    if (!doc || !location) {
+      log('err', 'missing document or location');
+      return null;
+    }
+    return doc.getText(location.range);
+  } 
+  catch (error) {
+    log('err', `Failed to get definition text: ${error.message}`);
+    return null;
+  }
 }
 
 function containsRange(outerRange, innerRange) {
@@ -51,4 +75,7 @@ function getRangeSize(range) {
   return range.end.line - range.start.line;
 }
 
-module.exports = { log, containsRange, containsLocation, getRangeSize };
+module.exports = { 
+  getLog, getTextFromDoc,
+  containsRange, containsLocation, getRangeSize 
+};

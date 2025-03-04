@@ -1,6 +1,7 @@
 const vscode        = require('vscode');
+const edit          = require('./editor.js');
 const utils         = require('./utils.js');
-const log           = utils.log('symbols');
+const log           = utils.getLog('symbol');
 const reservedWords = require('reserved-words');
 
 const ignorePaths = ['node_modules', '.d.ts'];
@@ -31,7 +32,7 @@ function getSymbolsRecursive(symbolIn) {
   return symbols;
 }
 
-async function findSurroundingFrame(document, selection) {
+async function findSurroundingBlock(document, selection) {
   try {
     const docTopSymbols = await vscode.commands.executeCommand(
              'vscode.executeDocumentSymbolProvider', document.uri);
@@ -39,13 +40,13 @@ async function findSurroundingFrame(document, selection) {
     const allSymbols = docTopSymbols
               .flatMap(symbol => getSymbolsRecursive(symbol))
     // Find the smallest containing symbol
-    const containingFrameSymbol = allSymbols
-      .filter(frame => utils.containsRange(frame.range, selection))
+    const containingBlockSymbol = allSymbols
+      .filter(block => utils.containsRange(block.range, selection))
       .sort((a, b) => utils.getRangeSize(a.range) 
                     - utils.getRangeSize(b.range))[0];
-    if (containingFrameSymbol) {
-      // log({containingFrameSymbol});
-      return containingFrameSymbol.location;
+    if (containingBlockSymbol) {
+      // log({containingBlockSymbol});
+      return containingBlockSymbol.location;
     }
     return null;
   } 
@@ -87,35 +88,45 @@ function findWordsInText(langId, text, positionIn) {
   return wordAndPosArr;
 }
 
-async function processOneFrame(frameLocation) {
-  const frameUri   = frameLocation.uri;
-  const framePath  = frameUri.path;
-  const frameRange = frameLocation.range;
-  const frameDoc = 
-        await vscode.workspace.openTextDocument(frameUri);
+async function processOneBlock(blockLocation) {
+  const blockUri   = blockLocation.uri;
+  const blockPath  = blockUri.path;
+  const blockRange = blockLocation.range;
+  const workSpace  = vscode.workspace;
+  const wsPath     = 
+          workSpace.getWorkspaceFolder(blockUri.fsPath);
+  const blockDoc = 
+          await workSpace.openTextDocument(blockUri);
   let langId;
-  const ext = framePath.split('.').slice(-1)[0];
+  const ext = blockPath.split('.').slice(-1)[0];
   if(extToLangId[ext]) langId = extToLangId[ext];
-  else                 langId = frameDoc.languageId;
-  const text = frameDoc.getText(frameRange);
+  else                 langId = blockDoc.languageId;
+  const text = blockDoc.getText(blockRange);
   const wordAndPosArr = findWordsInText(
-              langId, text, frameRange.start);
+              langId, text, blockRange.start);
   const defLocs = new Set();
   for(const wordAndPos of wordAndPosArr) {
     const definitions = await vscode.commands.executeCommand(
                               'vscode.executeDefinitionProvider',
-                                  frameUri, wordAndPos.position);
+                                  blockUri, wordAndPos.position);
     defloop:
     for(const definition of definitions) {
       const definitionLoc = new vscode.Location(
                       definition.targetUri, definition.targetRange);
       const defPath = definitionLoc.uri.path;
-      if(utils.containsLocation(frameLocation, definitionLoc)) continue;
+      if(utils.containsLocation(blockLocation, definitionLoc)) continue;
       for(const ignorePath of ignorePaths) {
         if(defPath.includes(ignorePath)) continue defloop;
       }
       const defLocStr = JSON.stringify(definitionLoc);
       if(defLocs.has(defLocStr)) continue;
+
+      const text =
+            await utils.getTextFromDoc(blockDoc, definitionLoc);
+      const relPath = blockPath.replace(wsPath, wsPath, '');
+      edit.addText(`${relPath}`, 'end');
+      edit.addText(text, 'end');
+      edit.addText('\n', 'end');
       defLocs.add(defLocStr);
 
       log(wordAndPos.word, 
@@ -123,19 +134,18 @@ async function processOneFrame(frameLocation) {
           definitionLoc.range.start.line,
           definitionLoc.range.end.line);
 
-      await processOneFrame(definitionLoc);
+      await processOneBlock(definitionLoc);
     }
-    // remove duplicates
   }
 }
 
-async function processFrames(document, selection) {
-  const frameLoc = await findSurroundingFrame(document, selection);
-  if(!frameLoc) {
-    log('info', 'No frame found');
+async function processBlocks(document, selection) {
+  const blockLoc = await findSurroundingBlock(document, selection);
+  if(!blockLoc) {
+    log('err', 'No block found');
     return;
   }
-  await processOneFrame(frameLoc);
+  await processOneBlock(blockLoc);
 }
 
-module.exports = { processFrames };
+module.exports = { processBlocks };

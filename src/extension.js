@@ -1,6 +1,6 @@
 const vscode = require('vscode');
 const utils  = require('./utils.js');
-const log    = utils.log('defStack');
+const log    = utils.getLog('defStack');
 const sym    = require('./symbols.js');
 
 function activate(context) {
@@ -14,7 +14,7 @@ function activate(context) {
     const document  = textEditor.document;
     const selection = textEditor.selection; 
 
-    await sym.processFrames(document, selection);
+    await sym.processBlocks(document, selection);
 
     log('done');
 	});
