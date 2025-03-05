@@ -2,24 +2,8 @@ const vscode        = require('vscode');
 const edit          = require('./editor.js');
 const utils         = require('./utils.js');
 const log           = utils.getLog('symbol');
-const reservedWords = require('reserved-words');
 
 const ignorePaths = ['node_modules', '.d.ts'];
-
-const extToLangId         = {'vue': 'vue'}
-const langsWithDollarSign = ['javascript', 'typescript', 'vue'];
-
-const isReservedWord = function(langId, word) {
-  switch(langId) {
-    case 'javascript':
-    case 'typescript':
-    case 'vue':
-      const version = 6;
-      return reservedWords.check(word, version);
-    default:
-      return false;
-  }
-}
 
 function getSymbolsRecursive(symbolIn) {
   const symbols = [];
@@ -56,57 +40,46 @@ async function findSurroundingBlock(document, selection) {
   }
 }
 
-function findWordsInText(langId, text, positionIn) {
+function findWordsInText(text, positionIn) {
   const lines = text.split('\n');
-  const ds = langsWithDollarSign.includes(langId) ? '$' : '';
-  const regexString = `\\b[a-zA-Z_${ds}][\\w${ds}]*?\\b`;
+  const regexString = `\\b[a-zA-Z_$][\\w$]*?\\b`;
   const wordRegex = new RegExp(regexString, 'g');
   const wordAndPosArr = [];
   let match;
   while ((match = wordRegex.exec(text)) !== null) {
     const word = match[0];
-    if (!isReservedWord(langId, word)) {
-      let lineZeroCharOfs = positionIn.character;
-      let charOfs = wordRegex.lastIndex - word.length;
-      let lineOfs = 0;
-      let position;
-      for(const [lineNum, lineStr] of lines.entries()) {
-        if(charOfs < (lineOfs + lineStr.length)) {
-          const line = positionIn.line + lineNum;
-          const char = lineZeroCharOfs + charOfs - lineOfs;
-          position = new vscode.Position(line, char);
-          break;
-        }
-        lineZeroCharOfs = 0;
-        lineOfs += lineStr.length + 1;
+    let lineZeroCharOfs = positionIn.character;
+    let charOfs = wordRegex.lastIndex - word.length;
+    let lineOfs = 0;
+    let position;
+    for(const [lineNum, lineStr] of lines.entries()) {
+      if(charOfs < (lineOfs + lineStr.length)) {
+        const line = positionIn.line + lineNum;
+        const char = lineZeroCharOfs + charOfs - lineOfs;
+        position = new vscode.Position(line, char);
+        break;
       }
-      const wordAndPos = {word, position};
-      // log('word', wordAndPosArr.length, {wordAndPos});
-      wordAndPosArr.push(wordAndPos);
+      lineZeroCharOfs = 0;
+      lineOfs += lineStr.length + 1;
     }
+    const wordAndPos = {word, position};
+    // log('word', wordAndPosArr.length, {wordAndPos});
+    wordAndPosArr.push(wordAndPos);
   }
   return wordAndPosArr;
 }
 
 async function processOneBlock(blockLocation) {
   const blockUri   = blockLocation.uri;
-  let  blockPath  = blockUri.path;
   const blockRange = blockLocation.range;
   const workSpace  = vscode.workspace;
-  let wsPath     = 
-          workSpace.getWorkspaceFolder(blockUri).uri.path; 
-  blockPath = utils.fixDriveLetter(blockPath);
-  wsPath    = utils.fixDriveLetter(wsPath) + '/';
+  const wsPath = workSpace.getWorkspaceFolder(blockUri).uri.path; 
+  const wsPathLen = wsPath.length;
  
   const blockDoc = 
           await workSpace.openTextDocument(blockUri);
-  let langId;
-  const ext = blockPath.split('.').slice(-1)[0];
-  if(extToLangId[ext]) langId = extToLangId[ext];
-  else                 langId = blockDoc.languageId;
   const text = blockDoc.getText(blockRange);
-  const wordAndPosArr = findWordsInText(
-              langId, text, blockRange.start);
+  const wordAndPosArr = findWordsInText(text, blockRange.start);
   const defLocs = new Set();
   for(const wordAndPos of wordAndPosArr) {
     const definitions = await vscode.commands.executeCommand(
@@ -114,8 +87,18 @@ async function processOneBlock(blockLocation) {
                                   blockUri, wordAndPos.position);
     defloop:
     for(const definition of definitions) {
+      let defRange   = definition.targetRange;
+      let defEndLine = defRange.end.line;
+      let defEndChar = defRange.end.character;
+      if(defRange.end.character > 0) {
+          defEndLine++;
+          defEndChar = 0;
+      }
+      const defEndPos = new vscode.Position(defEndLine, defEndChar);
+      defRange = new vscode.Range( 
+                        definition.targetRange.start, defEndPos);
       const definitionLoc = new vscode.Location(
-                      definition.targetUri, definition.targetRange);
+                              definition.targetUri, defRange);
       const defPath = definitionLoc.uri.path;
       if(utils.containsLocation(blockLocation, definitionLoc)) continue;
       for(const ignorePath of ignorePaths) {
@@ -124,13 +107,16 @@ async function processOneBlock(blockLocation) {
       const defLocStr = JSON.stringify(definitionLoc);
       if(defLocs.has(defLocStr)) continue;
       defLocs.add(defLocStr);
-      
+      const defDoc = await workSpace.openTextDocument(definitionLoc.uri);
       const text =
-          await utils.getTextFromDoc(blockDoc, definitionLoc);
-      let relPath = defPath.replace(wsPath, '');
-      await edit.addText(`${relPath}\n`, 'end');
-      await edit.addText(text, 'end');
-      await edit.addText('\n\n', 'end');
+          await utils.getTextFromDoc(defDoc, definitionLoc);
+      let relPath = defPath.slice(wsPathLen+1);
+      const hdrLine = `${relPath} 
+                      (${definitionLoc.range.start.line} -
+                       ${definitionLoc.range.end.line})`
+                       .replaceAll(/\s+/g, ' ');
+      await edit.addText(hdrLine + '\n',   'end');
+      await edit.addText(text    + '\n\n', 'end');
 
       log(wordAndPos.word, 
           defPath.split('/').slice(-1)[0], 

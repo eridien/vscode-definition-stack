@@ -9,7 +9,9 @@ async function openTextEditor() {
   try {
     if(defStackEditor) await closeEditor();
     const uri = vscode.Uri.parse(`untitled:DefinitionStack`);
-    const doc = await vscode.workspace.openTextDocument(uri);
+    const doc = await vscode.workspace.openTextDocument(uri, {
+       content:'', language:'plaintext'}
+    );
     const editor = await vscode.window.showTextDocument(doc, {
       preview: true,
       viewColumn: vscode.ViewColumn.Beside,
@@ -75,6 +77,5 @@ async function addText(text, position) {
     editBuilder.insert(position, text);
   });
 }
-
   
 module.exports = {clearEditor, addText}
