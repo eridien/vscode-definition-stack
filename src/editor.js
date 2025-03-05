@@ -2,20 +2,14 @@ const vscode = require('vscode');
 const utils  = require('./utils.js');
 const log    = utils.getLog('editor');
 
-let defStackEditor = null;
+let defStackEditor  = null;
+let disposableWatch = null;
 
 async function openTextEditor() {
   try {
-    // close old def stack editor
-    if(defStackEditor) {
-      defStackEditor.hide();
-      defStackEditor = null;
-    }
-    // Create an untitled document
+    if(defStackEditor) await closeEditor();
     const uri = vscode.Uri.parse(`untitled:DefinitionStack`);
     const doc = await vscode.workspace.openTextDocument(uri);
-    
-    // Get the editor
     const editor = await vscode.window.showTextDocument(doc, {
       preview: true,
       viewColumn: vscode.ViewColumn.Beside,
@@ -37,21 +31,38 @@ async function clearEditor() {
           new vscode.Range(0, 0, document.lineCount, 0), 
           '');
     await vscode.workspace.applyEdit(edit);
-    // await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
-    // defStackEditor = null;
   }
+}
+
+async function closeEditor() {
+  if(disposableWatch) {
+    disposableWatch.dispose();
+    disposableWatch = null;
+  }
+  if(!defStackEditor) return;
+  await vscode.window.showTextDocument(defStackEditor.document);
+  await vscode.commands.executeCommand(
+                  'workbench.action.closeActiveEditor');
+  log(`Editor closed`);
+  defStackEditor = null;
+}
+
+function watchForEditorClose() {
+  if(disposableWatch) return;
+  disposableWatch = vscode.window
+        .onDidChangeVisibleTextEditors(async (editors) => {
+    if(!defStackEditor) return;
+    const editorIsVisible = 
+        editors.some(editor => editor === defStackEditor);
+    if (!editorIsVisible) await closeEditor();
+  });
 }
 
 async function addText(text, position) {
   if(!defStackEditor) {
     defStackEditor = await openTextEditor();
-    vscode.workspace.onDidCloseTextDocument(
-      (doc) => {
-        if(doc === defStackEditor.document) {
-          defStackEditor = null;
-        }
-        log('editor closed');
-      });
+    watchForEditorClose();
+    await clearEditor();
     position = 'start';
   }
   if(position === 'start')
@@ -60,9 +71,6 @@ async function addText(text, position) {
      const doc = defStackEditor.document;
      position  = new vscode.Position(doc.lineCount, 0);
   }
-  // const pos = (position instanceof vscode.Position) 
-  //     ? position 
-  //     : new vscode.Position(position.line, position.character);
   await defStackEditor.edit(editBuilder => {
     editBuilder.insert(position, text);
   });

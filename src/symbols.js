@@ -124,12 +124,13 @@ async function processOneBlock(blockLocation) {
       const defLocStr = JSON.stringify(definitionLoc);
       if(defLocs.has(defLocStr)) continue;
       defLocs.add(defLocStr);
+      
       const text =
           await utils.getTextFromDoc(blockDoc, definitionLoc);
       let relPath = defPath.replace(wsPath, '');
-      edit.addText(`${relPath}\n`, 'end');
-      edit.addText(text, 'end');
-      edit.addText('\n\n', 'end');
+      await edit.addText(`${relPath}\n`, 'end');
+      await edit.addText(text, 'end');
+      await edit.addText('\n\n', 'end');
 
       log(wordAndPos.word, 
           defPath.split('/').slice(-1)[0], 
