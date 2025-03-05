@@ -69,54 +69,39 @@ function findWordsInText(text, positionIn) {
   return wordAndPosArr;
 }
 
+let defLocs = new Set();
+
 async function processOneBlock(blockLocation) {
   const blockUri   = blockLocation.uri;
   const blockRange = blockLocation.range;
   const workSpace  = vscode.workspace;
-  const wsPath = workSpace.getWorkspaceFolder(blockUri).uri.path; 
-  const wsPathLen = wsPath.length;
  
   const blockDoc = 
           await workSpace.openTextDocument(blockUri);
   const text = blockDoc.getText(blockRange);
   const wordAndPosArr = findWordsInText(text, blockRange.start);
-  const defLocs = new Set();
   for(const wordAndPos of wordAndPosArr) {
     const definitions = await vscode.commands.executeCommand(
                               'vscode.executeDefinitionProvider',
                                   blockUri, wordAndPos.position);
     defloop:
     for(const definition of definitions) {
-      // let defRange   = definition.targetRange;
-      // let defEndLine = defRange.end.line;
-      // let defEndChar = defRange.end.character;
-      // if(defRange.end.character > 0) {
-      //     defEndLine++;
-      //     defEndChar = 0;
-      // }
-      // const defEndPos = new vscode.Position(defEndLine, defEndChar);
-      // defRange = new vscode.Range( 
-      //                   definition.targetRange.start, defEndPos);
-      const definitionLoc = new vscode.Location(
-                              definition.targetUri, 
-                              definition.targetRange);
-                              
-    // if(definition.targetRange.start.line == 0 &&
-    //      definition.targetRange.end.line == 0) debugger;
+      const defUri        = definition.targetUri;
+      const defRange      = definition.targetRange;
+      const definitionLoc = new vscode.Location(defUri, defRange);
+      const defPath       = defUri.path;
 
-
-      const defPath = definitionLoc.uri.path;
       if(utils.containsLocation(blockLocation, definitionLoc)) continue;
       for(const ignorePath of ignorePaths) {
         if(defPath.includes(ignorePath)) continue defloop;
       }
-      const defLocStr = JSON.stringify(definitionLoc);
+      const defLocStr = JSON.stringify({defPath, 
+                      startLine: defRange.start.line,
+                      endLine:   defRange.end.line });
+      log(defLocStr);
       if(defLocs.has(defLocStr)) continue;
       defLocs.add(defLocStr);
-      const defDoc = await workSpace.openTextDocument(definitionLoc.uri);
-      const text =
-          await utils.getTextFromDoc(defDoc, definitionLoc);
-      const defRange = definitionLoc.range;
+
       let srcPath = blockUri.path.split('/').slice(-1)[0];
       let tgtPath = defPath      .split('/').slice(-1)[0];
       const hdrLine = (`${wordAndPos.word}(${srcPath}` +
@@ -125,12 +110,11 @@ async function processOneBlock(blockLocation) {
         `[${defRange.start.line+1}:${defRange.end.line+1}]`)
         .replaceAll(/\s+/g, ' ');
       await edit.addText(hdrLine + '\n',   'end');
-      await edit.addText(text    + '\n\n', 'end');
 
-      log(wordAndPos.word, 
-          defPath.split('/').slice(-1)[0], 
-          definitionLoc.range.start.line,
-          definitionLoc.range.end.line);
+      const defDoc = await workSpace.openTextDocument(definitionLoc.uri);
+      const text =
+          await utils.getTextFromDoc(defDoc, definitionLoc);
+      await edit.addText(text    + '\n\n', 'end');
 
       await processOneBlock(definitionLoc);
     }
@@ -148,6 +132,7 @@ async function processBlocks(document, selection) {
     }
   }
   await edit.clearEditor();
+  defLocs = new Set();
   await processOneBlock(blockLoc);
 }
 
