@@ -29,6 +29,10 @@ function getLog(module) {
 }
 const log = getLog('utils');
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function getTextFromDoc(doc, location) {
   try {
     if (!doc || !location) {
@@ -75,6 +79,6 @@ function fixDriveLetter(windowsPath) {
 
 
 module.exports = { 
-  getLog, getTextFromDoc, fixDriveLetter,
+  getLog, getTextFromDoc, fixDriveLetter, sleep,
   containsRange, containsLocation, getRangeSize 
 };

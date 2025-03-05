@@ -127,9 +127,9 @@ async function processOneBlock(blockLocation) {
       const text =
           await utils.getTextFromDoc(blockDoc, definitionLoc);
       let relPath = defPath.replace(wsPath, '');
-      edit.addText(`${relPath}`, 'end');
+      edit.addText(`${relPath}\n`, 'end');
       edit.addText(text, 'end');
-      edit.addText('\n', 'end');
+      edit.addText('\n\n', 'end');
 
       log(wordAndPos.word, 
           defPath.split('/').slice(-1)[0], 
@@ -144,7 +144,7 @@ async function processOneBlock(blockLocation) {
 async function processBlocks(document, selection) {
   let blockLoc = await findSurroundingBlock(document, selection);
   if(!blockLoc) {
-    await (new Promise(resolve => setTimeout(resolve, 2000)));
+    await utils.sleep(2000);
     blockLoc = await findSurroundingBlock(document, selection);
     if(!blockLoc) {
       log('err', 'No block found');

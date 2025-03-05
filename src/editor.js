@@ -45,6 +45,13 @@ async function clearEditor() {
 async function addText(text, position) {
   if(!defStackEditor) {
     defStackEditor = await openTextEditor();
+    vscode.workspace.onDidCloseTextDocument(
+      (doc) => {
+        if(doc === defStackEditor.document) {
+          defStackEditor = null;
+        }
+        log('editor closed');
+      });
     position = 'start';
   }
   if(position === 'start')
@@ -61,4 +68,5 @@ async function addText(text, position) {
   });
 }
 
+  
 module.exports = {clearEditor, addText}
