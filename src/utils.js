@@ -29,15 +29,6 @@ function getLog(module) {
 }
 const log = getLog('utils');
 
-function getWorkspaceFolderPath() {
-  const workspaceFolders = vscode.workspace.workspaceFolders;
-  if (workspaceFolders) {
-    return workspaceFolders[0].uri.fsPath;
-  } else {
-    return null;
-  }
-}
-
 async function getTextFromDoc(doc, location) {
   try {
     if (!doc || !location) {
@@ -75,7 +66,15 @@ function getRangeSize(range) {
   return range.end.line - range.start.line;
 }
 
+function fixDriveLetter(windowsPath) {
+  const match = /^\/([a-zA-Z]):\/(.*?)$/.exec(windowsPath);
+  if(match) windowsPath = 
+                `/${match[1].toUpperCase()}:/${match[2]}`;
+  return windowsPath;
+}
+
+
 module.exports = { 
-  getLog, getTextFromDoc,
+  getLog, getTextFromDoc, fixDriveLetter,
   containsRange, containsLocation, getRangeSize 
 };

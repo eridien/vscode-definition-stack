@@ -90,11 +90,14 @@ function findWordsInText(langId, text, positionIn) {
 
 async function processOneBlock(blockLocation) {
   const blockUri   = blockLocation.uri;
-  const blockPath  = blockUri.path;
+  let  blockPath  = blockUri.path;
   const blockRange = blockLocation.range;
   const workSpace  = vscode.workspace;
-  const wsPath     = 
-          workSpace.getWorkspaceFolder(blockUri.fsPath);
+  let wsPath     = 
+          workSpace.getWorkspaceFolder(blockUri).uri.path; 
+  blockPath = utils.fixDriveLetter(blockPath);
+  wsPath    = utils.fixDriveLetter(wsPath) + '/';
+ 
   const blockDoc = 
           await workSpace.openTextDocument(blockUri);
   let langId;
@@ -120,14 +123,13 @@ async function processOneBlock(blockLocation) {
       }
       const defLocStr = JSON.stringify(definitionLoc);
       if(defLocs.has(defLocStr)) continue;
-
+      defLocs.add(defLocStr);
       const text =
-            await utils.getTextFromDoc(blockDoc, definitionLoc);
-      const relPath = blockPath.replace(wsPath, wsPath, '');
+          await utils.getTextFromDoc(blockDoc, definitionLoc);
+      let relPath = defPath.replace(wsPath, '');
       edit.addText(`${relPath}`, 'end');
       edit.addText(text, 'end');
       edit.addText('\n', 'end');
-      defLocs.add(defLocStr);
 
       log(wordAndPos.word, 
           defPath.split('/').slice(-1)[0], 
@@ -140,11 +142,16 @@ async function processOneBlock(blockLocation) {
 }
 
 async function processBlocks(document, selection) {
-  const blockLoc = await findSurroundingBlock(document, selection);
+  let blockLoc = await findSurroundingBlock(document, selection);
   if(!blockLoc) {
-    log('err', 'No block found');
-    return;
+    await (new Promise(resolve => setTimeout(resolve, 2000)));
+    blockLoc = await findSurroundingBlock(document, selection);
+    if(!blockLoc) {
+      log('err', 'No block found');
+      return;
+    }
   }
+  await edit.clearEditor();
   await processOneBlock(blockLoc);
 }
 

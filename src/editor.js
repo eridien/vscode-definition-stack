@@ -29,8 +29,20 @@ async function openTextEditor() {
   }
 }
 
+async function clearEditor() {
+  if(defStackEditor) {
+    const document = defStackEditor.document;
+    const edit = new vscode.WorkspaceEdit();
+    edit.replace(document.uri, 
+          new vscode.Range(0, 0, document.lineCount, 0), 
+          '');
+    await vscode.workspace.applyEdit(edit);
+    // await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+    // defStackEditor = null;
+  }
+}
+
 async function addText(text, position) {
-  if (!text) return
   if(!defStackEditor) {
     defStackEditor = await openTextEditor();
     position = 'start';
@@ -49,4 +61,4 @@ async function addText(text, position) {
   });
 }
 
-module.exports = { addText }
+module.exports = {clearEditor, addText}
