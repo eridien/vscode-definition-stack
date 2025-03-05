@@ -87,18 +87,24 @@ async function processOneBlock(blockLocation) {
                                   blockUri, wordAndPos.position);
     defloop:
     for(const definition of definitions) {
-      let defRange   = definition.targetRange;
-      let defEndLine = defRange.end.line;
-      let defEndChar = defRange.end.character;
-      if(defRange.end.character > 0) {
-          defEndLine++;
-          defEndChar = 0;
-      }
-      const defEndPos = new vscode.Position(defEndLine, defEndChar);
-      defRange = new vscode.Range( 
-                        definition.targetRange.start, defEndPos);
+      // let defRange   = definition.targetRange;
+      // let defEndLine = defRange.end.line;
+      // let defEndChar = defRange.end.character;
+      // if(defRange.end.character > 0) {
+      //     defEndLine++;
+      //     defEndChar = 0;
+      // }
+      // const defEndPos = new vscode.Position(defEndLine, defEndChar);
+      // defRange = new vscode.Range( 
+      //                   definition.targetRange.start, defEndPos);
       const definitionLoc = new vscode.Location(
-                              definition.targetUri, defRange);
+                              definition.targetUri, 
+                              definition.targetRange);
+                              
+    // if(definition.targetRange.start.line == 0 &&
+    //      definition.targetRange.end.line == 0) debugger;
+
+
       const defPath = definitionLoc.uri.path;
       if(utils.containsLocation(blockLocation, definitionLoc)) continue;
       for(const ignorePath of ignorePaths) {
@@ -110,11 +116,14 @@ async function processOneBlock(blockLocation) {
       const defDoc = await workSpace.openTextDocument(definitionLoc.uri);
       const text =
           await utils.getTextFromDoc(defDoc, definitionLoc);
-      let relPath = defPath.slice(wsPathLen+1);
-      const hdrLine = `${relPath} 
-                      (${definitionLoc.range.start.line} -
-                       ${definitionLoc.range.end.line})`
-                       .replaceAll(/\s+/g, ' ');
+      const defRange = definitionLoc.range;
+      let srcPath = blockUri.path.split('/').slice(-1)[0];
+      let tgtPath = defPath      .split('/').slice(-1)[0];
+      const hdrLine = (`${wordAndPos.word}(${srcPath}` +
+        `[${blockRange.start.line+1}:${blockRange.end.line+1}]) ->
+          ${tgtPath}` +
+        `[${defRange.start.line+1}:${defRange.end.line+1}]`)
+        .replaceAll(/\s+/g, ' ');
       await edit.addText(hdrLine + '\n',   'end');
       await edit.addText(text    + '\n\n', 'end');
 
