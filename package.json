@@ -10,17 +10,42 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./src/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "definition-stack.openwebview",
-        "title": "Open Definition Stack"
+        "title": "Open View"
       },
       {
         "command": "definition-stack.closewebview",
-        "title": "Close Definition Stack"
+        "title": "Close View"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "definition-stack.openwebview",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "definition-stack.openwebview"
+        },
+        {
+          "command": "definition-stack.closewebview"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "definition-stack.openwebview",
+        "key": "ctrl+shift+d",
+        "mac": "cmd+shift+d"
       }
     ]
   },
