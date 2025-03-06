@@ -15,11 +15,11 @@
   "contributes": {
     "commands": [
       {
-        "command": "definition-stack.openWebView",
+        "command": "definition-stack.openwebview",
         "title": "Open Definition Stack"
       },
       {
-        "command": "definition-stack.closeWebView",
+        "command": "definition-stack.closewebview",
         "title": "Close Definition Stack"
       }
     ]
@@ -38,6 +38,7 @@
     "eslint": "^9.19.0"
   },
   "dependencies": {
+    "pug": "^3.0.3",
     "reserved-words": "^0.1.2"
   }
 }

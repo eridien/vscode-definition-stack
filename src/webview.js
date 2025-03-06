@@ -1,6 +1,10 @@
 const vscode = require('vscode');
+ 
+// const utils = require('./utils.js');
+// const log   = utils.getLog('webvew');
+const html  = require('./html.js');
 
-let webViewPanel = null
+let webViewPanel = null;
 
 async function openWebView(context) {
   // Create and show a new webview panel
@@ -18,7 +22,7 @@ async function openWebView(context) {
     );
     context.subscriptions.push(webViewPanel);
   }
-  webViewPanel.webview.html = getWebviewContent();
+  webViewPanel.webview.html = html.getHtml();
 }
 
 async function closeWebView() {
@@ -28,19 +32,19 @@ async function closeWebView() {
   }
 }
 
-function getWebviewContent() {
-  return `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <title>My Custom View</title>
-    </head>
-    <body>
-      <h1>Hello from your custom view!</h1>
-      <p>This view isn’t a document—it’s a webview panel.</p>
-    </body>
-    </html>`;
-}
+// function getHtml() {
+//   return `
+//     <!DOCTYPE html>
+//     <html lang="en">
+//     <head>
+//       <meta charset="UTF-8">
+//       <title>My Custom View</title>
+//     </head>
+//     <body>
+//       <h1>Hello from your custom view!</h1>
+//       <p>This view isn’t a document—it’s a webview panel.</p>
+//     </body>
+//     </html>`;
+// }
 
 module.exports = { openWebView, closeWebView };

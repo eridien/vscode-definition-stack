@@ -27,7 +27,7 @@ function getLog(module) {
   }
   return log;
 }
-const log = getLog('utils');
+const log = getLog('utilsm');
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));

@@ -1,7 +1,7 @@
 const vscode = require('vscode');
 const utils  = require('./utils.js');
-const log    = utils.getLog('defStack');
-const sym    = require('./symbols.js');
+const log    = utils.getLog('extens');
+// const sym    = require('./symbols.js');
 const webv   = require('./webview.js');
 
 function activate(context) {
@@ -9,7 +9,7 @@ function activate(context) {
   
 	const openWebViewCmd = 
     vscode.commands.registerCommand(
-     'definition-stack.openWebView', 
+     'definition-stack.openwebview', 
       async function() {
         await webv.openWebView(context);
         context.subscriptions.push(openWebViewCmd);
@@ -20,7 +20,7 @@ function activate(context) {
 
   const closeWebViewCmd = 
     vscode.commands.registerCommand(
-     'definition-stack.closeWebView', 
+     'definition-stack.closewebview', 
       async function() {
         await webv.closeWebView();
         context.subscriptions.push(closeWebViewCmd);
