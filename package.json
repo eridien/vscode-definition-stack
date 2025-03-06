@@ -1,7 +1,7 @@
 {
   "name": "definition-stack",
   "displayName": "Definition Stack",
-  "description": "Show a function and all definitions recursively in one tab.",
+  "description": "Show definitions recursively in one tab.",
   "publisher": "mark-hahn",
   "version": "0.0.1",
   "engines": {
@@ -15,8 +15,12 @@
   "contributes": {
     "commands": [
       {
-        "command": "definition-stack.test",
-        "title": "Definition Stack Test"
+        "command": "definition-stack.openWebView",
+        "title": "Open Definition Stack"
+      },
+      {
+        "command": "definition-stack.closeWebView",
+        "title": "Close Definition Stack"
       }
     ]
   },

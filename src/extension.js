@@ -5,23 +5,28 @@ const sym    = require('./symbols.js');
 const webv   = require('./webview.js');
 
 function activate(context) {
-	log("started");
+	log("definition-stack activated");
   
-	const disptest = vscode.commands.registerCommand(
-               'definition-stack.test', async function() {
-    webv.createCustomView(context);
+	const openWebViewCmd = 
+    vscode.commands.registerCommand(
+     'definition-stack.openWebView', 
+      async function() {
+        await webv.openWebView(context);
+        context.subscriptions.push(openWebViewCmd);
+        // sym.processBlocks();
+        log('web view opened');  
+      }	
+  );
 
-  //   const textEditor = vscode.window.activeTextEditor;
-  //   if (!textEditor) return;
-  //   const document  = textEditor.document;
-  //   const selection = textEditor.selection; 
-
-  //   await sym.processBlocks(document, selection);
-
-    log('done');
-	});
-
-	context.subscriptions.push(disptest);
+  const closeWebViewCmd = 
+    vscode.commands.registerCommand(
+     'definition-stack.closeWebView', 
+      async function() {
+        await webv.closeWebView();
+        context.subscriptions.push(closeWebViewCmd);
+        log('web view closed');  
+      }
+  );
 }
 
 function deactivate() {}

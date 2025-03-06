@@ -1,19 +1,31 @@
 const vscode = require('vscode');
 
-function createCustomView(context) {
+let webViewPanel = null
+
+async function openWebView(context) {
   // Create and show a new webview panel
-  const panel = vscode.window.createWebviewPanel(
-    'defstack-webview',   
-    'Definition Stack',   
-    vscode.ViewColumn.Two,
-    {
-      enableFindWidget: true,
-      retainContextWhenHidden: true,
-      enableScripts: true,
-      localResourceRoots: [vscode.Uri.file(context.extensionPath)]
-    }  
-  );
-  panel.webview.html = getWebviewContent();
+  if (!webViewPanel) {
+    webViewPanel = vscode.window.createWebviewPanel(
+      'defstack-webview',   
+      'Definition Stack',   
+      vscode.ViewColumn.Two,
+      {
+        enableFindWidget: true,
+        retainContextWhenHidden: true,
+        enableScripts: true,
+        localResourceRoots: [vscode.Uri.file(context.extensionPath)]
+      }  
+    );
+    context.subscriptions.push(webViewPanel);
+  }
+  webViewPanel.webview.html = getWebviewContent();
+}
+
+async function closeWebView() {
+  if (webViewPanel) {
+    webViewPanel.dispose();
+    webViewPanel = null;
+  }
 }
 
 function getWebviewContent() {
@@ -31,4 +43,4 @@ function getWebviewContent() {
     </html>`;
 }
 
-module.exports = { createCustomView };
+module.exports = { openWebView, closeWebView };
