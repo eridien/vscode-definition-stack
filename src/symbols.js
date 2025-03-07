@@ -104,7 +104,7 @@ async function processOneBlock(blockLocation) {
 
       let srcPath = blockUri.path.split('/').slice(-1)[0];
       let tgtPath = defPath      .split('/').slice(-1)[0];
-      const hdrLine = (`${wordAndPos.word}(${srcPath}` +
+      const hdrLine = (`// ${wordAndPos.word}(${srcPath}` +
         `[${blockRange.start.line+1}:${blockRange.end.line+1}]) ->
           ${tgtPath}` +
         `[${defRange.start.line+1}:${defRange.end.line+1}]`)
