@@ -1,0 +1,16 @@
+pre[class*="language-"],
+code[class*="language-"] {
+    color: var(--vscode-editor-foreground);
+    background: var(--vscode-editor-background);
+}
+
+pre {
+    margin: 0;
+    padding: 8px;
+    background: var(--vscode-editor-background);
+}
+
+body {
+    background: var(--vscode-editor-background);
+    color: var(--vscode-editor-foreground);
+}

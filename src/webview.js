@@ -21,12 +21,13 @@ async function open(context) {
     );
     context.subscriptions.push(webViewPanel);
   }
-  html.render(webViewPanel.webview);
+  html.init(context, webViewPanel.webview);
+  html.render();
 }
 
-async function add(htmlTxt) {
+async function add(code) {
   if (!webViewPanel) return;
-  html.add(webViewPanel.webview, htmlTxt);
+  html.add(code);
 }
 
 async function close() {

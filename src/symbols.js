@@ -104,17 +104,17 @@ async function processOneBlock(blockLocation) {
 
       let srcPath = blockUri.path.split('/').slice(-1)[0];
       let tgtPath = defPath      .split('/').slice(-1)[0];
-      const hdrLine = (`// ${wordAndPos.word}(${srcPath}` +
+      const banner = (`${wordAndPos.word}(${srcPath}` +
         `[${blockRange.start.line+1}:${blockRange.end.line+1}]) ->
           ${tgtPath}` +
         `[${defRange.start.line+1}:${defRange.end.line+1}]`)
         .replaceAll(/\s+/g, ' ');
-      await webv.add(`<pre><code>${hdrLine}</code></pre>`, 'end');
+      await webv.add(banner);
 
       const defDoc = await workSpace.openTextDocument(definitionLoc.uri);
       const text =
           await utils.getTextFromDoc(defDoc, definitionLoc);
-      await webv.add(`<pre><code>${text}</code></pre>`, 'end');
+      await webv.add(text);
       await processOneBlock(definitionLoc);
     }
   }

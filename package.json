@@ -63,6 +63,7 @@
     "eslint": "^9.19.0"
   },
   "dependencies": {
+    "prismjs": "^1.29.0",
     "pug": "^3.0.3",
     "reserved-words": "^0.1.2"
   }
