@@ -14,10 +14,11 @@ async function init(contextIn, webviewIn, languageIn = 'javascript') {
   webview  = webviewIn;
   grammar  = Prism.languages[languageIn];
   language = languageIn;
-  const cssPath = path.join(context.extensionPath, 'themes', 'prism.css');
+  const cssPath = path.join(context.extensionPath, 'themes', 'prism-vs.css');
   const cssUri = vscode.Uri.file(cssPath);
   const cssBuffer = await vscode.workspace.fs.readFile(cssUri);
   cssContent = Buffer.from(cssBuffer).toString('utf8')
+                     .replace(/\/\*[\s\S]*?\*\//g, '') // remove /* */
                      .replaceAll(/"/g, '&quot;');
   log('html.js initialized');
 }
