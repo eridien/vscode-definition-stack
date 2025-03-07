@@ -6,20 +6,19 @@ const log      = utils.getLog('htmljs');
 const template = require('../html/html-template.js').getHtml();
 
 let context, webview;
-let grammar, language
-let cssUri,  jsUri;
+let grammar, language;
+let cssContent;
 
-function init(contextIn, webviewIn, languageIn = 'javascript') {
+async function init(contextIn, webviewIn, languageIn = 'javascript') {
   context  = contextIn;
   webview  = webviewIn;
   grammar  = Prism.languages[languageIn];
   language = languageIn;
-  const cssPath = vscode.Uri.file(
-      path.join(context.extensionPath, 'themes', 'prism.css'));
-  cssUri = webview.asWebviewUri(cssPath);
-  const jsPath = vscode.Uri.file(
-      path.join(context.extensionPath, 'themes', 'prism.js'));
-  jsUri = webview.asWebviewUri(jsPath);
+  const cssPath = path.join(context.extensionPath, 'themes', 'prism.css');
+  const cssUri = vscode.Uri.file(cssPath);
+  const cssBuffer = await vscode.workspace.fs.readFile(cssUri);
+  cssContent = Buffer.from(cssBuffer).toString('utf8')
+                     .replaceAll(/"/g, '&quot;');
   log('html.js initialized');
 }
 
@@ -27,8 +26,7 @@ let htmlBody = "";
 
 function render() {
   const html = template
-      .replace('**cssPath**', cssUri)
-      // .replace('**jsPath**',  jsUri)
+      .replace('**cssContent**', cssContent)
       .replace('<div></div>', htmlBody);
   webview.html = html;
 }
@@ -36,8 +34,7 @@ function render() {
 function add(code) {
   const codeHtml = Prism.highlight(code, grammar, language);
   const wrappedHtml = `<pre><code>${codeHtml}</code></pre>`
-    // .replaceAll(/</g, '&lt;')
-    .replaceAll(/"/g, '&quot;');
+                      .replaceAll(/"/g, '&quot;');
   htmlBody += wrappedHtml;
   render();
 }

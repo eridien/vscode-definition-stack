@@ -21,7 +21,7 @@ async function open(context) {
     );
     context.subscriptions.push(webViewPanel);
   }
-  html.init(context, webViewPanel.webview);
+  await html.init(context, webViewPanel.webview);
   html.render();
 }
 
