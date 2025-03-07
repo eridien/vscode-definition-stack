@@ -1,15 +1,20 @@
-const utils  = require('./utils.js');
-const log = utils.getLog('htmljs');
+// const utils  = require('./utils.js');
+// const log = utils.getLog('htmljs');
 
-const pug   = require('pug');
-const html1 = pug.render(require('../html/1-html.pug'));
-let   html2 = "";
-const html3 = pug.render(require('../html/3-.html.pug'));
+const pug     = require('pug');
+const htmlHdr = pug.render(require('../html/html-hdr.js').getPug());
 
-async function getHtml() {
-  const html = html1 + html2 + html3;
-  log({html});
-  return html;
+let htmlBody = "";
+
+function render(webview) {
+  const html   = htmlHdr + htmlBody;
+  webview.html = html;
 }
 
-module.exports = { getHtml };
+function add(webview, html) {
+  htmlBody += html;
+  render(webview);
+}
+
+module.exports = { add, render };
+

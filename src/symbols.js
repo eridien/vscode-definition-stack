@@ -1,7 +1,7 @@
-const vscode        = require('vscode');
-const edit          = require('./editor.js');
-const utils         = require('./utils.js');
-const log           = utils.getLog('symbol');
+const vscode = require('vscode');
+const utils  = require('./utils.js');
+const log    = utils.getLog('symbol');
+const webv   = require('./webview.js');
 
 const ignorePaths = ['node_modules', '.d.ts'];
 
@@ -109,13 +109,12 @@ async function processOneBlock(blockLocation) {
           ${tgtPath}` +
         `[${defRange.start.line+1}:${defRange.end.line+1}]`)
         .replaceAll(/\s+/g, ' ');
-      await edit.addText(hdrLine + '\n',   'end');
+      await webv.add(`<pre><code>${hdrLine}</code></pre>`, 'end');
 
       const defDoc = await workSpace.openTextDocument(definitionLoc.uri);
       const text =
           await utils.getTextFromDoc(defDoc, definitionLoc);
-      await edit.addText(text    + '\n\n', 'end');
-
+      await webv.add(`<pre><code>${text}</code></pre>`, 'end');
       await processOneBlock(definitionLoc);
     }
   }
@@ -131,7 +130,6 @@ async function processBlocks(document, selection) {
       return;
     }
   }
-  await edit.clearEditor();
   defLocs = new Set();
   await processOneBlock(blockLoc);
 }

@@ -18,11 +18,11 @@
     "commands": [
       {
         "command": "definition-stack.openwebview",
-        "title": "Open View"
+        "title": "Definition Stack: Open"
       },
       {
         "command": "definition-stack.closewebview",
-        "title": "Close View"
+        "title": "Definition Stack: Close"
       }
     ],
     "menus": {
