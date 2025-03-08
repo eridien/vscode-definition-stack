@@ -22,10 +22,14 @@ function getHtml() { return `
           <style>
             **cssContent**
           </style>
+          <script language='javascript'>
+            **jsContent**
+          </script>
         </head>
-        <body style='font-weight:**fontWeight**; 
+        <body class="line-numbers"
+              style="font-weight:**fontWeight**; 
                      font-size:**fontSize**;
-                     font-family:**fontFamily**;'>
+                     font-family:**fontFamily**;">
           **body**
         </body>
       </html>

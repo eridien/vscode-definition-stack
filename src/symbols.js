@@ -100,7 +100,7 @@ async function processOneBlock(blockLocation) {
       const defLocStr = JSON.stringify({defPath, 
                       startLine: defRange.start.line,
                       endLine:   defRange.end.line });
-      log(defLocStr);
+      // log(defLocStr);
       if(defLocs.has(defLocStr)) continue;
       defLocs.add(defLocStr);
 
