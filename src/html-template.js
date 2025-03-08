@@ -26,10 +26,10 @@ function getHtml() { return `
             **jsContent**
           </script>
         </head>
-        <body class="line-numbers"
-              style="font-weight:**fontWeight**; 
+        <body class='line-numbers'
+              style='font-weight:**fontWeight**; 
                      font-size:**fontSize**;
-                     font-family:**fontFamily**;">
+                     font-family:**fontFamily**;'>
           **body**
         </body>
       </html>
