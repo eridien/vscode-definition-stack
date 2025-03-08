@@ -75,7 +75,7 @@ async function init(contextIn, webviewIn, editorIn) {
   const config = vscode.workspace.getConfiguration('editor', document.uri);
   fontFamily   = config.fontFamily;
   fontWeight   = config.fontWeight;
-  fontSize     = config.fontSize;
+  fontSize     = config.fontSize + 'px';
   log('html.js initialized');
 }
 
