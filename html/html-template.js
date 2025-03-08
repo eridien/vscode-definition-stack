@@ -26,8 +26,7 @@ function getHtml() { return `
         <body style='font-weight:**fontWeight**; 
                      font-size:**fontSize**;
                      font-family:**fontFamily**;'>
-          Definition Stack
-          <div></div>
+          **body**
         </body>
       </html>
 
