@@ -9,16 +9,16 @@ function getLog(module) {
   const log = function(...args) {
     let errFlag    = false;
     let infoFlag   = false;
-    let moduleFlag = false;
+    let nomodFlag = false;
     if(typeof args[0] == 'string') {
       errFlag    = args[0].includes('err');
-      infoFlag   = args[0].includes('nomod');
-      moduleFlag = args[0].includes('info');
+      infoFlag   = args[0].includes('info');
+      nomodFlag = infoFlag || args[0].includes('nomod');
     }
     if(errFlag || infoFlag) args = args.slice(1);
     const par = args.map(a => 
       typeof a === 'object' ? JSON.stringify(a, null, 2) : a);
-    const line = (moduleFlag ? '' : module + ':') + 
+    const line = (nomodFlag ? '' : module + ':') + 
                  (errFlag    ? ' ERROR, ' : '') + par.join(' ')
     outputChannel.appendLine(line);
     if(errFlag) console.error(line);

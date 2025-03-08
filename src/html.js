@@ -21,7 +21,10 @@ const vscLangIdToPrism = {
   "vue":"javascript"
 }
 
+let htmlBody = "";
+
 async function init(contextIn, webviewIn, editorIn) {
+  htmlBody = "";
   const document  = editorIn.document;
   const vscLangId = document.languageId;
   language = vscLangIdToPrism[vscLangId];
@@ -43,8 +46,6 @@ async function init(contextIn, webviewIn, editorIn) {
   fontSize   = config.fontSize;
   log('html.js initialized');
 }
-
-let htmlBody = "";
 
 function render() {
   const html = template

@@ -70,6 +70,7 @@ function findWordsInText(text, positionIn) {
 }
 
 let defLocs = new Set();
+let defCount = 0;
 
 async function processOneBlock(blockLocation) {
   const blockUri   = blockLocation.uri;
@@ -84,6 +85,7 @@ async function processOneBlock(blockLocation) {
     const definitions = await vscode.commands.executeCommand(
                               'vscode.executeDefinitionProvider',
                                   blockUri, wordAndPos.position);
+    defCount += definitions.length;
     defloop:
     for(const definition of definitions) {
       const defUri        = definition.targetUri;
@@ -126,12 +128,14 @@ async function processBlocks(document, selection) {
     await utils.sleep(2000);
     blockLoc = await findSurroundingBlock(document, selection);
     if(!blockLoc) {
-      log('err', 'No block found');
+      log('info', 'The selection is not in a block.');
       return;
     }
   }
   defLocs = new Set();
   await processOneBlock(blockLoc);
+  if(defCount == 0) 
+    log('info', `Found no symbol with a definition.`);
 }
 
 module.exports = { processBlocks };
