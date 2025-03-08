@@ -5,7 +5,7 @@ const html = require('./html.js');
 
 let webViewPanel = null;
 
-async function open(context) {
+async function open(context, editor) {
   // Create and show a new webview panel
   if (!webViewPanel) {
     webViewPanel = vscode.window.createWebviewPanel(
@@ -21,7 +21,7 @@ async function open(context) {
     );
     context.subscriptions.push(webViewPanel);
   }
-  await html.init(context, webViewPanel.webview);
+  await html.init(context, webViewPanel.webview, editor);
   html.render();
 }
 

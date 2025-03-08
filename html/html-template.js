@@ -23,8 +23,10 @@ function getHtml() { return `
             **cssContent**
           </style>
         </head>
-        <body style='font-weight:bold; font-size: 1.25em;'>
-          <h3>Definition Stack</h3>
+        <body style='font-weight:**fontWeight**; 
+                     font-size:**fontSize**;
+                     font-family:**fontFamily**;'>
+          Definition Stack
           <div></div>
         </body>
       </html>

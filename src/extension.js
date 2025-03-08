@@ -13,9 +13,9 @@ function activate(context) {
       function() {
         const textEditor = vscode.window.activeTextEditor;
         if (!textEditor) return;
-        webv.open(context);
-        const document  = textEditor.document;
-        const selection = textEditor.selection; 
+        webv.open(context, textEditor);
+        const document   = textEditor.document;
+        const selection  = textEditor.selection; 
         sym.processBlocks(document, selection);
         log('web view opened');  
       }	
