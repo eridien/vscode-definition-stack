@@ -5,6 +5,16 @@
 {
 	"version": "0.2.0",
 	"configurations": [
+  {
+    "name": "prism-language-names",
+    "program": "${workspaceFolder}/get-prism-language-names.js",
+    "request": "launch",
+    "skipFiles": [
+      "<node_internals>/**"
+    ],
+    "type": "node"
+  },
+  
 		{
 			"name": "Run Extension",
 			"type": "extensionHost",

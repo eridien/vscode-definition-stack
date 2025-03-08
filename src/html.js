@@ -21,8 +21,8 @@ async function init(contextIn, webviewIn, editorIn, languageIn = 'javascript') {
   cssContent = Buffer.from(cssBuffer).toString('utf8')
                      .replace(/\/\*[\s\S]*?\*\//g, '') // remove /* */
                      .replaceAll(/"/g, '&quot;');
-  const config = vscode.workspace.getConfiguration('editor', 
-                                                    editorIn.document.uri);
+  const config = vscode.workspace
+                       .getConfiguration('editor', editorIn.document.uri);
   fontFamily   = config.fontFamily;
   fontWeight   = config.fontWeight;
   fontSize     = config.fontSize;
