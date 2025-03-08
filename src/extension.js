@@ -10,13 +10,13 @@ async function activate(context) {
 	const openWebViewCmd = 
     vscode.commands.registerCommand(
      'definition-stack.openwebview', 
-      function() {
+      async function() {
         const textEditor = vscode.window.activeTextEditor;
         if (!textEditor) return;
-        webv.open(context, textEditor);
+        await webv.open(context, textEditor);
         const document   = textEditor.document;
         const selection  = textEditor.selection; 
-        sym.processBlocks(document, selection);
+        await sym.processBlocks(document, selection);
         log('web view opened');  
       }	
   );
