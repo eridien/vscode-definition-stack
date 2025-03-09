@@ -333,6 +333,7 @@ var Prism = (function (_self) {
 			 *     'color': /\b(?:red|green|blue)\b/
 			 * });
 			 */
+       
 			extend: function (id, redef) {
 				var lang = _.util.clone(_.languages[id]);
 

@@ -136,6 +136,8 @@ async function processBlocks(document, selection) {
   await processOneBlock(blockLoc);
   if(defCount == 0) 
     log('info', `Found no symbol with a definition.`);
+  else
+    webv.render();
 }
 
 module.exports = { processBlocks };

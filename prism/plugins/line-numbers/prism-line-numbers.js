@@ -1,6 +1,6 @@
 (function () {
   console.log("**** Entered Line Numbers Plugin", {Prism, document});
-  // debugger;
+  debugger;
 
   const Prism   = {};
   Prism.plugins = {};

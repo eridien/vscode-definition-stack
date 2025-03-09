@@ -22,12 +22,16 @@ async function open(context, editor) {
     context.subscriptions.push(webViewPanel);
   }
   await html.init(context, webViewPanel.webview, editor);
-  html.render();
 }
 
 async function add(code) {
   if (!webViewPanel) return;
   html.add(code);
+}
+
+async function render() {
+  if (!webViewPanel) return;
+  html.render();
 }
 
 async function close() {
@@ -37,4 +41,4 @@ async function close() {
   }
 }
 
-module.exports = { open, add, close };
+module.exports = { open, add, render, close };

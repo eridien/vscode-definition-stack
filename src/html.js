@@ -62,21 +62,36 @@ async function init(contextIn, webviewIn, editorIn) {
   const prismCoreJsUri = vscode.Uri.file(prismCoreJsPath);
   const prismCoreJsBuf = await vscode.workspace.fs.readFile(prismCoreJsUri);
   const prismCoreJs = Buffer.from(prismCoreJsBuf).toString('utf8')
-                            .replace(/\/\*[\s\S]*?\*\//g, '') // remove /* */
+                            // .replace(/\/\*[\s\S]*?\*\//g, '') // remove /* */
+                            .replaceAll(/"/g, '&quot;');
+                            
+  const prismJsPath = path.join(context.extensionPath,      
+                               'prism', 'components', 'prism-javascript.js');
+  const prismJsUri = vscode.Uri.file(prismJsPath);
+  const prismJsBuf = await vscode.workspace.fs.readFile(prismJsUri);
+  const prismJs = Buffer.from(prismJsBuf).toString('utf8')
+                            // .replace(/\/\*[\s\S]*?\*\//g, '') // remove /* */
                             .replaceAll(/"/g, '&quot;');
 
   const lineNumJsUri = vscode.Uri.file(lineNumJsPath);
   const lineNumJsBuf = await vscode.workspace.fs.readFile(lineNumJsUri);
   const lineNumJs = Buffer.from(lineNumJsBuf).toString('utf8')
-                     .replace(/\/\*[\s\S]*?\*\//g, '') // remove /* */
+                    //  .replace(/\/\*[\s\S]*?\*\//g, '') // remove /* */
                     .replaceAll(/"/g, '&quot;');
-  jsContent = prismCoreJs + lineNumJs;
+  jsContent = prismCoreJs + prismJs+ lineNumJs;
 
   const config = vscode.workspace.getConfiguration('editor', document.uri);
   fontFamily   = config.fontFamily;
   fontWeight   = config.fontWeight;
   fontSize     = config.fontSize + 'px';
   log('html.js initialized');
+}
+
+function add(code) {
+  // const codeHtml = Prism.highlight(code, grammar, language);
+  const wrappedHtml = `<pre><code class="language-javascript">${code}</code></pre>`
+                      .replaceAll(/"/g, '&quot;');
+  htmlBody += wrappedHtml;
 }
 
 function render() {
@@ -88,14 +103,6 @@ function render() {
       .replace('**fontSize**',   fontSize)
       .replace('**fontWeight**', fontWeight);
   webview.html = html;
-}
-
-function add(code) {
-  const codeHtml = Prism.highlight(code, grammar, language);
-  const wrappedHtml = `<pre><code>${codeHtml}</code></pre>`
-                      .replaceAll(/"/g, '&quot;');
-  htmlBody += wrappedHtml;
-  render();
 }
 
 module.exports = { init, add, render };
