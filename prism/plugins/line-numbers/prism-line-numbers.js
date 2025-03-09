@@ -1,11 +1,5 @@
 (function () {
-  console.log("**** Entered Line Numbers Plugin", {Prism, document});
-  debugger;
 
-  const Prism   = {};
-  Prism.plugins = {};
-  Prism.hooks   = [];
-  
 	if (typeof Prism === 'undefined' || typeof document === 'undefined') {
 		return;
 	}
@@ -201,9 +195,6 @@
 	});
 
 	Prism.hooks.add('complete', function (env) {
-
-    console.log("**** hooks add complete", env);
-
 		if (!env.code) {
 			return;
 		}
@@ -254,9 +245,6 @@
 	});
 
 	Prism.hooks.add('line-numbers', function (env) {
-
-    console.log("**** hooks add line-numbers", env);
-    
 		env.plugins = env.plugins || {};
 		env.plugins.lineNumbers = true;
 	});

@@ -1,15 +1,11 @@
 const vscode   = require('vscode');
-const path     = require('path');
-const Prism    = require('prismjs');
 const utils    = require('./utils.js');
 const log      = utils.getLog('htmljs');
 const template = require('./html-template.js').getHtml();
 
-let context, webview;
-let language;
-let cssContent, jsContent;
+let webview, language, header;
 let fontFamily, fontWeight, fontSize;
-let header;
+let cssContent, jsContent;
 
 const vscLangIdToPrism = {
   "bat":           "batch",
@@ -24,20 +20,20 @@ const vscLangIdToPrism = {
 
 let htmlBody = "";
 
-async function init(contextIn, webviewIn, editorIn) {
+async function init(context, webviewIn, editorIn) {
   htmlBody = "";
   const document  = editorIn.document;
   const vscLangId = document.languageId;
   language = vscLangIdToPrism[vscLangId];
   language ??= vscLangId;
   header = (language != vscLangId) ? 
-              `Using ${language}(prism) not ${vscLangId}(vscode)` : "";
-  context  = contextIn;
+              `Using language ${language}(prism), not ${vscLangId}(vscode)` : "";
   webview  = webviewIn;
   const config = vscode.workspace.getConfiguration('editor', document.uri);
   fontFamily   = config.fontFamily;
   fontWeight   = config.fontWeight;
   fontSize     = config.fontSize + 'px';
+
   const prismCss   = await utils.readTxt(context, true, 
                                           'prism', 'themes', 'prism.css');
   const lineNumCss = await utils.readTxt(context, true, 
@@ -57,18 +53,32 @@ async function init(contextIn, webviewIn, editorIn) {
   log('html.js initialized');
 }
 
-function add(code) {
-  const wrappedHtml = 
-          `<pre><code class="language-javascript">${code}</code></pre>`
-          .replaceAll(/"/g, '&quot;');
-  htmlBody += wrappedHtml;
+function add(code, lineNum, markup = false) {
+  let preTag  = `<pre `;
+  let klass   = "";
+  let codeTag = code;
+  if(markup) {
+    if (lineNum != undefined) {
+      klass  += " line-numbers";
+      preTag += ` data-start="${lineNum}"`;
+    }
+    if (language) klass += ` language-${language}`;
+    codeTag = `<code>${code}</code>`;
+  }
+  else {
+    preTag += ' style="margin-top:15px; margin-bottom:-5px; background-color:#ddd;"';
+  }
+  if(klass) preTag   += ` class="${klass}"`;
+  const html = `${preTag}>${codeTag}</pre>`;
+  console.log(html);
+  htmlBody += html.replaceAll(/"/g, '&quot;');
 }
 
 function render() {
   const html = template
       .replace('**cssContent**', cssContent)
       .replace('**jsContent**',  jsContent)
-      .replace('**body**',       header+htmlBody)
+      .replace('**body**',       htmlBody)
       .replace('**fontFamily**', fontFamily)
       .replace('**fontSize**',   fontSize)
       .replace('**fontWeight**', fontWeight);

@@ -71,6 +71,7 @@ function findWordsInText(text, positionIn) {
 
 let defLocs = new Set();
 let defCount = 0;
+let context = null;
 
 async function processOneBlock(blockLocation) {
   const blockUri   = blockLocation.uri;
@@ -90,6 +91,8 @@ async function processOneBlock(blockLocation) {
     for(const definition of definitions) {
       const defUri        = definition.targetUri;
       const defRange      = definition.targetRange;
+      const startLine     = defRange.start.line;
+      const endLine       = defRange.end.line;
       const definitionLoc = new vscode.Location(defUri, defRange);
       const defPath       = defUri.path;
 
@@ -97,32 +100,29 @@ async function processOneBlock(blockLocation) {
       for(const ignorePath of ignorePaths) {
         if(defPath.includes(ignorePath)) continue defloop;
       }
-      const defLocStr = JSON.stringify({defPath, 
-                      startLine: defRange.start.line,
-                      endLine:   defRange.end.line });
+      const defLocStr = JSON.stringify({defPath, startLine, endLine});
       log(defLocStr);
       if(defLocs.has(defLocStr)) continue;
       defLocs.add(defLocStr);
 
-      let srcPath = blockUri.path.split('/').slice(-1)[0];
-      let tgtPath = defPath      .split('/').slice(-1)[0];
-      const banner = (`${wordAndPos.word}(${srcPath}` +
-        `[${blockRange.start.line+1}:${blockRange.end.line+1}]) ->
-          ${tgtPath}` +
-        `[${defRange.start.line+1}:${defRange.end.line+1}]`)
-        .replaceAll(/\s+/g, ' ');
-      await webv.add(banner);
+    // todo: pick correct project
+      const projIdx = 0;
+      const projPath = vscode.workspace.workspaceFolders[projIdx].uri.path;
+      console.log({defPath, projPath});
+      const tgtPath = defPath.slice(projPath.length+1);
+      await webv.addBanner(wordAndPos.word, tgtPath);
 
       const defDoc = await workSpace.openTextDocument(definitionLoc.uri);
       const text =
           await utils.getTextFromDoc(defDoc, definitionLoc);
-      await webv.add(text);
+      await webv.addCode(text, startLine+1);
       await processOneBlock(definitionLoc);
     }
   }
 }
 
-async function processBlocks(document, selection) {
+async function processBlocks(contextIn, document, selection) {
+  context = contextIn;
   let blockLoc = await findSurroundingBlock(document, selection);
   if(!blockLoc) {
     await utils.sleep(2000);

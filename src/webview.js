@@ -1,12 +1,9 @@
 const vscode = require('vscode');
-// const utils = require('./utils.js');
-// const log   = utils.getLog('webvew');
-const html = require('./html.js');
+const html   = require('./html.js');
 
 let webViewPanel = null;
 
 async function open(context, editor) {
-  // Create and show a new webview panel
   if (!webViewPanel) {
     webViewPanel = vscode.window.createWebviewPanel(
       'defstack-webview',   
@@ -24,15 +21,16 @@ async function open(context, editor) {
   await html.init(context, webViewPanel.webview, editor);
 }
 
-async function add(code) {
-  if (!webViewPanel) return;
-  html.add(code);
+async function addBanner(word, tgtPath) {
+  const banner = `Definition of <span style="color:red;">${word}</span> in ${tgtPath}`;
+  html.add(banner);
 }
 
-async function render() {
-  if (!webViewPanel) return;
-  html.render();
+async function addCode(code, lineNum) {
+  html.add(code, lineNum, true);
 }
+
+const render = html.render;
 
 async function close() {
   if (webViewPanel) {
@@ -41,4 +39,4 @@ async function close() {
   }
 }
 
-module.exports = { open, add, render, close };
+module.exports = {open, addBanner, addCode, render, close };

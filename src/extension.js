@@ -16,7 +16,7 @@ async function activate(context) {
         await webv.open(context, textEditor);
         const document   = textEditor.document;
         const selection  = textEditor.selection; 
-        await sym.processBlocks(document, selection);
+        await sym.processBlocks(context, document, selection);
         log('web view opened');  
       }	
   );
@@ -29,17 +29,6 @@ async function activate(context) {
         log('web view closed');  
       }
   );
-
-  // const languages = await vscode.languages.getLanguages();
-  // const workspaceFolders = vscode.workspace.workspaceFolders;
-  // if (!workspaceFolders) {
-  //   vscode.window.showErrorMessage('No workspace folder open');
-  //   return;
-  // }
-  // const filePath = vscode.Uri.joinPath(workspaceFolders[0].uri, 'vscode-languages.txt');
-  // const data = 
-  // new Uint8Array(Buffer.from(languages.join('\n')));
-  // await vscode.workspace.fs.writeFile(filePath, data);
   
   context.subscriptions.push(openWebViewCmd, closeWebViewCmd);
   log("commands registered");
