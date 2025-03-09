@@ -1,4 +1,5 @@
 const vscode = require('vscode');
+const path   = require('path');
 
 const outputChannel = 
          vscode.window.createOutputChannel('Definition Stack');
@@ -27,7 +28,24 @@ function getLog(module) {
   }
   return log;
 }
-const log = getLog('utilsm');
+const log = getLog(' utils');
+
+async function readTxt(context, noComments, ...paths) {
+  let text;
+  const filePath = path.join(context.extensionPath, ...paths);
+  try {
+    const fileUri = vscode.Uri.file(filePath);
+    const fileBuf = await vscode.workspace.fs.readFile(fileUri);
+    text = Buffer.from(fileBuf).toString('utf8');
+  }
+  catch (e) { 
+    log('err', `reading file ${filePath}, ${e.message}`); 
+    return null; 
+  }
+  if(noComments) text = text.replaceAll(/\/\*[\s\S]*?\*\//g, '');
+  text = text.replaceAll(/"/g, '&quot;');
+  return text;
+}
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -80,5 +98,5 @@ function fixDriveLetter(windowsPath) {
 
 module.exports = { 
   getLog, getTextFromDoc, fixDriveLetter, sleep,
-  containsRange, containsLocation, getRangeSize 
+  containsRange, containsLocation, getRangeSize, readTxt
 };
