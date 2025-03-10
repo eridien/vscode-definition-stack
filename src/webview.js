@@ -3,14 +3,25 @@ const html   = require('./html.js');
 const utils  = require('./utils.js');
 const log    = utils.getLog('WEBV');
 
-let webViewPanel = null;
+let webviewPanel  = null;
 
-function openEmptyPage(context) {
-  if (!webViewPanel) {
-    webViewPanel = vscode.window.createWebviewPanel(
+function activeColumn() {
+  const editor = vscode.window.activeTextEditor;
+  return editor ? editor.viewColumn : vscode.ViewColumn.One;
+}
+
+function inactiveColumn() {
+  if(activeColumn() === vscode.ViewColumn.Two)
+    return vscode.ViewColumn.One;
+  return vscode.ViewColumn.Two;
+}
+
+async function openEmptyPage(context) {
+  if(!webviewPanel) {
+    webviewPanel = vscode.window.createWebviewPanel(
       'defstack-webview',   
       'Definition Stack',   
-      vscode.ViewColumn.Two,
+       inactiveColumn(),
       {
         enableFindWidget: true,
         retainContextWhenHidden: true,
@@ -18,9 +29,16 @@ function openEmptyPage(context) {
         localResourceRoots: [vscode.Uri.file(context.extensionPath)]
       }  
     );
-    context.subscriptions.push(webViewPanel);
-    html.setView(context, webViewPanel.webview);
-    webViewPanel.onDidDispose(() => {webViewPanel = null});
+    context.subscriptions.push(webviewPanel);
+    html.setView(context, webviewPanel.webview);
+    webviewPanel.onDidDispose(() => {webviewPanel = null});
+  }
+  if(!webviewPanel.active && 
+      webviewPanel.viewColumn === activeColumn()) {
+    webviewPanel.dispose();
+    webviewPanel = null;
+    openEmptyPage(context);
+    return;
   }
   html.clearPage();
   html.showBusyAnimation();
@@ -40,10 +58,11 @@ const renderPage    = html.renderPage;
 const showMsgInPage = html.showMsgInPage;
 
 async function close() {
-  if (webViewPanel) {
-    webViewPanel.dispose();
-    webViewPanel = null;
+  if (webviewPanel) {
+    webviewPanel.dispose();
+    webviewPanel = null;
   }
 }
 
-module.exports = {openEmptyPage, addBanner, addCode, renderPage, showMsgInPage, close };
+module.exports = {openEmptyPage, addBanner, addCode, 
+                  renderPage, showMsgInPage, close};
