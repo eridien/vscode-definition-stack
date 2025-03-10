@@ -1,7 +1,7 @@
 const vscode = require('vscode');
-const utils  = require('./utils.js');
-const log    = utils.getLog('symbol');
 const webv   = require('./webview.js');
+const utils  = require('./utils.js');
+const log    = utils.getLog('PAGE');
 
 const ignorePaths = ['node_modules', '.d.ts'];
 
@@ -63,12 +63,12 @@ function findWordsInText(text, positionIn) {
       lineOfs += lineStr.length + 1;
     }
     const wordAndPos = {word, position};
-    // log('word', wordAndPosArr.length, {wordAndPos});
     wordAndPosArr.push(wordAndPos);
   }
   return wordAndPosArr;
 }
 
+let projPath = "";
 let defLocs  = new Set();
 let defCount = 0;
 
@@ -93,22 +93,19 @@ async function processOneBlock(blockLocation) {
       const endLine       = defRange.end.line;
       const definitionLoc = new vscode.Location(defUri, defRange);
       const defPath       = defUri.path;
+      const defRelPath    = defPath.slice(projPath.length+1);
 
       if(utils.containsLocation(blockLocation, definitionLoc)) continue;
       for(const ignorePath of ignorePaths) {
         if(defPath.includes(ignorePath)) continue defloop;
       }
       const defLocStr = JSON.stringify({defPath, startLine, endLine});
-      log(defLocStr);
       if(defLocs.has(defLocStr)) continue;
       defLocs.add(defLocStr);
-
       defCount++;
-      const projIdx = 0;
-      const projPath = vscode.workspace.workspaceFolders[projIdx].uri.path;
-      console.log({defPath, projPath});
-      const tgtPath = defPath.slice(projPath.length+1);
-      await webv.addBanner(wordAndPos.word, tgtPath);
+
+      log(wordAndPos.word.padEnd(15),       defRelPath);
+      await webv.addBanner(wordAndPos.word, defRelPath);
 
       const defDoc = await workSpace.openTextDocument(definitionLoc.uri);
       const text =
@@ -123,12 +120,14 @@ async function startBuildingPage(contextIn, textEditor) {
   context = contextIn;
   const document  = textEditor.document;
   const selection = textEditor.selection; 
-  let blockLoc = await findSurroundingBlock(document, selection);
+  const projIdx   = utils.getProjectIdx(document);
+  projPath = vscode.workspace.workspaceFolders[projIdx].uri.path;
+  let blockLoc    = await findSurroundingBlock(document, selection);
   if(!blockLoc) {
     await utils.sleep(2000);
     blockLoc = await findSurroundingBlock(document, selection);
     if(!blockLoc) {
-      log('info', 'The selection is not in a block.');
+      webv.showMsgInPage('The selection is not in a block.');
       return;
     }
   }
@@ -137,7 +136,7 @@ async function startBuildingPage(contextIn, textEditor) {
   await processOneBlock(blockLoc);
   if(defCount == 0) {
     webv.showMsgInPage(
-             `Found no symbol in selection with a definition.`);
+       `Found no symbol in selection with a definition.`);
   }
   else await webv.renderPage(textEditor);
 }

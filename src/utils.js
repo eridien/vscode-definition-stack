@@ -1,5 +1,6 @@
 const vscode = require('vscode');
 const path   = require('path');
+const log    = getLog('UTIL');
 
 const outputChannel = 
          vscode.window.createOutputChannel('Definition Stack');
@@ -19,7 +20,7 @@ function getLog(module) {
     if(errFlag || infoFlag) args = args.slice(1);
     const par = args.map(a => 
       typeof a === 'object' ? JSON.stringify(a, null, 2) : a);
-    const line = (nomodFlag ? '' : module + ':') + 
+    const line = (nomodFlag ? '' : module + ': ') + 
                  (errFlag    ? ' ERROR, ' : '') + par.join(' ')
     outputChannel.appendLine(line);
     if(errFlag) console.error(line);
@@ -28,7 +29,6 @@ function getLog(module) {
   }
   return log;
 }
-const log = getLog(' utils');
 
 async function readTxt(context, noComments, ...paths) {
   let text;
@@ -95,8 +95,19 @@ function fixDriveLetter(windowsPath) {
   return windowsPath;
 }
 
+function getProjectIdx(document) {
+  const workspaceFolders = vscode.workspace.workspaceFolders;
+  if (!workspaceFolders || workspaceFolders.length === 0) return 0;
+  for (let i = 0; i < workspaceFolders.length; i++) {
+    const folder = workspaceFolders[i];
+    if (document.uri.fsPath.startsWith(folder.uri.fsPath)) {
+      return i;
+    }
+  }
+  return 0;
+}
 
 module.exports = { 
-  getLog, getTextFromDoc, fixDriveLetter, sleep,
+  getLog, getTextFromDoc, fixDriveLetter, sleep, getProjectIdx,
   containsRange, containsLocation, getRangeSize, readTxt
 };

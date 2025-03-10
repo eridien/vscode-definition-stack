@@ -1,6 +1,6 @@
 const vscode   = require('vscode');
 const utils    = require('./utils.js');
-const log      = utils.getLog('htmljs');
+const log      = utils.getLog('HTML');
 
 const vscLangIdToPrism = {
   "bat":           "batch",
@@ -113,12 +113,12 @@ function showBusyAnimation() {
 function showMsgInPage(msg) {
   if(webview) {
     const msgHtml = 
-    `<div style=" background: var(--vscode-editor-background);
-                  color:      var(--vscode-editor-foreground);
-                  border-radius: 8px;
-                  padding: 10px;
-                  margin:  10px;
-                "> ${msg} </div>`;
+      `<div style=" background: var(--vscode-editor-background);
+                    color:      var(--vscode-editor-foreground);
+                    border-radius: 8px;
+                    padding: 10px;
+                    margin:  10px;
+                  "> ${msg} </div>`;
     webview.html = msgHtml;
   }
   else log('info', msg);

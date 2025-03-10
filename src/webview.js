@@ -1,5 +1,7 @@
 const vscode = require('vscode');
 const html   = require('./html.js');
+const utils  = require('./utils.js');
+const log    = utils.getLog('WEBV');
 
 let webViewPanel = null;
 

@@ -1,8 +1,8 @@
 const vscode = require('vscode');
-const utils  = require('./utils.js');
-const log    = utils.getLog('extens');
-const sym    = require('./symbols.js');
+const page    = require('./page.js');
 const webv   = require('./webview.js');
+const utils  = require('./utils.js');
+const log    = utils.getLog('EXTS');
 
 async function activate(context) {
   log("definition-stack activated");
@@ -14,7 +14,7 @@ async function activate(context) {
         const textEditor = vscode.window.activeTextEditor;
         if (!textEditor) return;
         await webv.openEmptyPage(context, textEditor);
-        await sym.startBuildingPage(context, textEditor);
+        await page.startBuildingPage(context, textEditor);
         log('web view loaded');  
       }	
   );
