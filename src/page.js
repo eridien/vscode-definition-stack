@@ -133,6 +133,7 @@ async function startBuildingPage(contextIn, textEditor) {
   }
   defLocs  = new Set();
   defCount = 0;
+  webv.setLanguage(textEditor);
   await processOneBlock(blockLoc);
   if(defCount == 0) {
     webv.showMsgInPage(

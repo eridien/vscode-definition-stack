@@ -29,16 +29,20 @@ function setView(contextIn, webviewIn) {
   webview.html = "";
 }
 
-async function initPage(editor) {
-  webview.html    = "";
+function setLanguage(editor) {
   const document  = editor.document;
   const vscLangId = document.languageId;
   language = vscLangIdToPrism[vscLangId];
   language ??= vscLangId;
-  const config = vscode.workspace.getConfiguration('editor', document.uri);
-  fontFamily   = config.fontFamily;
-  fontWeight   = config.fontWeight;
-  fontSize     = config.fontSize + 'px';
+}
+
+async function initPage(editor) {
+  webview.html   = "";
+  const document = editor.document;
+  const config   = vscode.workspace.getConfiguration('editor', document.uri);
+  fontFamily     = config.fontFamily;
+  fontWeight     = config.fontWeight;
+  fontSize       = config.fontSize + 'px';
 
   const prismCss   = await utils.readTxt(context, true, 
                                           'prism', 'themes', 'prism.css');
@@ -76,7 +80,6 @@ function add(code, lineNum, markup = false) {
   }
   if(klass) preTag   += ` class="${klass}"`;
   const html = `${preTag}>${codeTag}</pre>`;
-  console.log(html);
   htmlBody += html.replaceAll(/"/g, '&quot;');
 }
 
@@ -166,6 +169,6 @@ function getPageTemplate() { return `
   
 `}
 
-module.exports = {setView, clearPage, add, renderPage, 
+module.exports = {setLanguage, setView, clearPage, add, renderPage, 
                   showMsgInPage, showBusyAnimation};
 

@@ -44,6 +44,7 @@ async function addCode(code, lineNum) {
   html.add(code, lineNum, true);
 }
 
+const setLanguage   = html.setLanguage;
 const renderPage    = html.renderPage;
 const showMsgInPage = html.showMsgInPage;
 
@@ -54,5 +55,5 @@ async function close() {
   }
 }
 
-module.exports = {openEmptyPage, addBanner, addCode, 
+module.exports = {setLanguage, openEmptyPage, addBanner, addCode, 
                   renderPage, showMsgInPage, close};
