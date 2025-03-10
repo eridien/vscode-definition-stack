@@ -14,9 +14,6 @@ const vscLangIdToPrism = {
 }
 
 let context, webview, language;
-let fontFamily, fontWeight, fontSize;
-let cssContent, jsContent;
-
 let htmlBody = "";
 
 function clearPage() {
@@ -34,33 +31,6 @@ function setLanguage(editor) {
   const vscLangId = document.languageId;
   language = vscLangIdToPrism[vscLangId];
   language ??= vscLangId;
-}
-
-async function initPage(editor) {
-  webview.html   = "";
-  const document = editor.document;
-  const config   = vscode.workspace.getConfiguration('editor', document.uri);
-  fontFamily     = config.fontFamily;
-  fontWeight     = config.fontWeight;
-  fontSize       = config.fontSize + 'px';
-
-  const prismCss   = await utils.readTxt(context, true, 
-                                          'prism', 'themes', 'prism.css');
-  const lineNumCss = await utils.readTxt(context, true, 
-            'prism', 'plugins', 'line-numbers', 'prism-line-numbers.css');
-  cssContent = prismCss + lineNumCss;
-
-  const prismCoreJs = await utils.readTxt(context, false, 
-                                                'prism', 'prism-core.js');
-  const langClike = await utils.readTxt(context, false, 
-                                  'prism', 'languages', 'prism-clike.js');
-  const langJavascript = await utils.readTxt(context, false, 
-                            'prism', 'languages', 'prism-javascript.js');
-  const lineNumJs = await utils.readTxt(context, false, 
-            'prism', 'plugins', 'line-numbers', 'prism-line-numbers.js');
-  jsContent = prismCoreJs + langClike + langJavascript + lineNumJs;
-
-  log('html.js initialized');
 }
 
 function add(code, lineNum, markup = false) {
@@ -84,7 +54,25 @@ function add(code, lineNum, markup = false) {
 }
 
 async function renderPage(editor) {
-  await initPage(editor);
+  const document = editor.document;
+  const prismCss = await utils.readTxt(context, true, 
+                                          'prism', 'themes', 'prism.css');
+  const lineNumCss = await utils.readTxt(context, true, 
+            'prism', 'plugins', 'line-numbers', 'prism-line-numbers.css');
+  const cssContent = prismCss + lineNumCss;
+  const prismCoreJs = await utils.readTxt(context, false, 
+                                                'prism', 'prism-core.js');
+  const langClike = await utils.readTxt(context, false, 
+                                  'prism', 'languages', 'prism-clike.js');
+  const langJavascript = await utils.readTxt(context, false, 
+                            'prism', 'languages', 'prism-javascript.js');
+  const lineNumJs = await utils.readTxt(context, false, 
+            'prism', 'plugins', 'line-numbers', 'prism-line-numbers.js');
+  const jsContent  = prismCoreJs + langClike + langJavascript + lineNumJs;
+  const config     = vscode.workspace.getConfiguration('editor', document.uri);
+  const fontFamily = config.fontFamily;
+  const fontWeight = config.fontWeight;
+  const fontSize   = config.fontSize + 'px';
   const html = getPageTemplate()
       .replace('**cssContent**', cssContent)
       .replace('**jsContent**',  jsContent)
