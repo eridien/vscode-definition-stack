@@ -3,7 +3,7 @@ const html   = require('./html.js');
 
 let webViewPanel = null;
 
-function startPage(context) {
+function openEmptyPage(context) {
   if (!webViewPanel) {
     webViewPanel = vscode.window.createWebviewPanel(
       'defstack-webview',   
@@ -25,7 +25,8 @@ function startPage(context) {
 }
 
 async function addBanner(word, tgtPath) {
-  const banner = `Definition of <span style="color:red;">${word}</span> in ${tgtPath}`;
+  const banner = 
+    `Definition of <span style="color:red;">${word}</span> in ${tgtPath}`;
   html.add(banner);
 }
 
@@ -33,7 +34,8 @@ async function addCode(code, lineNum) {
   html.add(code, lineNum, true);
 }
 
-const renderPage = html.renderPage;
+const renderPage    = html.renderPage;
+const showMsgInPage = html.showMsgInPage;
 
 async function close() {
   if (webViewPanel) {
@@ -42,4 +44,4 @@ async function close() {
   }
 }
 
-module.exports = {startPage, addBanner, addCode, renderPage, close };
+module.exports = {openEmptyPage, addBanner, addCode, renderPage, showMsgInPage, close };

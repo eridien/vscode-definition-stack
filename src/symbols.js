@@ -69,7 +69,7 @@ function findWordsInText(text, positionIn) {
   return wordAndPosArr;
 }
 
-let defLocs = new Set();
+let defLocs  = new Set();
 let defCount = 0;
 
 async function processOneBlock(blockLocation) {
@@ -85,7 +85,6 @@ async function processOneBlock(blockLocation) {
     const definitions = await vscode.commands.executeCommand(
                               'vscode.executeDefinitionProvider',
                                   blockUri, wordAndPos.position);
-    defCount += definitions.length;
     defloop:
     for(const definition of definitions) {
       const defUri        = definition.targetUri;
@@ -104,6 +103,7 @@ async function processOneBlock(blockLocation) {
       if(defLocs.has(defLocStr)) continue;
       defLocs.add(defLocStr);
 
+      defCount++;
       const projIdx = 0;
       const projPath = vscode.workspace.workspaceFolders[projIdx].uri.path;
       console.log({defPath, projPath});
@@ -119,7 +119,7 @@ async function processOneBlock(blockLocation) {
   }
 }
 
-async function startGeneratingPage(contextIn, textEditor) {
+async function startBuildingPage(contextIn, textEditor) {
   context = contextIn;
   const document  = textEditor.document;
   const selection = textEditor.selection; 
@@ -132,12 +132,14 @@ async function startGeneratingPage(contextIn, textEditor) {
       return;
     }
   }
-  defLocs = new Set();
+  defLocs  = new Set();
+  defCount = 0;
   await processOneBlock(blockLoc);
-  if(defCount == 0) 
-    log('info', `Found no symbol with a definition.`);
-  else
-    await webv.renderPage(textEditor);
+  if(defCount == 0) {
+    webv.showMsgInPage(
+             `Found no symbol in selection with a definition.`);
+  }
+  else await webv.renderPage(textEditor);
 }
 
-module.exports = { startGeneratingPage };
+module.exports = { startBuildingPage };

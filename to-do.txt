@@ -1,5 +1,4 @@
 use correct project folder in workspace (symbols.js:108)
-add busy indicator
 ignore empty blocks
 fix duplicates
 handle entire files (remove lines with no symbols)

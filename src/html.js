@@ -1,7 +1,6 @@
 const vscode   = require('vscode');
 const utils    = require('./utils.js');
 const log      = utils.getLog('htmljs');
-const template = require('./html-template.js').getHtml();
 
 const vscLangIdToPrism = {
   "bat":           "batch",
@@ -83,7 +82,7 @@ function add(code, lineNum, markup = false) {
 
 async function renderPage(editor) {
   await initPage(editor);
-  const html = template
+  const html = getPageTemplate()
       .replace('**cssContent**', cssContent)
       .replace('**jsContent**',  jsContent)
       .replace('**body**',       htmlBody)
@@ -111,6 +110,62 @@ function showBusyAnimation() {
   webview.html = busyHtml;
 }
 
+function showMsgInPage(msg) {
+  if(webview) {
+    const msgHtml = 
+    `<div style=" background: var(--vscode-editor-background);
+                  color:      var(--vscode-editor-foreground);
+                  border-radius: 8px;
+                  padding: 10px;
+                  margin:  10px;
+                "> ${msg} </div>`;
+    webview.html = msgHtml;
+  }
+  else log('info', msg);
+}
 
-module.exports = {setView, clearPage, add, renderPage, showBusyAnimation};
+function getPageTemplate() { return `
+
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        html, body { height: 100vh; margin: 0; padding: 0; }
+        iframe { width: 100%; height: 100vh; border: none; }
+      </style>
+    </head>
+    <body>
+      <iframe srcdoc="
+
+        <!DOCTYPE html>
+        <html lang='en'>
+          <head>
+            <meta charset='UTF-8'>
+            <meta name='viewport' 
+                  content='width=device-width, initial-scale=1.0'>
+            <style>
+              **cssContent**
+            </style>
+            <script language='javascript'>
+              **jsContent**
+            </script>
+          </head>
+          <body class='line-numbers'
+                style='font-weight:**fontWeight**; 
+                      font-size:**fontSize**;
+                      font-family:**fontFamily**;'>
+            **body**
+          </body>
+        </html>
+
+    "></iframe>
+    </body>
+  </html>
+  
+`}
+
+module.exports = {setView, clearPage, add, renderPage, 
+                  showMsgInPage, showBusyAnimation};
 
