@@ -3,7 +3,7 @@ const html   = require('./html.js');
 
 let webViewPanel = null;
 
-async function open(context, editor) {
+function createWebView(context) {
   if (!webViewPanel) {
     webViewPanel = vscode.window.createWebviewPanel(
       'defstack-webview',   
@@ -17,8 +17,14 @@ async function open(context, editor) {
       }  
     );
     context.subscriptions.push(webViewPanel);
+    html.setView(context, webViewPanel.webview);
   }
-  await html.init(context, webViewPanel.webview, editor);
+}
+
+async function startPage(context, editor) {
+  createWebView(context);
+  html.showBusyAnimation();
+  await html.initPage(editor);
 }
 
 async function addBanner(word, tgtPath) {
@@ -30,7 +36,7 @@ async function addCode(code, lineNum) {
   html.add(code, lineNum, true);
 }
 
-const render = html.render;
+const renderPage = html.renderPage;
 
 async function close() {
   if (webViewPanel) {
@@ -39,4 +45,4 @@ async function close() {
   }
 }
 
-module.exports = {open, addBanner, addCode, render, close };
+module.exports = {startPage, addBanner, addCode, renderPage, close };

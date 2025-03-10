@@ -71,7 +71,6 @@ function findWordsInText(text, positionIn) {
 
 let defLocs = new Set();
 let defCount = 0;
-let context = null;
 
 async function processOneBlock(blockLocation) {
   const blockUri   = blockLocation.uri;
@@ -105,7 +104,6 @@ async function processOneBlock(blockLocation) {
       if(defLocs.has(defLocStr)) continue;
       defLocs.add(defLocStr);
 
-    // todo: pick correct project
       const projIdx = 0;
       const projPath = vscode.workspace.workspaceFolders[projIdx].uri.path;
       console.log({defPath, projPath});
@@ -121,7 +119,7 @@ async function processOneBlock(blockLocation) {
   }
 }
 
-async function processBlocks(contextIn, document, selection) {
+async function generatePage(contextIn, document, selection) {
   context = contextIn;
   let blockLoc = await findSurroundingBlock(document, selection);
   if(!blockLoc) {
@@ -137,7 +135,7 @@ async function processBlocks(contextIn, document, selection) {
   if(defCount == 0) 
     log('info', `Found no symbol with a definition.`);
   else
-    webv.render();
+    webv.renderPage();
 }
 
-module.exports = { processBlocks };
+module.exports = { generatePage };
