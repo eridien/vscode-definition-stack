@@ -20,14 +20,17 @@ let cssContent, jsContent;
 
 let htmlBody = "";
 
-function setView(contextIn, webviewIn, ) {
-  webview = webviewIn;
+function clearPage() {
+  htmlBody = "";
+}
+
+function setView(contextIn, webviewIn) {
   context = contextIn;
+  webview = webviewIn;
   webview.html = "";
 }
 
 async function initPage(editor) {
-  htmlBody        = "";
   webview.html    = "";
   const document  = editor.document;
   const vscLangId = document.languageId;
@@ -78,7 +81,8 @@ function add(code, lineNum, markup = false) {
   htmlBody += html.replaceAll(/"/g, '&quot;');
 }
 
-function renderPage() {
+async function renderPage(editor) {
+  await initPage(editor);
   const html = template
       .replace('**cssContent**', cssContent)
       .replace('**jsContent**',  jsContent)
@@ -86,19 +90,27 @@ function renderPage() {
       .replace('**fontFamily**', fontFamily)
       .replace('**fontSize**',   fontSize)
       .replace('**fontWeight**', fontWeight);
-  // webview.html = html;
+  webview.html = html;
 }
 
 function showBusyAnimation() {
+  const imagePath = vscode.Uri.joinPath(
+                      context.extensionUri, 'images', 'loading.gif');
+  const imageSrc = webview.asWebviewUri(imagePath);
   const busyHtml = `
-    <div style="margin:15px; width:100px; height:100px;
-                position:relative; top:20px; left:80px;">
-      <img src="${webview.asWebviewUri(
-            vscode.Uri.file(`${__dirname}/images/busy.gif`))}">
-    </div>`;
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+      </head>
+      <body>
+        <img src="${imageSrc}"/>
+      </body>
+    </html>
+  `;
   webview.html = busyHtml;
 }
 
 
-module.exports = {setView, initPage, add, renderPage, showBusyAnimation};
+module.exports = {setView, clearPage, add, renderPage, showBusyAnimation};
 

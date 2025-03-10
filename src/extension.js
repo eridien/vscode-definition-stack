@@ -14,10 +14,8 @@ async function activate(context) {
         const textEditor = vscode.window.activeTextEditor;
         if (!textEditor) return;
         await webv.startPage(context, textEditor);
-        const document   = textEditor.document;
-        const selection  = textEditor.selection; 
-        await sym.generatePage(context, document, selection);
-        log('web view opened');  
+        await sym.startGeneratingPage(context, textEditor);
+        log('web view loaded');  
       }	
   );
 

@@ -119,8 +119,10 @@ async function processOneBlock(blockLocation) {
   }
 }
 
-async function generatePage(contextIn, document, selection) {
+async function startGeneratingPage(contextIn, textEditor) {
   context = contextIn;
+  const document  = textEditor.document;
+  const selection = textEditor.selection; 
   let blockLoc = await findSurroundingBlock(document, selection);
   if(!blockLoc) {
     await utils.sleep(2000);
@@ -135,7 +137,7 @@ async function generatePage(contextIn, document, selection) {
   if(defCount == 0) 
     log('info', `Found no symbol with a definition.`);
   else
-    webv.renderPage();
+    await webv.renderPage(textEditor);
 }
 
-module.exports = { generatePage };
+module.exports = { startGeneratingPage };

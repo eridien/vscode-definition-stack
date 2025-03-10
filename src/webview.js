@@ -3,7 +3,7 @@ const html   = require('./html.js');
 
 let webViewPanel = null;
 
-function createWebView(context) {
+function startPage(context) {
   if (!webViewPanel) {
     webViewPanel = vscode.window.createWebviewPanel(
       'defstack-webview',   
@@ -18,13 +18,10 @@ function createWebView(context) {
     );
     context.subscriptions.push(webViewPanel);
     html.setView(context, webViewPanel.webview);
+    webViewPanel.onDidDispose(() => {webViewPanel = null});
   }
-}
-
-async function startPage(context, editor) {
-  createWebView(context);
+  html.clearPage();
   html.showBusyAnimation();
-  await html.initPage(editor);
 }
 
 async function addBanner(word, tgtPath) {
