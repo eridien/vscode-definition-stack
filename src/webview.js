@@ -5,41 +5,31 @@ const log    = utils.getLog('WEBV');
 
 let webviewPanel  = null;
 
-function activeColumn() {
-  const editor = vscode.window.activeTextEditor;
-  return editor ? editor.viewColumn : vscode.ViewColumn.One;
-}
-
 function inactiveColumn() {
-  if(activeColumn() === vscode.ViewColumn.Two)
+  const editor = vscode.window.activeTextEditor;
+  const activeColumn =  
+          editor ? editor.viewColumn : vscode.ViewColumn.One;
+  if(activeColumn === vscode.ViewColumn.Two)
     return vscode.ViewColumn.One;
   return vscode.ViewColumn.Two;
 }
 
 async function openEmptyPage(context) {
-  if(!webviewPanel) {
-    webviewPanel = vscode.window.createWebviewPanel(
-      'defstack-webview',   
-      'Definition Stack',   
-       inactiveColumn(),
-      {
-        enableFindWidget: true,
-        retainContextWhenHidden: true,
-        enableScripts: true,
-        localResourceRoots: [vscode.Uri.file(context.extensionPath)]
-      }  
-    );
-    context.subscriptions.push(webviewPanel);
-    html.setView(context, webviewPanel.webview);
-    webviewPanel.onDidDispose(() => {webviewPanel = null});
-  }
-  if(!webviewPanel.active && 
-      webviewPanel.viewColumn === activeColumn()) {
-    webviewPanel.dispose();
-    webviewPanel = null;
-    openEmptyPage(context);
-    return;
-  }
+  if(webviewPanel) webviewPanel.dispose();
+  webviewPanel = vscode.window.createWebviewPanel(
+    'defstack-webview',   
+    'Definition Stack',   
+      inactiveColumn(),
+    {
+      enableFindWidget: true,
+      retainContextWhenHidden: true,
+      enableScripts: true,
+      localResourceRoots: [vscode.Uri.file(context.extensionPath)]
+    }  
+  );
+  context.subscriptions.push(webviewPanel);
+  webviewPanel.onDidDispose(() => {webviewPanel = null});
+  html.setView(context, webviewPanel.webview);
   html.clearPage();
   html.showBusyAnimation();
 }
