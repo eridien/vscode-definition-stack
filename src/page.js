@@ -1,5 +1,6 @@
 const vscode = require('vscode');
 const webv   = require('./webview.js');
+const comm   = require('./def-stk-comm.js');
 const utils  = require('./utils.js');
 const log    = utils.getLog('PAGE');
 
@@ -72,7 +73,7 @@ let projPath = "";
 let defLocs  = new Set();
 let defCount = 0;
 
-async function processOneBlock(blockLocation) {
+async function processBlock(blockLocation) {
   const blockUri   = blockLocation.uri;
   const blockRange = blockLocation.range;
   const workSpace  = vscode.workspace;
@@ -111,7 +112,6 @@ async function processOneBlock(blockLocation) {
       const text =
           await utils.getTextFromDoc(defDoc, definitionLoc);
       await webv.addCode(text, startLine+1);
-      await processOneBlock(definitionLoc);
     }
   }
 }
@@ -134,12 +134,17 @@ async function startBuildingPage(contextIn, textEditor) {
   defLocs  = new Set();
   defCount = 0;
   webv.setLanguage(textEditor);
-  await processOneBlock(blockLoc);
+  await processBlock(blockLoc);
   if(defCount == 0) {
     webv.showMsgInPage(
        `Found no symbol in selection with a definition.`);
   }
-  else await webv.renderPage(textEditor);
+  else await webv.setAllViewHtml(textEditor);
 }
 
-module.exports = { startBuildingPage };
+function startBuildingPageWhenReady(contextIn, textEditor) {
+  comm.registerWebviewRecv('ready', async () => {
+    startBuildingPage(contextIn, textEditor);
+  });
+}
+module.exports = { startBuildingPageWhenReady };

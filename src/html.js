@@ -1,6 +1,7 @@
-const vscode   = require('vscode');
-const utils    = require('./utils.js');
-const log      = utils.getLog('HTML');
+const vscode = require('vscode');
+const comm   = require('./def-stk-comm.js');
+const utils  = require('./utils.js');
+const log    = utils.getLog('HTML');
 
 const vscLangIdToPrism = {
   "bat":           "batch",
@@ -14,11 +15,6 @@ const vscLangIdToPrism = {
 }
 
 let context, webview, language;
-let htmlBody = "";
-
-function clearPage() {
-  htmlBody = "";
-}
 
 function setView(contextIn, webviewIn) {
   context = contextIn;
@@ -33,7 +29,7 @@ function setLanguage(editor) {
   language ??= vscLangId;
 }
 
-function add(code, lineNum, markup = false) {
+async function addpre(code, lineNum, markup = false) {
   let preTag  = `<pre `;
   let klass   = "";
   let codeTag = code;
@@ -42,24 +38,28 @@ function add(code, lineNum, markup = false) {
       klass  += " line-numbers";
       preTag += ` data-start="${lineNum}"`;
     }
-    if (language) klass += ` language-${language}`;
     codeTag = `<code>${code}</code>`;
   }
   else {
     preTag += ' style="margin-top:15px; margin-bottom:-5px; background-color:#ddd;"';
   }
-  if(klass) preTag   += ` class="${klass}"`;
+  if(klass) preTag += ` class="${klass}"`;
   const html = `${preTag}>${codeTag}</pre>`;
-  htmlBody += html.replaceAll(/"/g, '&quot;');
+  await comm.send('addPre', {html, language});
 }
 
-async function renderPage(editor) {
+async function setAllViewHtml(editor) {
   const document = editor.document;
   const prismCss = await utils.readTxt(context, true, 
                                           'prism', 'themes', 'prism.css');
   const lineNumCss = await utils.readTxt(context, true, 
             'prism', 'plugins', 'line-numbers', 'prism-line-numbers.css');
   const cssContent = prismCss + lineNumCss;
+
+  const prePrismJs = `
+    window.Prism = window.Prism || {};
+		window.Prism.manual = true;
+  `;
   const prismCoreJs = await utils.readTxt(context, false, 
                                                 'prism', 'prism-core.js');
   const langClike = await utils.readTxt(context, false, 
@@ -68,38 +68,43 @@ async function renderPage(editor) {
                             'prism', 'languages', 'prism-javascript.js');
   const lineNumJs = await utils.readTxt(context, false, 
             'prism', 'plugins', 'line-numbers', 'prism-line-numbers.js');
-  const jsContent  = prismCoreJs + langClike + langJavascript + lineNumJs;
+  const defStkJs = await utils.readTxt(context, false, 
+                                             'src', 'def-stk-script.js');
+  const jsContent  = prePrismJs + prismCoreJs + 
+                     langClike + langJavascript + 
+                     lineNumJs + defStkJs;
+
   const config     = vscode.workspace.getConfiguration('editor', document.uri);
   const fontFamily = config.fontFamily;
   const fontWeight = config.fontWeight;
   const fontSize   = config.fontSize + 'px';
+
   const html = getPageTemplate()
       .replace('**cssContent**', cssContent)
       .replace('**jsContent**',  jsContent)
-      .replace('**body**',       htmlBody)
       .replace('**fontFamily**', fontFamily)
       .replace('**fontSize**',   fontSize)
       .replace('**fontWeight**', fontWeight);
   webview.html = html;
 }
 
-function showBusyAnimation() {
-  const imagePath = vscode.Uri.joinPath(
-                      context.extensionUri, 'images', 'loading.gif');
-  const imageSrc = webview.asWebviewUri(imagePath);
-  const busyHtml = `
-    <!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-      </head>
-      <body>
-        <img src="${imageSrc}"/>
-      </body>
-    </html>
-  `;
-  webview.html = busyHtml;
-}
+// function showBusyAnimation() {
+//   const imagePath = vscode.Uri.joinPath(
+//                       context.extensionUri, 'images', 'loading.gif');
+//   const imageSrc = webview.asWebviewUri(imagePath);
+//   const busyHtml = `
+//     <!DOCTYPE html>
+//     <html lang="en">
+//       <head>
+//         <meta charset="UTF-8">
+//       </head>
+//       <body>
+//         <img src="${imageSrc}"/>
+//       </body>
+//     </html>
+//   `;
+//   webview.html = busyHtml;
+// }
 
 function showMsgInPage(msg) {
   if(webview) {
@@ -126,9 +131,32 @@ function getPageTemplate() { return `
         html, body { height: 100vh; margin: 0; padding: 0; }
         iframe { width: 100%; height: 100vh; border: none; }
       </style>
+      <script language="javascript" defer>
+
+        const vscode = acquireVsCodeApi();
+        const iframe = document.getElementById('defStackIframe');
+
+        // Receive a message from anywhere
+        window.addEventListener('message', event => {
+          const message = event.data;
+          if(message.src === 'extension') {
+            console.log('Received message from extension:', message);
+            // post the message to the iframe
+            iframe.contentWindow.postMessage(message, '*');
+            return;
+          }
+          if(message.src === 'iframe') {
+            console.log('Received message from iframe:', message);
+            // post the message to the extension
+            vscode.postMessage(message);
+            return;
+          }
+        });
+
+      </script
     </head>
     <body>
-      <iframe srcdoc="
+      <iframe id="defStackIframe" srcdoc="
 
         <!DOCTYPE html>
         <html lang='en'>
@@ -139,15 +167,13 @@ function getPageTemplate() { return `
             <style>
               **cssContent**
             </style>
-            <script language='javascript'>
+            <script language='javascript' defer>
               **jsContent**
             </script>
           </head>
-          <body class='line-numbers'
-                style='font-weight:**fontWeight**; 
-                      font-size:**fontSize**;
-                      font-family:**fontFamily**;'>
-            **body**
+          <body style='font-weight:**fontWeight**; 
+                       font-size:**fontSize**;
+                       font-family:**fontFamily**;'>
           </body>
         </html>
 
@@ -157,6 +183,5 @@ function getPageTemplate() { return `
   
 `}
 
-module.exports = {setLanguage, setView, clearPage, add, renderPage, 
-                  showMsgInPage, showBusyAnimation};
+module.exports = {setLanguage, setView, addpre, setAllViewHtml, showMsgInPage};
 

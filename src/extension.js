@@ -14,21 +14,12 @@ async function activate(context) {
         const textEditor = vscode.window.activeTextEditor;
         if (!textEditor) return;
         await webv.openEmptyPage(context, textEditor);
-        await page.startBuildingPage(context, textEditor);
-        log('web view loaded');  
+        page.startBuildingPageWhenReady(context, textEditor);
+        log('openWebViewCmd finished');  
       }	
   );
-
-  const closeWebViewCmd = 
-    vscode.commands.registerCommand(
-     'definition-stack.closewebview', 
-      function() {
-        webv.close();
-        log('web view closed');  
-      }
-  );
   
-  context.subscriptions.push(openWebViewCmd, closeWebViewCmd);
+  context.subscriptions.push(openWebViewCmd);
   log("commands registered");
 }
 

@@ -19,10 +19,6 @@
       {
         "command": "definition-stack.openwebview",
         "title": "Definition Stack: Open"
-      },
-      {
-        "command": "definition-stack.closewebview",
-        "title": "Definition Stack: Close"
       }
     ],
     "menus": {
@@ -35,9 +31,6 @@
       "commandPalette": [
         {
           "command": "definition-stack.openwebview"
-        },
-        {
-          "command": "definition-stack.closewebview"
         }
       ]
     },

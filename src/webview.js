@@ -1,5 +1,6 @@
 const vscode = require('vscode');
 const html   = require('./html.js');
+const comm   = require('./def-stk-comm.js');
 const utils  = require('./utils.js');
 const log    = utils.getLog('WEBV');
 
@@ -29,23 +30,23 @@ async function openEmptyPage(context) {
   );
   context.subscriptions.push(webviewPanel);
   webviewPanel.onDidDispose(() => {webviewPanel = null});
+  comm.init(webviewPanel.webview, context);
   html.setView(context, webviewPanel.webview);
-  html.clearPage();
-  html.showBusyAnimation();
+  // html.showBusyAnimation();
 }
 
 async function addBanner(word, tgtPath) {
   const banner = 
     `Definition of <span style="color:red;">${word}</span> in ${tgtPath}`;
-  html.add(banner);
+  await html.addpre(banner);
 }
 
 async function addCode(code, lineNum) {
-  html.add(code, lineNum, true);
+  await html.addpre(code, lineNum, true);
 }
 
 const setLanguage   = html.setLanguage;
-const renderPage    = html.renderPage;
+const setAllViewHtml    = html.setAllViewHtml;
 const showMsgInPage = html.showMsgInPage;
 
 async function close() {
@@ -56,4 +57,4 @@ async function close() {
 }
 
 module.exports = {setLanguage, openEmptyPage, addBanner, addCode, 
-                  renderPage, showMsgInPage, close};
+                  setAllViewHtml, showMsgInPage, close};
