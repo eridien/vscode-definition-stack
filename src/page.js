@@ -6,18 +6,37 @@ const log    = utils.getLog('PAGE');
 
 const ignorePaths = ['node_modules', '.d.ts'];
 
-function getSymbolsRecursive(symbolIn) {
+function getSymbolsRecursive(rootSymbol) {
   const symbols = [];
   function recursPush(symbol) {
     symbols.push(symbol);
     if (symbol.children) 
       symbol.children.forEach(recursPush);
   }
-  recursPush(symbolIn);
+  recursPush(rootSymbol);
   return symbols;
 }
 
-async function findSurroundingBlock(document, selection) {
+function convertSymToBlock(document, symbol) {
+  const symStartLine = symbol.range.start.line;
+  const symEndLine   = symbol.range.end.line;
+  const symStartChar = symbol.range.start.character;
+  const symEndChar   = symbol.range.end.character;
+  const lines = [];
+  for(let lineNum  = symStartLine; 
+          lineNum <= symEndLine; 
+          lineNum++) {
+    const blockLine = document.lineAt(lineNum);
+    let startCharOfs = 0;
+    let endCharOfs   = line.text.length;
+    if(lineNum == symStartLine) startCharOfs = symStartChar;
+    if(lineNum == symEndLine)   endCharOfs   = symEndChar;
+    lines.push({line, startCharOfs, endCharOfs});
+  }
+  return {symbol, lines};
+}
+
+async function findSurroundingBlock(document, selectionRange) {
   try {
     const docTopSymbols = await vscode.commands.executeCommand(
              'vscode.executeDocumentSymbolProvider', document.uri);
@@ -26,13 +45,11 @@ async function findSurroundingBlock(document, selection) {
               .flatMap(symbol => getSymbolsRecursive(symbol))
     // Find the smallest containing symbol
     const containingBlockSymbol = allSymbols
-      .filter(block => utils.containsRange(block.range, selection))
+      .filter(block => utils.containsRange(block.range, selectionRange))
       .sort((a, b) => utils.getRangeSize(a.range) 
                     - utils.getRangeSize(b.range))[0];
-    if (containingBlockSymbol) {
-      // log({containingBlockSymbol});
-      return containingBlockSymbol.location;
-    }
+    if (containingBlockSymbol)
+      return convertSymToBlock(document, containingBlockSymbol);
     return null;
   } 
   catch (error) {
@@ -41,30 +58,33 @@ async function findSurroundingBlock(document, selection) {
   }
 }
 
-function findWordsInText(text, positionIn) {
-  const lines = text.split('\n');
+function findWordsInBlock(block) {
+  const {symbol, lines} = block;
   const regexString = `\\b[a-zA-Z_$][\\w$]*?\\b`;
   const wordRegex = new RegExp(regexString, 'g');
   const wordAndPosArr = [];
+  for(const line of lines) {
   let match;
   while ((match = wordRegex.exec(text)) !== null) {
+    const lineText = line.line.text;
     const word = match[0];
-    let lineZeroCharOfs = positionIn.character;
+    let lineCharOfs = positionIn.character;
     let charOfs = wordRegex.lastIndex - word.length;
     let lineOfs = 0;
     let position;
     for(const [lineNum, lineStr] of lines.entries()) {
       if(charOfs < (lineOfs + lineStr.length)) {
         const line = positionIn.line + lineNum;
-        const char = lineZeroCharOfs + charOfs - lineOfs;
+        const char = lineCharOfs + charOfs - lineOfs;
         position = new vscode.Position(line, char);
         break;
       }
-      lineZeroCharOfs = 0;
+      lineCharOfs = 0;
       lineOfs += lineStr.length + 1;
     }
     const wordAndPos = {word, position};
     wordAndPosArr.push(wordAndPos);
+  }
   }
   return wordAndPosArr;
 }
@@ -77,15 +97,14 @@ async function processBlock(blockLocation) {
   const blockUri   = blockLocation.uri;
   const blockRange = blockLocation.range;
   const workSpace  = vscode.workspace;
- 
   const blockDoc = 
           await workSpace.openTextDocument(blockUri);
-  const text = blockDoc.getText(blockRange);
-  const wordAndPosArr = findWordsInText(text, blockRange.start);
+
+  const wordAndPosArr = findWordsInBlock(blockLocation);
+
   for(const wordAndPos of wordAndPosArr) {
     const definitions = await vscode.commands.executeCommand(
-                              'vscode.executeDefinitionProvider',
-                                  blockUri, wordAndPos.position);
+          'vscode.executeDefinitionProvider', blockUri, wordAndPos.position);
     defloop:
     for(const definition of definitions) {
       const defUri        = definition.targetUri;
@@ -122,11 +141,11 @@ async function startBuildingPage(contextIn, textEditor) {
   const selection = textEditor.selection; 
   const projIdx   = utils.getProjectIdx(document);
   projPath = vscode.workspace.workspaceFolders[projIdx].uri.path;
-  let blockLoc    = await findSurroundingBlock(document, selection);
-  if(!blockLoc) {
+  let block = await findSurroundingBlock(document, selection);
+  if(!block) {
     await utils.sleep(2000);
-    blockLoc = await findSurroundingBlock(document, selection);
-    if(!blockLoc) {
+    block = await findSurroundingBlock(document, selection);
+    if(!block) {
       webv.showMsgInPage('The selection is not in a block.');
       return;
     }
@@ -134,7 +153,7 @@ async function startBuildingPage(contextIn, textEditor) {
   defLocs  = new Set();
   defCount = 0;
   webv.setLanguage(textEditor);
-  await processBlock(blockLoc);
+  await processBlock(block);
   if(defCount == 0) {
     webv.showMsgInPage(
        `Found no symbol in selection with a definition.`);

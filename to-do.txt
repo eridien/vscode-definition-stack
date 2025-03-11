@@ -1,6 +1,7 @@
 bugs ...
   msg style broken
   doesn't show inital block reliably
+  first line in block shifted left
   
 to-do ...
   wrap
