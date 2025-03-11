@@ -26,14 +26,17 @@ function convertSymToBlock(document, symbol) {
   for(let lineNum  = symStartLine; 
           lineNum <= symEndLine; 
           lineNum++) {
-    const blockLine = document.lineAt(lineNum);
+    const line = document.lineAt(lineNum);
     let startCharOfs = 0;
-    let endCharOfs   = line.text.length;
+    let endCharOfs = line.text.length;
     if(lineNum == symStartLine) startCharOfs = symStartChar;
     if(lineNum == symEndLine)   endCharOfs   = symEndChar;
-    lines.push({line, startCharOfs, endCharOfs});
+    line.startCharOfs = startCharOfs;
+    line.endCharOfs   = endCharOfs;
+    lines.push(line);
   }
-  return {symbol, lines};
+  const location = new vscode.Location(document.uri, symbol.range);
+  return {symbol, location, lines};
 }
 
 async function findSurroundingBlock(document, selectionRange) {
@@ -58,79 +61,78 @@ async function findSurroundingBlock(document, selectionRange) {
   }
 }
 
-function findWordsInBlock(block) {
-  const {symbol, lines} = block;
+function addWordsToBlock(block) {
+  const {lines} = block;
   const regexString = `\\b[a-zA-Z_$][\\w$]*?\\b`;
   const wordRegex = new RegExp(regexString, 'g');
-  const wordAndPosArr = [];
   for(const line of lines) {
-  let match;
-  while ((match = wordRegex.exec(text)) !== null) {
-    const lineText = line.line.text;
-    const word = match[0];
-    let lineCharOfs = positionIn.character;
-    let charOfs = wordRegex.lastIndex - word.length;
-    let lineOfs = 0;
-    let position;
-    for(const [lineNum, lineStr] of lines.entries()) {
-      if(charOfs < (lineOfs + lineStr.length)) {
-        const line = positionIn.line + lineNum;
-        const char = lineCharOfs + charOfs - lineOfs;
-        position = new vscode.Position(line, char);
-        break;
-      }
-      lineCharOfs = 0;
-      lineOfs += lineStr.length + 1;
+    const words = [];
+    let match;
+    const lineText = line.text.slice(line.startCharOfs, line.endCharOfs);
+    while ((match = wordRegex.exec(lineText)) !== null) {
+      const text = match[0]
+      const startWordOfs = wordRegex.lastIndex - text.length;
+      const endWordOfs   = wordRegex.lastIndex;
+      words.push({text, startWordOfs, endWordOfs});;
     }
-    const wordAndPos = {word, position};
-    wordAndPosArr.push(wordAndPos);
+    line.words = words;
   }
-  }
-  return wordAndPosArr;
 }
 
-let projPath = "";
-let defLocs  = new Set();
-let defCount = 0;
+let defLocSet = new Set();
+let defCount  = 0;
 
-async function processBlock(blockLocation) {
-  const blockUri   = blockLocation.uri;
-  const blockRange = blockLocation.range;
-  const workSpace  = vscode.workspace;
-  const blockDoc = 
-          await workSpace.openTextDocument(blockUri);
-
-  const wordAndPosArr = findWordsInBlock(blockLocation);
-
-  for(const wordAndPos of wordAndPosArr) {
-    const definitions = await vscode.commands.executeCommand(
-          'vscode.executeDefinitionProvider', blockUri, wordAndPos.position);
-    defloop:
-    for(const definition of definitions) {
-      const defUri        = definition.targetUri;
-      const defRange      = definition.targetRange;
-      const startLine     = defRange.start.line;
-      const endLine       = defRange.end.line;
-      const definitionLoc = new vscode.Location(defUri, defRange);
-      const defPath       = defUri.path;
-      const defRelPath    = defPath.slice(projPath.length+1);
-
-      if(utils.containsLocation(blockLocation, definitionLoc)) continue;
-      for(const ignorePath of ignorePaths) {
-        if(defPath.includes(ignorePath)) continue defloop;
+async function processBlock(block) {
+  const blockLocation = block.location;
+  const blockUri      = blockLocation.uri;
+  addWordsToBlock(block);
+  for(const line of block.lines) {
+    const words = line.words;
+    for(let idx = 0; idx < words.length; idx++) {
+      const word = line.words[idx];
+      const startWordPos = new vscode.Position(line.lineNumber, word.startWordOfs);
+      const definitions = await vscode.commands.executeCommand(
+                 'vscode.executeDefinitionProvider', blockUri, startWordPos);
+      if (definitions.length == 0) {
+        words.splice(idx, 1);
+        continue;
       }
-      const defLocStr = JSON.stringify({defPath, startLine, endLine});
-      if(defLocs.has(defLocStr)) continue;
-      defLocs.add(defLocStr);
-      defCount++;
-
-      log(wordAndPos.word.padEnd(15),       defRelPath);
-      await webv.addBanner(wordAndPos.word, defRelPath);
-
-      const defDoc = await workSpace.openTextDocument(definitionLoc.uri);
-      const text =
-          await utils.getTextFromDoc(defDoc, definitionLoc);
-      await webv.addCode(text, startLine+1);
+      word.defLocations = definitions;
+      defloop:
+      for(const definition of definitions) {
+        const defUri     = definition.targetUri;
+        const defDoc     = await vscode.workspace.openTextDocument(defUri);
+        const defRange   = definition.targetRange;
+        const defPath    = defUri.path;
+        const defRelPath = defPath.slice(block.projPath.length+1);
+        const defLoc     = new vscode.Location(defUri, defRange);
+        if(utils.containsLocation(blockLocation, defLoc)) continue defloop;
+        for(const ignorePath of ignorePaths) {
+          if(defPath.includes(ignorePath)) continue defloop;
+        }
+        const defLocStr = JSON.stringify({defUri, defRange});
+        if(defLocSet.has(defLocStr)) continue defloop;
+        defLocSet.add(defLocStr);
+        defCount++;
+        log(word.text.padEnd(15), defRelPath);
+        await webv.addBanner(word.text, defRelPath);
+        let defText = "";
+        let minWsIdx = Number.MAX_VALUE;
+        for(let lineNum  = defRange.start.line;
+                lineNum <= defRange.end.line;
+                lineNum++) {
+          const wsIdx = defDoc.lineAt(lineNum)
+                              .firstNonWhitespaceCharacterIndex;
+          minWsIdx = Math.min(minWsIdx, wsIdx);
+        }
+        for(let lineNum  = defRange.start.line;
+                lineNum <= defRange.end.line;
+                lineNum++) {
+          defText += defDoc.lineAt(lineNum).text
+                           .slice(minWsIdx) + "\n";
+        }
+        await webv.addCode(defText, defRange.start.line+1);
+      }
     }
   }
 }
@@ -140,7 +142,6 @@ async function startBuildingPage(contextIn, textEditor) {
   const document  = textEditor.document;
   const selection = textEditor.selection; 
   const projIdx   = utils.getProjectIdx(document);
-  projPath = vscode.workspace.workspaceFolders[projIdx].uri.path;
   let block = await findSurroundingBlock(document, selection);
   if(!block) {
     await utils.sleep(2000);
@@ -150,8 +151,7 @@ async function startBuildingPage(contextIn, textEditor) {
       return;
     }
   }
-  defLocs  = new Set();
-  defCount = 0;
+  block.projPath = vscode.workspace.workspaceFolders[projIdx].uri.path;
   webv.setLanguage(textEditor);
   await processBlock(block);
   if(defCount == 0) {
