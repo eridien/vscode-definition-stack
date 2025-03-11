@@ -1,8 +1,8 @@
 const vscode = require('vscode');
 const html   = require('./html.js');
 const comm   = require('./def-stk-comm.js');
-const utils  = require('./utils.js');
-const log    = utils.getLog('WEBV');
+// const utils  = require('./utils.js');
+// const log    = utils.getLog('WEBV');
 
 let webviewPanel  = null;
 
@@ -15,7 +15,7 @@ function inactiveColumn() {
   return vscode.ViewColumn.Two;
 }
 
-async function openEmptyPage(context) {
+async function setWebView(context, editor) {
   if(webviewPanel) webviewPanel.dispose();
   webviewPanel = vscode.window.createWebviewPanel(
     'defstack-webview',   
@@ -31,7 +31,8 @@ async function openEmptyPage(context) {
   context.subscriptions.push(webviewPanel);
   webviewPanel.onDidDispose(() => {webviewPanel = null});
   comm.init(webviewPanel.webview, context);
-  html.setView(context, webviewPanel.webview);
+  html.init(context, webviewPanel.webview);
+  await html.setAllViewHtml(editor);
   // html.showBusyAnimation();
 }
 
@@ -45,9 +46,9 @@ async function addCode(code, lineNum) {
   await html.addpre(code, lineNum, true);
 }
 
-const setLanguage   = html.setLanguage;
-const setAllViewHtml    = html.setAllViewHtml;
-const showMsgInPage = html.showMsgInPage;
+const setLanguage    = html.setLanguage;
+const setAllViewHtml = html.setAllViewHtml;
+const showMsgInPage  = html.showMsgInPage;
 
 async function close() {
   if (webviewPanel) {
@@ -56,5 +57,5 @@ async function close() {
   }
 }
 
-module.exports = {setLanguage, openEmptyPage, addBanner, addCode, 
+module.exports = {setLanguage, setWebView, addBanner, addCode, 
                   setAllViewHtml, showMsgInPage, close};

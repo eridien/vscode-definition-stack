@@ -3,25 +3,28 @@
 
 ///////////// iframe script
   
-  console.log('started def-stk-script.js');
+  console.log('iframe started');
 
   debugger;
 
   function send(command, data) {  
-    console.log('iframe sending to webview', {command, data});
+    // console.log('iframe sending to webview', {command, data});
     window.parent.postMessage({src:'iframe', command, data}, '*');
   };
-  send('ready', {});
+
+  document.addEventListener('DOMContentLoaded', () => {
+    send('ready', {});
+  });
 
   function addPre(html, language) {
-    console.log('addPre', {html, language});
+    // console.log('addPre', {html, language});
     const tempDiv     = document.createElement('div');
     tempDiv.innerHTML = html;
     const preEle      = tempDiv.firstChild;
     const klass       = `language-${language}`;
     if(language) preEle.classList.add(klass);
     document.body.appendChild(preEle);
-    console.log('before highlightAll', {Prism, preEle, klass, highlightAll: Prism.highlightAll});
+    // console.log('before highlightAll', {Prism, preEle, klass, highlightAll: Prism.highlightAll});
     Prism.highlightAll();
     // document.querySelector(`.${klass}`).classList.remove(klass);
     preEle.classList.remove(klass);
@@ -36,7 +39,7 @@
   // Listen for message from webview
   window.addEventListener('message', event => {
     const message = event.data;
-    console.log('iframe received message from webview:', message);
+    // console.log('iframe received message from webview:', message);
     const {command, data} = message;
     recv(command, data);
   });

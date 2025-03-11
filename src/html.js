@@ -16,7 +16,7 @@ const vscLangIdToPrism = {
 
 let context, webview, language;
 
-function setView(contextIn, webviewIn) {
+function init(contextIn, webviewIn) {
   context = contextIn;
   webview = webviewIn;
   webview.html = "";
@@ -57,6 +57,7 @@ async function setAllViewHtml(editor) {
   const cssContent = prismCss + lineNumCss;
 
   const prePrismJs = `
+    console.log('webview started');
     window.Prism = window.Prism || {};
 		window.Prism.manual = true;
   `;
@@ -132,27 +133,31 @@ function getPageTemplate() { return `
         iframe { width: 100%; height: 100vh; border: none; }
       </style>
       <script language="javascript" defer>
+        document.addEventListener('DOMContentLoaded', () => {
+          const vscode = acquireVsCodeApi();
+          const iframe = document.getElementById('defStackIframe');
+          console.log('webview started, iframe:', iframe);
 
-        const vscode = acquireVsCodeApi();
-        const iframe = document.getElementById('defStackIframe');
-
-        // Receive a message from anywhere
-        window.addEventListener('message', event => {
-          const message = event.data;
-          if(message.src === 'extension') {
-            console.log('Received message from extension:', message);
-            // post the message to the iframe
-            iframe.contentWindow.postMessage(message, '*');
-            return;
-          }
-          if(message.src === 'iframe') {
-            console.log('Received message from iframe:', message);
-            // post the message to the extension
-            vscode.postMessage(message);
-            return;
-          }
+          // Receive a message from anywhere
+          window.addEventListener('message', event => {
+            const message = event.data;
+            console.log('webview received message:', message);
+            if(message.src === 'extension') {
+              console.log('Received message from extension:', message);
+              // post the message to the iframe
+              message.src = 'webview';
+              iframe.contentWindow.postMessage(message, '*');
+              return;
+            }
+            if(message.src === 'iframe') {
+              console.log('Received message from iframe:', message);
+              // post the message to the extension
+              message.src = 'webview';
+              vscode.postMessage(message);
+              return;
+            }
+          });
         });
-
       </script
     </head>
     <body>
@@ -183,5 +188,5 @@ function getPageTemplate() { return `
   
 `}
 
-module.exports = {setLanguage, setView, addpre, setAllViewHtml, showMsgInPage};
+module.exports = {setLanguage, init, addpre, setAllViewHtml, showMsgInPage};
 

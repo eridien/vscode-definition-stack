@@ -1,0 +1,24 @@
+{
+	"files": [
+		{
+			"path": "src/extension.js",
+			"bookmarks": [
+				{
+					"line": 15,
+					"column": 20,
+					"label": ""
+				}
+			]
+		},
+		{
+			"path": "src/webview.js",
+			"bookmarks": [
+				{
+					"line": 34,
+					"column": 20,
+					"label": ""
+				}
+			]
+		}
+	]
+}

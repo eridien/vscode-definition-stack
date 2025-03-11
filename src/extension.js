@@ -13,7 +13,7 @@ async function activate(context) {
       async function() {
         const textEditor = vscode.window.activeTextEditor;
         if (!textEditor) return;
-        await webv.openEmptyPage(context, textEditor);
+        await webv.setWebView(context, textEditor);
         page.startBuildingPageWhenReady(context, textEditor);
         log('openWebViewCmd finished');  
       }	

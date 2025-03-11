@@ -1,1 +1,1 @@
-{"html":"<pre  style=\\"margin-top:15px; margin-bottom:-5px; background-color:#ddd;\\">Definition of <span style=\\"color:red;\\">toggleWaiting</span> in src/components/list.vue</pre>","language":"javascript"}
+  "command": "addPre",

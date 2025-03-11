@@ -6,14 +6,16 @@ let context = null;
 
 const registeredRecvs = {};
 function registerWebviewRecv(command, callback) {
-  registeredRecvs[command] = callback;
+  // log('registerWebviewRecv', command);
+  registeredRecvs[command] ??= [];
+  registeredRecvs[command].push(callback);
 }
 
 async function init(webviewIn, contextIn) {
   webview = webviewIn;
   context = contextIn;
   const recvDisposable = webview.onDidReceiveMessage(message => {
-    log('Received message from webview: ', message);
+    // log('Received message from webview: ', message);
     const {command, data} = message;
     const callbacks = registeredRecvs[command] ?? [];
     for(const callback of callbacks) callback(data);
@@ -23,7 +25,7 @@ async function init(webviewIn, contextIn) {
 
 async function send(command, data) {
   const message = {src:'extension', command, data};
-  log('Sending message to webview: ', message);
+  // log('Sending message to webview: ', message);
   await webview.postMessage(message);
 }
 
