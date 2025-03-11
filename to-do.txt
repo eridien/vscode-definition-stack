@@ -1,7 +1,9 @@
 bugs ...
   msg style broken
-
+  doesn't show inital block reliably
+  
 to-do ...
+  wrap
   set max lines output
   use vscode colors in banner or steal colors from prism theme
   ignore empty blocks
@@ -12,6 +14,7 @@ to-do ...
   highlight references
   navigate with clicks
   add configs
+    ignorePath
     scale
     lang id mapping
     theme

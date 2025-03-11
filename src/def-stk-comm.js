@@ -4,21 +4,25 @@ const log   = utils.getLog('COMM');
 let webview = null;
 let context = null;
 
-const registeredRecvs = {};
+let registeredRecvs = {};
 function registerWebviewRecv(command, callback) {
   // log('registerWebviewRecv', command);
   registeredRecvs[command] ??= [];
   registeredRecvs[command].push(callback);
 }
 
+function clearRecvCallbacks() {
+  registeredRecvs = {};
+}
+
 async function init(webviewIn, contextIn) {
   webview = webviewIn;
   context = contextIn;
-  const recvDisposable = webview.onDidReceiveMessage(message => {
+  const recvDisposable = webview.onDidReceiveMessage(async message => {
     // log('Received message from webview: ', message);
     const {command, data} = message;
     const callbacks = registeredRecvs[command] ?? [];
-    for(const callback of callbacks) callback(data);
+    for(const callback of callbacks) await callback(data);
   });
   context.subscriptions.push(recvDisposable);
 }
@@ -29,5 +33,5 @@ async function send(command, data) {
   await webview.postMessage(message);
 }
 
-module.exports = {init, send, registerWebviewRecv};
+module.exports = {init, send, registerWebviewRecv, clearRecvCallbacks};
 

@@ -142,9 +142,10 @@ async function startBuildingPage(contextIn, textEditor) {
   else await webv.setAllViewHtml(textEditor);
 }
 
-function startBuildingPageWhenReady(contextIn, textEditor) {
+async function startBuildingPageWhenReady(contextIn, textEditor) {
+  comm.clearRecvCallbacks();
   comm.registerWebviewRecv('ready', async () => {
-    startBuildingPage(contextIn, textEditor);
+    await startBuildingPage(contextIn, textEditor);
   });
 }
 module.exports = { startBuildingPageWhenReady };
