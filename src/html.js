@@ -109,6 +109,17 @@ function showMsgInPage(msg) {
   else log('info', msg);
 }
 
+function highlightWords(line, id, classText) {
+  let html = line.text;
+  for(let idx = line.words.length-1; idx >= 0; idx--) {
+    const word = line.words[idx];
+    html.splice(word.endWordOfs,   0, '</span>');
+    html.splice(word.startWordOfs, 0,
+                  `<span id="${id}" class="${classText}">`);
+  }
+  return html;
+}
+
 function getPageTemplate() { return `
 
   <!DOCTYPE html>
@@ -176,5 +187,6 @@ function getPageTemplate() { return `
   
 `}
 
-module.exports = {setLanguage, init, addpre, setAllViewHtml, showMsgInPage};
+module.exports = {setLanguage, init, addpre, setAllViewHtml, 
+                  showMsgInPage, highlightWords};
 

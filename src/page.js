@@ -1,5 +1,6 @@
 const vscode = require('vscode');
 const webv   = require('./webview.js');
+const html   = require('./html.js');
 const comm   = require('./comm.js');
 const utils  = require('./utils.js');
 const log    = utils.getLog('PAGE');
@@ -27,12 +28,12 @@ function convertSymToBlock(document, symbol) {
           lineNum <= symEndLine; 
           lineNum++) {
     const line = document.lineAt(lineNum);
-    let startCharOfs = 0;
-    let endCharOfs = line.text.length;
-    if(lineNum == symStartLine) startCharOfs = symStartChar;
-    if(lineNum == symEndLine)   endCharOfs   = symEndChar;
-    line.startCharOfs = startCharOfs;
-    line.endCharOfs   = endCharOfs;
+    let startSymCharOfs = 0;
+    let endSymCharOfs = line.text.length;
+    if(lineNum == symStartLine) startSymCharOfs = symStartChar;
+    if(lineNum == symEndLine)   endSymCharOfs  = symEndChar;
+    line.startSymCharOfs = startSymCharOfs;
+    line.endSymCharOfs   = endSymCharOfs;
     lines.push(line);
   }
   const location = new vscode.Location(document.uri, symbol.range);
@@ -68,14 +69,16 @@ function addWordsToBlock(block) {
   for(const line of lines) {
     const words = [];
     let match;
-    const lineText = line.text.slice(line.startCharOfs, line.endCharOfs);
+    const lineText = line.text.slice(line.startSymCharOfs, line.endSymCharOfs);
     while ((match = wordRegex.exec(lineText)) !== null) {
       const text = match[0]
-      const startWordOfs = wordRegex.lastIndex - text.length;
+      const startWordOfs = line.startSymCharOfs + wordRegex.lastIndex - text.length;
       const endWordOfs   = wordRegex.lastIndex;
       words.push({text, startWordOfs, endWordOfs});;
     }
     line.words = words;
+    line.id    = utils.getUniqueId();
+    line.html  = html.highlightWords(line.text, utils.getUniqueId(), 'ref');
   }
 }
 
@@ -91,7 +94,7 @@ async function processBlock(block) {
     for(let idx = 0; idx < words.length; idx++) {
       const word = line.words[idx];
       const startWordPos = new vscode.Position(
-              line.lineNumber, line.startCharOfs + word.startWordOfs);
+                                line.lineNumber, word.startWordOfs);
       const definitions = await vscode.commands.executeCommand(
                  'vscode.executeDefinitionProvider', blockUri, startWordPos);
       if (definitions.length == 0) {
@@ -148,18 +151,17 @@ async function startBuildingPage(contextIn, textEditor) {
     await utils.sleep(2000);
     block = await findSurroundingBlock(document, selection);
     if(!block) {
-      webv.showMsgInPage('The selection is not in a block.');
+      html.showMsgInPage('The selection is not in a block.');
       return;
     }
   }
   block.projPath = vscode.workspace.workspaceFolders[projIdx].uri.path;
-  webv.setLanguage(textEditor);
+  html.setLanguage(textEditor);
   await processBlock(block);
-  if(defCount == 0) {
-    webv.showMsgInPage(
-       `Found no symbol in selection with a definition.`);
+  if(defCount == 0) { html.showMsgInPage(
+                       `Found no symbol in selection with a definition.`);
   }
-  else await webv.setAllViewHtml(textEditor);
+  else await html.setAllViewHtml(textEditor);
 }
 
 async function startBuildingPageWhenReady(contextIn, textEditor) {

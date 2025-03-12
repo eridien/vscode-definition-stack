@@ -47,10 +47,6 @@ async function addCode(code, lineNum) {
   await html.addpre(code, lineNum, true);
 }
 
-const setLanguage    = html.setLanguage;
-const setAllViewHtml = html.setAllViewHtml;
-const showMsgInPage  = html.showMsgInPage;
-
 async function close() {
   if (webviewPanel) {
     webviewPanel.dispose();
@@ -58,5 +54,4 @@ async function close() {
   }
 }
 
-module.exports = {setLanguage, setWebView, addBanner, addCode, 
-                  setAllViewHtml, showMsgInPage, close};
+module.exports = { setWebView, addBanner, addCode, close};

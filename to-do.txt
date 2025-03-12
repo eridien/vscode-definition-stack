@@ -2,6 +2,7 @@ bugs ...
   msg style broken
 
 to-do ...
+  highlight references
   wrap
   set max lines output
   use vscode colors in banner or steal colors from prism theme
@@ -11,7 +12,6 @@ to-do ...
   handle single-line defs (combine ones from same file)
   merge blocks that are immediately next to each other (e.g. toggleWaiting)
   show source when line num clicked
-  highlight references
   navigate with clicks
   add configs
     ignorePath

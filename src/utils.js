@@ -51,6 +51,9 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+let uniqueId = 1;
+function getUniqueId() { return `ds${uniqueId++}` }
+
 async function getTextFromDoc(doc, location) {
   try {
     if (!doc || !location) {
@@ -109,5 +112,5 @@ function getProjectIdx(document) {
 
 module.exports = { 
   getLog, getTextFromDoc, fixDriveLetter, sleep, getProjectIdx,
-  containsRange, containsLocation, getRangeSize, readTxt
+  containsRange, containsLocation, getRangeSize, readTxt, getUniqueId
 };
