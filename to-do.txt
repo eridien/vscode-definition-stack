@@ -1,5 +1,6 @@
 bugs ...
   msg style broken
+  last pre is missing language-javascript, other pre/code have it
 
 to-do ...
   wrap

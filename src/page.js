@@ -90,14 +90,15 @@ async function processBlock(block) {
     const words = line.words;
     for(let idx = 0; idx < words.length; idx++) {
       const word = line.words[idx];
-      const startWordPos = new vscode.Position(line.lineNumber, word.startWordOfs);
+      const startWordPos = new vscode.Position(
+              line.lineNumber, line.startCharOfs + word.startWordOfs);
       const definitions = await vscode.commands.executeCommand(
                  'vscode.executeDefinitionProvider', blockUri, startWordPos);
       if (definitions.length == 0) {
         words.splice(idx, 1);
         continue;
       }
-      word.defLocations = definitions;
+      word.definitions = definitions;
       defloop:
       for(const definition of definitions) {
         const defUri     = definition.targetUri;
