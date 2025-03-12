@@ -1,6 +1,6 @@
 const vscode = require('vscode');
 const html   = require('./html.js');
-const comm   = require('./def-stk-comm.js');
+const comm   = require('./comm.js');
 // const utils  = require('./utils.js');
 // const log    = utils.getLog('WEBV');
 

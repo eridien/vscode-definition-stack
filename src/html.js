@@ -1,5 +1,5 @@
 const vscode = require('vscode');
-const comm   = require('./def-stk-comm.js');
+const comm   = require('./comm.js');
 const utils  = require('./utils.js');
 const log    = utils.getLog('HTML');
 
@@ -70,7 +70,7 @@ async function setAllViewHtml(editor) {
   const lineNumJs = await utils.readTxt(context, false, 
             'prism', 'plugins', 'line-numbers', 'prism-line-numbers.js');
   const defStkJs = await utils.readTxt(context, false, 
-                                             'src', 'def-stk-script.js');
+                                             'src', 'script.js');
   const jsContent  = prePrismJs + prismCoreJs + 
                      langClike + langJavascript + 
                      lineNumJs + defStkJs;
