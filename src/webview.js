@@ -33,7 +33,6 @@ async function setWebView(context, editor) {
   comm.init(webviewPanel.webview, context);
   html.init(context, webviewPanel.webview);
   await html.setAllViewHtml(editor);
-  // html.showBusyAnimation();
 }
 
 async function addBanner(word, tgtPath) {

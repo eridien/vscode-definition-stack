@@ -89,24 +89,6 @@ async function setAllViewHtml(editor) {
   webview.html = html;
 }
 
-// function showBusyAnimation() {
-//   const imagePath = vscode.Uri.joinPath(
-//                       context.extensionUri, 'images', 'loading.gif');
-//   const imageSrc = webview.asWebviewUri(imagePath);
-//   const busyHtml = `
-//     <!DOCTYPE html>
-//     <html lang="en">
-//       <head>
-//         <meta charset="UTF-8">
-//       </head>
-//       <body>
-//         <img src="${imageSrc}"/>
-//       </body>
-//     </html>
-//   `;
-//   webview.html = busyHtml;
-// }
-
 function showMsgInPage(msg) {
   if(webview) {
     const msgHtml = 
