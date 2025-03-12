@@ -37,8 +37,8 @@ async function setWebView(context, editor) {
 
 async function addBanner(word, tgtPath) {
   const banner = 
-    `Definition of <span style="color:red;">${word}</span> in ` +
-                  `<span style="color:red;">${tgtPath}</span>`;
+    `<span style="color:#444;">Definition of <span style="color:#f44;">${word}</span> in ` +
+                  `<span style="color:#f44;">${tgtPath}</span></span>`;
   await html.addpre(banner);
 }
 
