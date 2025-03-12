@@ -163,6 +163,7 @@ async function startBuildingPage(contextIn, textEditor) {
 }
 
 async function startBuildingPageWhenReady(contextIn, textEditor) {
+  defLocSet = new Set();
   comm.clearRecvCallbacks();
   comm.registerWebviewRecv('ready', async () => {
     await startBuildingPage(contextIn, textEditor);
