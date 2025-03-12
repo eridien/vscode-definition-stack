@@ -45,7 +45,7 @@ async function addpre(code, lineNum, markup = false) {
     html = `${preTag}>${codeTag}</pre>`;
   }
   else {
-    html =`<span style="margin-top:5px; padding:2px 15px;
+    html =`<span style="margin-top:5px; padding:2px 15px 5px 15px;
                     display:block;
                         margin-bottom:-10px; background-color:#ddd;">` +
                         `${code}</span>`;
@@ -57,6 +57,7 @@ async function setAllViewHtml(editor) {
   const document = editor.document;
   const prismCss = await utils.readTxt(context, true, 
                                           'prism', 'themes', 'prism.css');
+                                          // 'prism', 'themes', 'prism-a11y-dark.css');
   const lineNumCss = await utils.readTxt(context, true, 
             'prism', 'plugins', 'line-numbers', 'prism-line-numbers.css');
   const cssContent = prismCss + lineNumCss;

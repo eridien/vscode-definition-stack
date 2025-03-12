@@ -333,7 +333,6 @@ var Prism = (function (_self) {
 			 *     'color': /\b(?:red|green|blue)\b/
 			 * });
 			 */
-       
 			extend: function (id, redef) {
 				var lang = _.util.clone(_.languages[id]);
 
@@ -528,8 +527,7 @@ var Prism = (function (_self) {
 			_.hooks.run('before-all-elements-highlight', env);
 
 			for (var i = 0, element; (element = env.elements[i++]);) {
-        if (!element.classList.contains('ds-done')) 
-				      _.highlightElement(element, async === true, env.callback);
+				_.highlightElement(element, async === true, env.callback);
 			}
 		},
 
