@@ -528,7 +528,8 @@ var Prism = (function (_self) {
 			_.hooks.run('before-all-elements-highlight', env);
 
 			for (var i = 0, element; (element = env.elements[i++]);) {
-				_.highlightElement(element, async === true, env.callback);
+        if (!element.classList.contains('ds-done')) 
+				      _.highlightElement(element, async === true, env.callback);
 			}
 		},
 

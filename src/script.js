@@ -26,7 +26,7 @@
     }
     document.body.appendChild(preEle);
     Prism.highlightAll();
-    preEle.classList.remove(klass);
+    preEle.classList.add('ds-done');
   }
 
   function recv(command, data) {
