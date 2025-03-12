@@ -30,21 +30,26 @@ function setLanguage(editor) {
 }
 
 async function addpre(code, lineNum, markup = false) {
-  let preTag  = `<pre `;
+  let preTag  ='';
   let klass   = "";
   let codeTag = code;
+  let html;
   if(markup) {
+    preTag  = `<pre `;
     if (lineNum != undefined) {
       klass  += " line-numbers";
       preTag += ` data-start="${lineNum}"`;
     }
     codeTag = `<code>${code}</code>`;
+    if(klass) preTag += ` class="${klass}"`;
+    html = `${preTag}>${codeTag}</pre>`;
   }
   else {
-    preTag += ' style="margin-top:15px; margin-bottom:-5px; background-color:#ddd;"';
+    html =`<span style="margin-top:5px; padding:2px 15px;
+                    display:block;
+                        margin-bottom:-10px; background-color:#ddd;">` +
+                        `${code}</span>`;
   }
-  if(klass) preTag += ` class="${klass}"`;
-  const html = `${preTag}>${codeTag}</pre>`;
   await comm.send('addPre', {html, language});
 }
 
@@ -70,7 +75,7 @@ async function setAllViewHtml(editor) {
   const lineNumJs = await utils.readTxt(context, false, 
             'prism', 'plugins', 'line-numbers', 'prism-line-numbers.js');
   const defStkJs = await utils.readTxt(context, false, 
-                                             'src', 'script.js');
+                                                     'src', 'script.js');
   const jsContent  = prePrismJs + prismCoreJs + 
                      langClike + langJavascript + 
                      lineNumJs + defStkJs;
