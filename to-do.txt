@@ -1,7 +1,5 @@
 bugs ...
   msg style broken
-  doesn't show inital block reliably
-  blocks after first, headers too tall
 
 to-do ...
   wrap

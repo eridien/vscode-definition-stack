@@ -20,16 +20,13 @@
     const tempDiv     = document.createElement('div');
     tempDiv.innerHTML = html;
     const preEle      = tempDiv.firstElementChild;
-    const codeEle     = preEle.firstElementChild
     const klass       = `language-${language}`;
     if(language) {
       preEle.classList.add(klass);
-      codeEle.classList.add(klass);
     }
     document.body.appendChild(preEle);
     Prism.highlightAll();
     preEle.classList.remove(klass);
-    codeEle.classList.remove(klass);
   }
 
   function recv(command, data) {
