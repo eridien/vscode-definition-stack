@@ -19,6 +19,8 @@ function getSymbolsRecursive(rootSymbol) {
 }
 
 function convertSymToBlock(document, symbol) {
+  const name         = symbol.name;
+  const location     = new vscode.Location(document.uri, symbol.range);
   const symStartLine = symbol.range.start.line;
   const symEndLine   = symbol.range.end.line;
   const symStartChar = symbol.range.start.character;
@@ -36,8 +38,7 @@ function convertSymToBlock(document, symbol) {
     line.endSymCharOfs   = endSymCharOfs;
     lines.push(line);
   }
-  const location = new vscode.Location(document.uri, symbol.range);
-  return {symbol, location, lines};
+  return {name, location, lines};
 }
 
 async function findSurroundingBlock(document, selectionRange) {
@@ -71,15 +72,32 @@ function addWordsToBlock(block) {
     let match;
     const lineText = line.text.slice(line.startSymCharOfs, line.endSymCharOfs);
     while ((match = wordRegex.exec(lineText)) !== null) {
-      const text = match[0]
-      const startWordOfs = line.startSymCharOfs + wordRegex.lastIndex - text.length;
+      const name = match[0]
+      const startWordOfs = line.startSymCharOfs + wordRegex.lastIndex - name.length;
       const endWordOfs   = wordRegex.lastIndex;
-      words.push({text, startWordOfs, endWordOfs});;
+      words.push({name, startWordOfs, endWordOfs});;
     }
     line.words = words;
     line.id    = utils.getUniqueId();
     line.html  = html.highlightWords(line.text, utils.getUniqueId(), 'ref');
   }
+}
+
+async function sendBlockToPage(block) {
+  const {name, location, lines} = block;
+  const relPath = location.uri.path.slice(block.projPath.length+1);
+  log(name.padEnd(15), relPath);
+  await webv.addBanner(name, relPath);
+  let minWsIdx = Number.MAX_VALUE;
+  for(const line of lines) {
+    const wsIdx = line.firstNonWhitespaceCharacterIndex;
+    minWsIdx = Math.min(minWsIdx, wsIdx);
+  }
+  let text = "";
+  for(const line of lines)
+    text += line.text.slice(minWsIdx) + "\n";
+  const range = location.range
+  await webv.addCode(text, range.start.line+1);
 }
 
 let defLocSet = new Set();
@@ -93,6 +111,7 @@ async function processBlock(block) {
     const words = line.words;
     for(let idx = 0; idx < words.length; idx++) {
       const word = line.words[idx];
+      const name = word.name;
       const startWordPos = new vscode.Position(
                                 line.lineNumber, word.startWordOfs);
       const definitions = await vscode.commands.executeCommand(
@@ -105,10 +124,9 @@ async function processBlock(block) {
       defloop:
       for(const definition of definitions) {
         const defUri     = definition.targetUri;
-        const defDoc     = await vscode.workspace.openTextDocument(defUri);
         const defRange   = definition.targetRange;
         const defPath    = defUri.path;
-        const defRelPath = defPath.slice(block.projPath.length+1);
+        const defDoc     = await vscode.workspace.openTextDocument(defUri);
         const defLoc     = new vscode.Location(defUri, defRange);
         if(utils.containsLocation(blockLocation, defLoc)) continue defloop;
         for(const ignorePath of ignorePaths) {
@@ -118,24 +136,27 @@ async function processBlock(block) {
         if(defLocSet.has(defLocStr)) continue defloop;
         defLocSet.add(defLocStr);
         defCount++;
-        log(word.text.padEnd(15), defRelPath);
-        await webv.addBanner(word.text, defRelPath);
-        let defText = "";
-        let minWsIdx = Number.MAX_VALUE;
-        for(let lineNum  = defRange.start.line;
-                lineNum <= defRange.end.line;
-                lineNum++) {
-          const wsIdx = defDoc.lineAt(lineNum)
-                              .firstNonWhitespaceCharacterIndex;
-          minWsIdx = Math.min(minWsIdx, wsIdx);
-        }
-        for(let lineNum  = defRange.start.line;
-                lineNum <= defRange.end.line;
-                lineNum++) {
-          defText += defDoc.lineAt(lineNum).text
-                           .slice(minWsIdx) + "\n";
-        }
-        await webv.addCode(defText, defRange.start.line+1);
+
+        const text = defDoc.getText(defRange);
+        const lines = text.split('\n');
+        lines.forEach((line, lineNum) => {
+          let startSymCharOfs = 0;
+          let endSymCharOfs = line.text.length;
+
+
+          
+          if(lineNum == 0)              startSymCharOfs = symStartChar;
+          if(lineNum == lines.length-1) endSymCharOfs   = symEndChar;
+          line.startSymCharOfs = startSymCharOfs;
+          line.endSymCharOfs   = endSymCharOfs;
+          lines.push(line);
+        });
+
+
+        const block = {name, location, lines};
+        await sendBlockToPage(block);
+
+
       }
     }
   }
