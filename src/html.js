@@ -109,15 +109,16 @@ function showMsgInPage(msg) {
   else log('info', msg);
 }
 
-function highlightWords(line, id, classText) {
+function highlightRefsWithIds(line) {
   let html = line.text;
   for(let idx = line.words.length-1; idx >= 0; idx--) {
     const word = line.words[idx];
     html.splice(word.endWordOfs,   0, '</span>');
+    word.id = 'ref-' + utils.getUniqueId();
     html.splice(word.startWordOfs, 0,
-                  `<span id="${id}" class="${classText}">`);
+             `<span id="${word.id}" class="ds-ref">`);
   }
-  return html;
+  line.html = html;
 }
 
 function getPageTemplate() { return `
@@ -188,5 +189,5 @@ function getPageTemplate() { return `
 `}
 
 module.exports = {setLanguage, init, addpre, setAllViewHtml, 
-                  showMsgInPage, highlightWords};
+                  showMsgInPage, highlightRefsWithIds};
 
