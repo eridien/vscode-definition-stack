@@ -15,11 +15,31 @@ const vscLangIdToPrism = {
 }
 
 let context, webview, language;
+let templateHtml, lineNumCss, prePrismJs, prismCoreJs, lineNumJs, scriptJs;
 
-function init(contextIn, webviewIn) {
-  context = contextIn;
-  webview = webviewIn;
+async function loadConstFiles() {
+  templateHtml = await utils.readTxt(context, false, 
+                                                  'src', 'template.html');
+  lineNumCss = await utils.readTxt(context, true, 
+            'prism', 'plugins', 'line-numbers', 'prism-line-numbers.css');
+  prePrismJs = `
+    console.log('webview started');
+    window.Prism = window.Prism || {};
+		window.Prism.manual = true;
+  `;
+  prismCoreJs = await utils.readTxt(context, false, 
+                                                'prism', 'prism-core.js');
+  lineNumJs = await utils.readTxt(context, false, 
+            'prism', 'plugins', 'line-numbers', 'prism-line-numbers.js');
+  scriptJs = await utils.readTxt(context, false, 
+                                                     'src', 'script.js');
+}
+
+async function init(contextIn, webviewIn) {
+  context      = contextIn;
+  webview      = webviewIn;
   webview.html = "";
+  await loadConstFiles();
 }
 
 function setLanguage(editor) {
@@ -58,35 +78,22 @@ async function setAllViewHtml(editor) {
   const prismCss = await utils.readTxt(context, true, 
                                           'prism', 'themes', 'prism.css');
                                           // 'prism', 'themes', 'prism-a11y-dark.css');
-  const lineNumCss = await utils.readTxt(context, true, 
-            'prism', 'plugins', 'line-numbers', 'prism-line-numbers.css');
   const cssContent = prismCss + lineNumCss;
 
-  const prePrismJs = `
-    console.log('webview started');
-    window.Prism = window.Prism || {};
-		window.Prism.manual = true;
-  `;
-  const prismCoreJs = await utils.readTxt(context, false, 
-                                                'prism', 'prism-core.js');
   const langClike = await utils.readTxt(context, false, 
                                   'prism', 'languages', 'prism-clike.js');
   const langJavascript = await utils.readTxt(context, false, 
                             'prism', 'languages', 'prism-javascript.js');
-  const lineNumJs = await utils.readTxt(context, false, 
-            'prism', 'plugins', 'line-numbers', 'prism-line-numbers.js');
-  const defStkJs = await utils.readTxt(context, false, 
-                                                     'src', 'script.js');
   const jsContent  = prePrismJs + prismCoreJs + 
                      langClike + langJavascript + 
-                     lineNumJs + defStkJs;
+                     lineNumJs + scriptJs;
 
   const config     = vscode.workspace.getConfiguration('editor', document.uri);
   const fontFamily = config.fontFamily;
   const fontWeight = config.fontWeight;
   const fontSize   = config.fontSize + 'px';
 
-  const html = getPageTemplate()
+  const html = templateHtml
       .replace('**cssContent**', cssContent)
       .replace('**jsContent**',  jsContent)
       .replace('**fontFamily**', fontFamily)
@@ -123,73 +130,5 @@ function highlightRefsWithIds(line) {
   line.html = html;
 }
 
-function getPageTemplate() { return `
-
-  <!DOCTYPE html>
-  <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <style>
-        html, body { height: 100vh; margin: 0; padding: 0; }
-        iframe { width: 100%; height: 100vh; border: none; }
-      </style>
-      <script language="javascript" defer>
-        document.addEventListener('DOMContentLoaded', () => {
-          const vscode = acquireVsCodeApi();
-          const iframe = document.getElementById('defStackIframe');
-          console.log('webview started, iframe:', iframe);
-
-          // Receive a message from anywhere
-          window.addEventListener('message', event => {
-            const message = event.data;
-            // console.log('webview received message:', message);
-            if(message.src === 'extension') {
-              // console.log('Received message from extension:', message);
-              // post the message to the iframe
-              message.src = 'webview';
-              iframe.contentWindow.postMessage(message, '*');
-              return;
-            }
-            if(message.src === 'iframe') {
-              // console.log('Received message from iframe:', message);
-              // post the message to the extension
-              message.src = 'webview';
-              vscode.postMessage(message);
-              return;
-            }
-          });
-        });
-      </script
-    </head>
-    <body>
-      <iframe id="defStackIframe" srcdoc="
-
-        <!DOCTYPE html>
-        <html lang='en'>
-          <head>
-            <meta charset='UTF-8'>
-            <meta name='viewport' 
-                  content='width=device-width, initial-scale=1.0'>
-            <style>
-              **cssContent**
-            </style>
-            <script language='javascript' defer>
-              **jsContent**
-            </script>
-          </head>
-          <body style='font-weight:**fontWeight**; 
-                       font-size:**fontSize**;
-                       font-family:**fontFamily**;'>
-          </body>
-        </html>
-
-    "></iframe>
-    </body>
-  </html>
-  
-`}
-
 module.exports = {setLanguage, init, addpre, setAllViewHtml, 
                   showMsgInPage, highlightRefsWithIds};
-
