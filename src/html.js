@@ -113,10 +113,12 @@ function highlightRefsWithIds(line) {
   let html = line.text;
   for(let idx = line.words.length-1; idx >= 0; idx--) {
     const word = line.words[idx];
-    html.splice(word.endWordOfs,   0, '</span>');
+    const endOfs = word.endWordOfs;
+    html = html.slice(0, endOfs) + '</span>' + html.slice(endOfs);
     word.id = 'ref-' + utils.getUniqueId();
-    html.splice(word.startWordOfs, 0,
-             `<span id="${word.id}" class="ds-ref">`);
+    const span = `<span id="${word.id}" class="ds-ref" style="background-color: #ff0;">`;
+    const strtOfs = word.startWordOfs;
+    html = html.slice(0, strtOfs) + span + html.slice(strtOfs);
   }
   line.html = html;
 }

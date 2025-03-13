@@ -37,7 +37,7 @@ async function sendBlockToView(block) {
   }
   let html = "";
   for(const line of lines)
-    html += line.html.slice(minWsIdx) + "\n";
+    html += ((line.html.slice(minWsIdx)) + "\n");
   await webv.addCode(html, location.range.start.line+1);
 }
 
@@ -130,6 +130,10 @@ async function addDefBlocks(block) {
         defCount++;
         const defBlock = makeBlock(name, document, defRange);
         word.defBlocks.push(defBlock);
+      }
+      if (word.defBlocks.length == 0) {
+        delete words[idx];
+        continue;
       }
     }
     line.words = words.filter(word => word);
