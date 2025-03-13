@@ -43,7 +43,6 @@ async function readTxt(context, noComments, ...paths) {
     return null; 
   }
   if(noComments) text = text.replaceAll(/\/\*[\s\S]*?\*\//g, '');
-  text = text.replaceAll(/"/g, '&quot;');
   return text;
 }
 

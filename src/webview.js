@@ -30,9 +30,8 @@ async function setWebView(context, editor) {
   );
   context.subscriptions.push(webviewPanel);
   webviewPanel.onDidDispose(() => {webviewPanel = null});
-  comm.init(webviewPanel.webview, context);
-  html.init(context, webviewPanel.webview);
-  await html.setAllViewHtml(editor);
+  await comm.init(webviewPanel.webview, context);
+  await html.init(context, webviewPanel.webview);
 }
 
 async function addBanner(word, tgtPath) {

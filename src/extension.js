@@ -1,5 +1,5 @@
 const vscode = require('vscode');
-const page    = require('./page.js');
+const page   = require('./block.js');
 const webv   = require('./webview.js');
 const utils  = require('./utils.js');
 const log    = utils.getLog('EXTS');

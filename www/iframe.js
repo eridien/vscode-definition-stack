@@ -23,8 +23,20 @@
     if(language) {
       preEle.classList.add(klass);
     }
+    console.log('preEle before appending:', preEle);
+
     document.body.appendChild(preEle);
+
+    const bodyEle = document.body;
+    
+    console.log('iframeEle before highlightAll:', bodyEle);
+
     Prism.highlightAll();
+
+    console.log('iframeEle after highlightAll:', bodyEle);
+
+// .outerHTML
+
   }
 
   function recv(command, data) {

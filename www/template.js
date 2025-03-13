@@ -5,7 +5,8 @@
   document.addEventListener('DOMContentLoaded', () => {
     const vscode = acquireVsCodeApi();
     const iframe = document.getElementById('defStackIframe');
-    console.log('webview started, iframe:', iframe);
+    
+    // console.log('webview started, iframe:', iframe);
 
     // Receive a message from anywhere
     window.addEventListener('message', event => {

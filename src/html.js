@@ -15,19 +15,18 @@ const vscLangIdToPrism = {
 }
 
 let context, webview, language;
-let templateHtml, templateJs, iframeHtmlIn, iframeJs;
-let lineNumCss, prePrismJs, prismCoreJs, lineNumJs;
+let templateHtml, templateJs, iframeHtmlIn, iframeJsIn;
+let lineNumCss, prePrismJs, prismCoreJs, lineNumJs, keepMarkupJs;
 
 async function loadConstFiles() {
   templateHtml = await utils.readTxt(context, false, 
                                                   'www', 'template.html');
   templateJs = await utils.readTxt(context, false, 
                                                     'www', 'template.js');
-                                                  
-  iframeJs = await utils.readTxt(context, false, 
-                                                      'www', 'iframe.js');
-  iframeHtmlIn = await utils.readTxt(context, false,
-                                                    'www', 'iframe.html');  
+  iframeHtmlIn = await utils.readTxt(context, false, 
+                                                    'www', 'iframe.html'); 
+  iframeJsIn = await utils.readTxt(context, false, 
+                                                      'www', 'iframe.js'); 
   lineNumCss = await utils.readTxt(context, true, 
             'prism', 'plugins', 'line-numbers', 'prism-line-numbers.css');
   prePrismJs = `
@@ -37,6 +36,8 @@ async function loadConstFiles() {
   `;
   prismCoreJs = await utils.readTxt(context, false, 
                                                 'prism', 'prism-core.js');
+  keepMarkupJs = await utils.readTxt(context, false, 
+               'prism', 'plugins', 'keep-markup', 'prism-keep-markup.js');
   lineNumJs = await utils.readTxt(context, false, 
              'prism', 'plugins', 'line-numbers', 'prism-line-numbers.js');
 }
@@ -90,21 +91,22 @@ async function setAllViewHtml(editor) {
                                   'prism', 'languages', 'prism-clike.js');
   const langJavascript = await utils.readTxt(context, false, 
                             'prism', 'languages', 'prism-javascript.js');
-  const iframeJs = prePrismJs + prismCoreJs + 
-                   langClike + langJavascript + 
-                   lineNumJs + iframeJs;
+  const iframeJs = (prePrismJs + prismCoreJs + 
+                    langClike + langJavascript + 
+                    keepMarkupJs + lineNumJs + iframeJsIn); 
 
   const config     = vscode.workspace.getConfiguration('editor', document.uri);
   const fontFamily = config.fontFamily;
   const fontWeight = config.fontWeight;
   const fontSize   = config.fontSize + 'px';
 
-  const iframeHtml = iframeHtmlIn
+  const iframeHtml = (iframeHtmlIn
       .replace('**iframeCss**',  iframeCss)
       .replace('**iframeJs**',   iframeJs)
       .replace('**fontFamily**', fontFamily)
       .replace('**fontSize**',   fontSize)
-      .replace('**fontWeight**', fontWeight);
+      .replace('**fontWeight**', fontWeight))
+      .replaceAll(/"/g, '&quot;');
 
   const html = templateHtml
       .replace('**templateJs**', templateJs)
