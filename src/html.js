@@ -15,11 +15,19 @@ const vscLangIdToPrism = {
 }
 
 let context, webview, language;
-let templateHtml, lineNumCss, prePrismJs, prismCoreJs, lineNumJs, scriptJs;
+let templateHtml, templateJs, iframeHtmlIn, iframeJs;
+let lineNumCss, prePrismJs, prismCoreJs, lineNumJs;
 
 async function loadConstFiles() {
   templateHtml = await utils.readTxt(context, false, 
-                                                  'src', 'template.html');
+                                                  'www', 'template.html');
+  templateJs = await utils.readTxt(context, false, 
+                                                    'www', 'template.js');
+                                                  
+  iframeJs = await utils.readTxt(context, false, 
+                                                      'www', 'iframe.js');
+  iframeHtmlIn = await utils.readTxt(context, false,
+                                                    'www', 'iframe.html');  
   lineNumCss = await utils.readTxt(context, true, 
             'prism', 'plugins', 'line-numbers', 'prism-line-numbers.css');
   prePrismJs = `
@@ -30,9 +38,7 @@ async function loadConstFiles() {
   prismCoreJs = await utils.readTxt(context, false, 
                                                 'prism', 'prism-core.js');
   lineNumJs = await utils.readTxt(context, false, 
-            'prism', 'plugins', 'line-numbers', 'prism-line-numbers.js');
-  scriptJs = await utils.readTxt(context, false, 
-                                                     'src', 'script.js');
+             'prism', 'plugins', 'line-numbers', 'prism-line-numbers.js');
 }
 
 async function init(contextIn, webviewIn) {
@@ -78,27 +84,32 @@ async function setAllViewHtml(editor) {
   const prismCss = await utils.readTxt(context, true, 
                                           'prism', 'themes', 'prism.css');
                                           // 'prism', 'themes', 'prism-a11y-dark.css');
-  const cssContent = prismCss + lineNumCss;
+  const iframeCss = prismCss + lineNumCss;
 
   const langClike = await utils.readTxt(context, false, 
                                   'prism', 'languages', 'prism-clike.js');
   const langJavascript = await utils.readTxt(context, false, 
                             'prism', 'languages', 'prism-javascript.js');
-  const jsContent  = prePrismJs + prismCoreJs + 
-                     langClike + langJavascript + 
-                     lineNumJs + scriptJs;
+  const iframeJs = prePrismJs + prismCoreJs + 
+                   langClike + langJavascript + 
+                   lineNumJs + iframeJs;
 
   const config     = vscode.workspace.getConfiguration('editor', document.uri);
   const fontFamily = config.fontFamily;
   const fontWeight = config.fontWeight;
   const fontSize   = config.fontSize + 'px';
 
-  const html = templateHtml
-      .replace('**cssContent**', cssContent)
-      .replace('**jsContent**',  jsContent)
+  const iframeHtml = iframeHtmlIn
+      .replace('**iframeCss**',  iframeCss)
+      .replace('**iframeJs**',   iframeJs)
       .replace('**fontFamily**', fontFamily)
       .replace('**fontSize**',   fontSize)
       .replace('**fontWeight**', fontWeight);
+
+  const html = templateHtml
+      .replace('**templateJs**', templateJs)
+      .replace('**iframeHtml**', iframeHtml)
+      
   webview.html = html;
 }
 
