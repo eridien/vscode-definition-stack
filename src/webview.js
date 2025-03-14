@@ -15,7 +15,7 @@ function inactiveColumn() {
   return vscode.ViewColumn.Two;
 }
 
-async function setWebView(context) {
+async function initWebview(context) {
   if(webviewPanel) webviewPanel.dispose();
   webviewPanel = vscode.window.createWebviewPanel(
     'defstack-webview',   
@@ -30,27 +30,8 @@ async function setWebView(context) {
   );
   context.subscriptions.push(webviewPanel);
   webviewPanel.onDidDispose(() => {webviewPanel = null});
-  await comm.init(webviewPanel.webview, context);
+  await comm.init(context, webviewPanel.webview);
   await html.init(context, webviewPanel.webview);
 }
 
-async function addBanner(word, tgtPath) {
-  const banner = 
-    `<span style="color:#444;">
-     <span style="color:#f44;">${word}</span> in 
-     <span style="color:#f44;">${tgtPath}</span></span>`;
-  await html.addpre(banner);
-}
-
-async function addCode(code, lineNum) {
-  await html.addpre(code, lineNum, true);
-}
-
-async function close() {
-  if (webviewPanel) {
-    webviewPanel.dispose();
-    webviewPanel = null;
-  }
-}
-
-module.exports = { setWebView, addBanner, addCode, close};
+module.exports = { initWebview };

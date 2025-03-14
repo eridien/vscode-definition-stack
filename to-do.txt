@@ -2,7 +2,6 @@ bugs ...
   msg style broken
 
 to-do ...
-  highlight references
   wrap
   set max lines output
   use vscode colors in banner or steal colors from prism theme

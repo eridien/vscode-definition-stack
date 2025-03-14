@@ -56,31 +56,36 @@ function setLanguage(editor) {
   language ??= vscLangId;
 }
 
-async function addpre(code, lineNum, markup = false) {
-  let preTag  ='';
-  let klass   = "";
-  let codeTag = code;
-  let html;
-  if(markup) {
-    preTag  = `<pre `;
-    if (lineNum != undefined) {
-      klass  += " line-numbers";
-      preTag += ` data-start="${lineNum}"`;
-    }
-    codeTag = `<code>${code}</code>`;
-    if(klass) preTag += ` class="${klass}"`;
-    html = `${preTag}>${codeTag}</pre>`;
+async function addBlockToView(block) {
+  const {id, name, relPath, lines} = block;
+  log(name.padEnd(15), relPath);
+  let minWsIdx = Number.MAX_VALUE;
+  for(const line of lines) {
+    const wsIdx = line.firstNonWhitespaceCharacterIndex;
+    minWsIdx = Math.min(minWsIdx, wsIdx);
   }
-  else {
-    html =`<span style="margin-top:5px; padding:2px 15px 5px 15px;
-                    display:block;
-                        margin-bottom:-10px; background-color:#ddd;">` +
-                        `${code}</span>`;
-  }
-  await comm.send('addPre', {html, language});
+  let code = "";
+  for(const line of lines)
+    code += ((line.html.slice(minWsIdx)) + "\n");
+  const blockHtml = 
+   `<div id="${id}" class="ds-block">
+      <span style="margin-top:5px; padding:2px 15px 5px 15px;
+                    display:block; margin-bottom:-10px; 
+                    background-color:#ddd;">
+        <span style="color:#444;">
+          <span style="color:#f44;">${name}</span> in 
+          <span style="color:#f44;">${relPath}</span>
+        </span>
+      </span>
+      <pre data-start="${lines[0].lineNumber+1}" 
+           class="line-numbers language-${language}">
+        <code class="language-${language}">${code}</code>
+      </pre>
+    </div>`;
+  await comm.send('addBlock', {blockHtml});
 }
 
-async function setAllViewHtml(editor) {
+async function initWebviewHtml(editor) {
   const document = editor.document;
   const prismCss = await utils.readTxt(context, true, 
                                           'prism', 'themes', 'prism.css');
@@ -98,7 +103,7 @@ async function setAllViewHtml(editor) {
   const config     = vscode.workspace.getConfiguration('editor', document.uri);
   const fontFamily = ` */ font-family: ${config.fontFamily}; /* `;
   const fontWeight = ` */ font-weight: ${config.fontWeight}; /* `;
-  const fontSize   = ` */ font-size:   ${config.fontSize};   /* `;
+  const fontSize   = ` */ font-size:   ${config.fontSize}px;   /* `;
 
   const iframeHtml = (iframeHtmlIn
       .replace('**iframeCss**',  ` */ ${iframeCss} /*`)
@@ -110,7 +115,7 @@ async function setAllViewHtml(editor) {
 
   const html = templateHtml
       .replace('**templateJs**', templateJs)
-      .replace('**iframeHtml**', `--> ${iframeHtml} <!--`)
+      .replace('**iframeHtml**', iframeHtml);
       
   webview.html = html;
 }
@@ -129,19 +134,18 @@ function showMsgInPage(msg) {
   else log('info', msg);
 }
 
-function highlightRefsWithIds(line) {
+function highlightRefs(line, style) {
   let html = line.text;
   for(let idx = line.words.length-1; idx >= 0; idx--) {
     const word = line.words[idx];
     const endOfs = word.endWordOfs;
     html = html.slice(0, endOfs) + '</span>' + html.slice(endOfs);
-    word.id = 'ref-' + utils.getUniqueId();
-    const span = `<span id="${word.id}" class="ds-ref" style="background-color: #ff0;">`;
+    const span = `<span id="${word.id}" class="ds-ref" style="${style}">`;
     const strtOfs = word.startWordOfs;
     html = html.slice(0, strtOfs) + span + html.slice(strtOfs);
   }
   line.html = html;
 }
 
-module.exports = {setLanguage, init, addpre, setAllViewHtml, 
-                  showMsgInPage, highlightRefsWithIds};
+module.exports = {setLanguage, init, initWebviewHtml, addBlockToView, 
+                  showMsgInPage, highlightRefs};

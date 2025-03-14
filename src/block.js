@@ -1,5 +1,4 @@
 const vscode = require('vscode');
-const webv   = require('./webview.js');
 const html   = require('./html.js');
 const comm   = require('./comm.js');
 const utils  = require('./utils.js');
@@ -25,23 +24,11 @@ function addPossibleWords(block) {
   }
 }
 
-async function sendBlockToView(block) {
-  const {name, lines, location} = block;
-  const relPath = location.uri.path.slice(block.projPath.length+1);
-  log(name.padEnd(15), relPath);
-  await webv.addBanner(name, relPath);
-  let minWsIdx = Number.MAX_VALUE;
-  for(const line of lines) {
-    const wsIdx = line.firstNonWhitespaceCharacterIndex;
-    minWsIdx = Math.min(minWsIdx, wsIdx);
-  }
-  let html = "";
-  for(const line of lines)
-    html += ((line.html.slice(minWsIdx)) + "\n");
-  await webv.addCode(html, location.range.start.line+1);
-}
-
 function makeBlock(name, document, range) {
+  const id        = 'blk-' + utils.getUniqueId();
+  const projIdx   = utils.getProjectIdx(document);
+  const projPath  = vscode.workspace.workspaceFolders[projIdx].uri.path;
+  const relPath   = document.uri.path.slice(projPath.length+1);
   const startLine = range.start.line;
   const endLine   = range.end.line;
   const lines = [];
@@ -56,10 +43,7 @@ function makeBlock(name, document, range) {
     lines.push(line);
   };
   const location = new vscode.Location(document.uri, range);
-  const block    = {name, lines, location};
-  const projIdx  = utils.getProjectIdx(document);
-  block.projPath = vscode.workspace.workspaceFolders[projIdx].uri.path;
-  return block;
+  return {id, name, relPath, lines, location};
 }
 
 function getSymbolsRecursive(rootSymbol) {
@@ -95,7 +79,7 @@ async function getSurroundingBlock(document, selectionRange) {
   }
 }
 
-let defLocSet, defCount;
+let defCount;
 
 async function addDefBlocks(block) {
   const blockUri = block.location.uri;
@@ -124,9 +108,6 @@ async function addDefBlocks(block) {
         for(const ignorePath of ignorePaths) {
           if(defPath.includes(ignorePath)) continue defloop;
         }
-        const defLocStr = JSON.stringify({defUri, defRange});
-        if(defLocSet.has(defLocStr)) continue;
-        defLocSet.add(defLocStr);
         defCount++;
         const defBlock = makeBlock(name, document, defRange);
         word.defBlocks.push(defBlock);
@@ -135,13 +116,14 @@ async function addDefBlocks(block) {
         delete words[idx];
         continue;
       }
+      word.id = 'ref-' + utils.getUniqueId();
     }
     line.words = words.filter(word => word);
-    html.highlightRefsWithIds(line);
+    html.highlightRefs(line, "background-color: #ff0;");
   }
 }
 
-async function startBuildingPage(contextIn, textEditor) {
+async function buildPage(contextIn, textEditor) {
   context = contextIn;
   const document  = textEditor.document;
   const selection = textEditor.selection; 
@@ -155,24 +137,22 @@ async function startBuildingPage(contextIn, textEditor) {
     }
   }
   addPossibleWords(block);
-  defLocSet = new Set();
   defCount  = 0;
   await addDefBlocks(block);
   if(defCount == 0) {
     html.showMsgInPage(`Found no symbol in selection with a definition.`);
     return;
   }
-  block.id = 'blk-' + utils.getUniqueId();
-  await sendBlockToView(block);
+  await html.addBlockToView(block);
 }
 
-async function startBuildingPageWhenReady(contextIn, textEditor) {
+async function buildPageWhenReady(contextIn, textEditor) {
   comm.clearRecvCallbacks();
   comm.registerWebviewRecv('ready', async () => {
-    await startBuildingPage(contextIn, textEditor);
+    await buildPage(contextIn, textEditor);
   });
   html.setLanguage(textEditor);
-  await html.setAllViewHtml(textEditor);
+  await html.initWebviewHtml(textEditor);
 }
 
-module.exports = { startBuildingPageWhenReady };
+module.exports = { buildPageWhenReady };

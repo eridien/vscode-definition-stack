@@ -1,5 +1,5 @@
-const utils = require('./utils.js');
-const log   = utils.getLog('COMM');
+// const utils = require('./utils.js');
+// const log   = utils.getLog('COMM');
 
 let webview = null;
 let context = null;
@@ -15,7 +15,7 @@ function clearRecvCallbacks() {
   registeredRecvs = {};
 }
 
-async function init(webviewIn, contextIn) {
+async function init(contextIn, webviewIn) {
   webview = webviewIn;
   context = contextIn;
   const recvDisposable = webview.onDidReceiveMessage(async message => {

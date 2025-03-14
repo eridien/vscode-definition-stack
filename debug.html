@@ -1,1 +1,46 @@
-'<pre  data-start="318" class=" line-numbers"><code>const <span id="ref-ds1" class="ds-ref" style="background-color: #ff0;">toggleWaiting</span> = async (show) => {  // console.log("toggleWaiting", show.Name);  this.saveVisShow(show);  if (show.Waiting) {    show.Waiting = false;    <span id="ref-ds3" class="ds-ref" style="background-color: #ff0;">srvr</span>.<span id="ref-ds2" class="ds-ref" style="background-color: #ff0;">addBlockedWait</span>(show.Name);  }  else if (show.WaitStr?.length > 0) {    show.Waiting = true;    srvr.<span id="ref-ds4" class="ds-ref" style="background-color: #ff0;">delBlockedWait</span>(show.Name);  }};</code></pre>'
+<div id="blk-ds1" class="ds-block">
+
+  <span style="margin-top:5px; padding:2px 15px 5px 15px; display:block;                         
+               margin-bottom:-10px; background-color:#ddd;">
+    <span style="color:#444;">
+      <span style="color:#f44;">toggleWaiting</span>
+       in           
+      <span style="color:#f44;">src/components/list.vue</span>
+    </span>
+  </span>
+  
+  <pre data-start="318" class="line-numbers language-javascript">
+    <code class="language-javascript">
+        const
+      <span id="ref-ds3" class="ds-ref" style="background-color: #ff0;">
+              toggleWaiting
+      </span> 
+                            = async (show) => {
+          // console.log("toggleWaiting", show.Name);  
+          this.saveVisShow(show);  
+          if (show.Waiting) {    
+            show.Waiting = false;
+      <span id="ref-ds5" class="ds-ref" style="background-color: #ff0;">
+            srvr
+      </span>
+                .
+      <span id="ref-ds7" class="ds-ref" style="background-color: #ff0;">
+                 addBlockedWait
+      </span>
+                               (show.Name); 
+          }  
+          else if (show.WaitStr?.length > 0) {    
+            show.Waiting = true;    
+      <span id="ref-ds9" class="ds-ref" style="background-color: #ff0;">
+            srvr
+      </span>
+                .
+      <span id="ref-ds11" class="ds-ref" style="background-color: #ff0;">
+                 delBlockedWait
+      </span>                  (show.Name);
+          }
+        };
+    </code>
+  </pre>
+  
+</div>
