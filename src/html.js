@@ -96,12 +96,12 @@ async function setAllViewHtml(editor) {
                     keepMarkupJs + lineNumJs + iframeJsIn); 
 
   const config     = vscode.workspace.getConfiguration('editor', document.uri);
-  const fontFamily = config.fontFamily;
-  const fontWeight = config.fontWeight;
-  const fontSize   = config.fontSize + 'px';
+  const fontFamily = ` */ font-family: ${config.fontFamily}; /* `;
+  const fontWeight = ` */ font-weight: ${config.fontWeight}; /* `;
+  const fontSize   = ` */ font-size:   ${config.fontSize};   /* `;
 
   const iframeHtml = (iframeHtmlIn
-      .replace('**iframeCss**',  iframeCss)
+      .replace('**iframeCss**',  ` */ ${iframeCss} /*`)
       .replace('**iframeJs**',   iframeJs)
       .replace('**fontFamily**', fontFamily)
       .replace('**fontSize**',   fontSize)
@@ -110,7 +110,7 @@ async function setAllViewHtml(editor) {
 
   const html = templateHtml
       .replace('**templateJs**', templateJs)
-      .replace('**iframeHtml**', iframeHtml)
+      .replace('**iframeHtml**', `--> ${iframeHtml} <!--`)
       
   webview.html = html;
 }

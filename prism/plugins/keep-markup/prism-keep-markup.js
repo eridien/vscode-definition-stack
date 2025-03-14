@@ -1,3 +1,7 @@
+//////////////// definition stack iframe script //////////////////
+  
+  /* global document Prism */
+
 (function () {
 
 	if (typeof Prism === 'undefined' || typeof document === 'undefined' || !document.createRange) {

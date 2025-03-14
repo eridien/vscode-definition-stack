@@ -15,7 +15,7 @@ function inactiveColumn() {
   return vscode.ViewColumn.Two;
 }
 
-async function setWebView(context, editor) {
+async function setWebView(context) {
   if(webviewPanel) webviewPanel.dispose();
   webviewPanel = vscode.window.createWebviewPanel(
     'defstack-webview',   
