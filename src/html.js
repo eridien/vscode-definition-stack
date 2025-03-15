@@ -77,7 +77,8 @@ async function addBlockToView(block) {
           <span style="color:#f44;">${relPath}</span>
         </span>
       </span>
-      <pre data-start="${lines[0].lineNumber+1}" class="language-${language}">` +
+      <pre data-start="${lines[0].lineNumber+1}" 
+           class="line-numbers language-${language}">` +
         `<code class="language-${language}">${code}</code>`                     +
      `</pre>
     </div>`;

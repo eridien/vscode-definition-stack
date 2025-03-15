@@ -18,6 +18,7 @@ async function refClick(data) {
   }
   let blocksStr = '';
   for(const block of blocks) {
+    await blk.addPossibleWords(block);
     await blk.addDefBlocks(block);
     html.addBlockToView(block);
     blocksStr += `${block.id }:${block.name}, `;

@@ -6,24 +6,6 @@ const log    = utils.getLog('BLCK');
 
 const ignorePaths = ['node_modules', '.d.ts'];
 
-function addPossibleWords(block) {
-  const {lines} = block;
-  const regexString = `\\b[a-zA-Z_$][\\w$]*?\\b`;
-  const wordRegex = new RegExp(regexString, 'g');
-  for(const line of lines) {
-    const words = [];
-    let match;
-    const lineText = line.text.slice(line.startCharOfs, line.endCharOfs);
-    while ((match = wordRegex.exec(lineText)) !== null) {
-      const name = match[0]
-      const startWordOfs = line.startCharOfs + wordRegex.lastIndex - name.length;
-      const endWordOfs   = wordRegex.lastIndex;
-      words.push({name, startWordOfs, endWordOfs});;
-    }
-    line.words = words;
-  }
-}
-
 const blockByHash   = {};
 const blocksByRefId = {};
 
@@ -47,19 +29,28 @@ function showAllRefs() {
   };
 }
 
-let uniqueBlkId = 1;
-
-function getOrMakeBlock(name, document, range) {
-  const hash = JSON.stringify([name, document.uri.path, range]);
-  // log('getOrMakeBlock, hash:', hash);
-  const existingBlock = blockByHash[hash];
-  if(existingBlock) { 
-    // log('getOrMakeBlock, using existing block:', existingBlock.id, name);
-    return existingBlock;
+function addPossibleWords(block) {
+  const {lines} = block;
+  const regexString = `\\b[a-zA-Z_$][\\w$]*?\\b`;
+  const wordRegex = new RegExp(regexString, 'g');
+  for(const line of lines) {
+    const words = [];
+    let match;
+    const lineText = line.text.slice(line.startCharOfs, line.endCharOfs);
+    while ((match = wordRegex.exec(lineText)) !== null) {
+      const name = match[0]
+      const startWordOfs = line.startCharOfs + wordRegex.lastIndex - name.length;
+      const endWordOfs   = wordRegex.lastIndex;
+      words.push({name, startWordOfs, endWordOfs});;
+    }
+    line.words = words;
   }
-  const projIdx   = utils.getProjectIdx(document);
-  const projPath  = vscode.workspace.workspaceFolders[projIdx].uri.path;
-  const relPath   = document.uri.path.slice(projPath.length+1);
+}
+
+async function addLines(block) {
+  const location  = block.location;
+  const document  = await vscode.workspace.openTextDocument(location.uri)
+  const range     = block.location.range;
   const startLine = range.start.line;
   const endLine   = range.end.line;
   const lines = [];
@@ -73,49 +64,8 @@ function getOrMakeBlock(name, document, range) {
     line.endCharOfs   = endCharOfs;
     lines.push(line);
   };
-  const id = `ds-blk-${uniqueBlkId++}`;
-  const location = new vscode.Location(document.uri, range);
-  const block = {id, name, relPath, lines, location, hash};
-  blockByHash[hash] = block;
-  // log('getOrMakeBlock, new block:', id, name);
-  return block;
+  block.lines = lines;
 }
-
-function getSymbolsRecursive(rootSymbol) {
-  const symbols = [];
-  function recursPush(symbol) {
-    symbols.push(symbol);
-    if (symbol.children) 
-      symbol.children.forEach(recursPush);
-  }
-  recursPush(rootSymbol);
-  return symbols;
-}
-
-async function getSurroundingBlock(document, selectionRange) {
-  try {
-    const docTopSymbols = await vscode.commands.executeCommand(
-             'vscode.executeDocumentSymbolProvider', document.uri);
-    if (!docTopSymbols) return null;
-    const allSymbols = docTopSymbols
-              .flatMap(symbol => getSymbolsRecursive(symbol))
-    // Find the smallest containing symbol
-    const srcSymbol = allSymbols
-      .filter(sym => utils.containsRange(sym.range, selectionRange))
-      .sort((a,b) => utils.getRangeSize(a.range) - 
-                     utils.getRangeSize(b.range))[0];
-    if (srcSymbol)
-      return getOrMakeBlock(srcSymbol.name, document, srcSymbol.range);
-    return null;
-  } 
-  catch (error) {
-    log('infoerr', error.message);
-    return null;
-  }
-}
-
-let defCount;
-let uniqueRefId = 1;
 
 async function addDefBlocks(block) {
   const blockUri = block.location.uri;
@@ -138,14 +88,13 @@ async function addDefBlocks(block) {
         const defUri   = definition.targetUri;
         const defRange = definition.targetRange;
         const defPath  = defUri.path;
-        const document = await vscode.workspace.openTextDocument(defUri);
         const location = new vscode.Location(defUri, defRange);
         if(utils.containsLocation(block.location, location)) continue;
         for(const ignorePath of ignorePaths) {
           if(defPath.includes(ignorePath)) continue defloop;
         }
         defCount++;
-        const defBlock = getOrMakeBlock(name, document, defRange);
+        const defBlock = await getOrMakeBlock(name, defUri, defRange);
         word.defBlocks.push(defBlock);
       }
       if (word.defBlocks.length == 0) {
@@ -166,14 +115,74 @@ async function addDefBlocks(block) {
   }
 }
 
+let uniqueBlkId = 1;
+
+async function getOrMakeBlock(name, uri, range) {
+  const hash = JSON.stringify([name, uri.path, range]);
+  // log('getOrMakeBlock, hash:', hash);
+  const existingBlock = blockByHash[hash];
+  if(existingBlock) { 
+    // log('getOrMakeBlock, using existing block:', existingBlock.id, name);
+    return existingBlock;
+  }
+  const id = `ds-blk-${uniqueBlkId++}`;
+  const location = new vscode.Location(uri, range);
+  const document = await vscode.workspace.openTextDocument(location.uri)
+  const projIdx  = utils.getProjectIdx(document);
+  const projPath = vscode.workspace.workspaceFolders[projIdx].uri.path;
+  const relPath  = uri.path.slice(projPath.length+1);
+  const block = {id, name, location, relPath, hash};
+  await addLines(block);
+  blockByHash[hash] = block;
+  // log('getOrMakeBlock, new block:', id, name);
+  return block;
+}
+
+function getSymbolsRecursive(rootSymbol) {
+  const symbols = [];
+  function recursPush(symbol) {
+    symbols.push(symbol);
+    if (symbol.children) 
+      symbol.children.forEach(recursPush);
+  }
+  recursPush(rootSymbol);
+  return symbols;
+}
+
+async function getSurroundingBlock(uri, selectionRange) {
+  try {
+    const docTopSymbols = await vscode.commands.executeCommand(
+             'vscode.executeDocumentSymbolProvider', uri);
+    if (!docTopSymbols) return null;
+    const allSymbols = docTopSymbols
+              .flatMap(symbol => getSymbolsRecursive(symbol))
+    // Find the smallest containing symbol
+    const srcSymbol = allSymbols
+      .filter(sym => utils.containsRange(sym.range, selectionRange))
+      .sort((a,b) => utils.getRangeSize(a.range) - 
+                     utils.getRangeSize(b.range))[0];
+    if (srcSymbol)
+      return getOrMakeBlock(srcSymbol.name, uri, srcSymbol.range);
+    return null;
+  }
+  catch (error) {
+    log('infoerr', error.message);
+    return null;
+  }
+}
+
+let defCount;
+let uniqueRefId = 1;
+
 async function buildPage(contextIn, textEditor) {
   context = contextIn;
   const document  = textEditor.document;
+  const uri       = document.uri;
   const selection = textEditor.selection; 
-  let block = await getSurroundingBlock(document, selection);
+  let block = await getSurroundingBlock(uri, selection);
   if(!block) {
     await utils.sleep(2000);
-    block = await getSurroundingBlock(document, selection);
+    block = await getSurroundingBlock(uri, selection);
     if(!block) {
       html.showMsgInPage('The selection is not in a block.');
       return;
@@ -198,6 +207,6 @@ async function buildPageWhenReady(contextIn, textEditor) {
 }
 
 module.exports = { 
-  buildPageWhenReady, addDefBlocks,
+  buildPageWhenReady, addDefBlocks, addLines, addPossibleWords,
   showAllBlocks, showAllRefs, getBlocksByRefId 
 };
