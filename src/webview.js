@@ -1,6 +1,7 @@
 // console.log('loading webview module');
 
 const vscode = require('vscode');
+const blk    = require('./block.js');
 const html   = require('./html.js');
 const navi   = require('./navigate.js');
 const comm   = require('./comm.js');
@@ -36,6 +37,7 @@ async function initWebview(context) {
   await comm.init(context, webviewPanel.webview);
   await html.init(context, webviewPanel.webview);
   navi.init();
+  blk.init();
 }
 
 module.exports = { initWebview };

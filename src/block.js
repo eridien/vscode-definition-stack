@@ -9,8 +9,13 @@ const log    = utils.getLog('BLCK');
 
 const ignorePaths = ['node_modules', '.d.ts'];
 
-const blockByHash   = {};
-const blocksByRefId = {};
+let blockByHash   = {};
+let blocksByRefId = {};
+
+function init() {
+  blockByHash   = {};
+  blocksByRefId = {};
+}
 
 function getBlockByHash(hash) {
   return blockByHash[hash];
@@ -248,6 +253,6 @@ async function showFirstBlockWhenReady(contextIn, textEditor) {
 }
 
 module.exports = { 
-  showFirstBlockWhenReady, getBlocksByRefId, 
+  init, showFirstBlockWhenReady, getBlocksByRefId, 
   showAllBlocks, showAllRefs, addAllData
 };
