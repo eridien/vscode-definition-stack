@@ -109,8 +109,7 @@ async function addDefs(block, firstDefOnly) {
         const defBlock = await getOrMakeBlock(name, defUri, defRange);
         word.defBlocks.push(defBlock);
         if(firstDefOnly) {
-          words = words.filter(word => word);
-          line.words = words;
+          line.words = words.filter(word => word);
           return;
         }
       }
@@ -131,7 +130,6 @@ async function addDefs(block, firstDefOnly) {
     }
     html.markupRefs(line, "background-color: #ff0;");
   }
-  return block.lines;
 }
 
 async function addAllData(block, firstDefOnly) {
@@ -139,6 +137,7 @@ async function addAllData(block, firstDefOnly) {
   addWords(block);
   await addDefs(block, firstDefOnly);
 }
+
 let uniqueBlkId = 1;
 
 async function getOrMakeBlock(name, uri, range) {
@@ -153,6 +152,8 @@ async function getOrMakeBlock(name, uri, range) {
   const relPath  = uri.path.slice(projPath.length+1);
   const block = {id, name, location, relPath, hash};
   block.flags = {};
+  block.flags.isEntireFile = 
+        await utils.locationIsEntireFile(location);
   await addLines(block);
   blockByHash[hash] = block;
   // log('getOrMakeBlock, new block:', id, name);
@@ -208,8 +209,9 @@ async function showFirstBlock(contextIn, textEditor) {
       return;
     }
   }
+  block.flags.isRoot = true;
   if(await utils.locationIsEntireFile(block.location)) {
-    html.showInWebview('Selection is the entire file. Select a block.');
+    html.showInWebview('Selection is the entire file. Select a smaller block.');
     return;
   }
   await addAllData(block, true);
@@ -246,5 +248,6 @@ async function showFirstBlockWhenReady(contextIn, textEditor) {
 }
 
 module.exports = { 
-  showFirstBlockWhenReady, getBlocksByRefId, showAllBlocks, showAllRefs
+  showFirstBlockWhenReady, getBlocksByRefId, 
+  showAllBlocks, showAllRefs, addAllData
 };

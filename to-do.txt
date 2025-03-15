@@ -6,7 +6,6 @@ to-do ...
   set max lines output
   use vscode colors in banner or steal colors from prism theme
   ignore empty blocks
-  handle entire files (remove lines with no symbols)
   show source when line num clicked
   add configs
     show entire files
