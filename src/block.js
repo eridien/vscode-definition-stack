@@ -197,4 +197,7 @@ async function buildPageWhenReady(contextIn, textEditor) {
   await html.initWebviewHtml(textEditor);
 }
 
-module.exports = { buildPageWhenReady, showAllBlocks, showAllRefs, getBlocksByRefId };
+module.exports = { 
+  buildPageWhenReady, addDefBlocks,
+  showAllBlocks, showAllRefs, getBlocksByRefId 
+};

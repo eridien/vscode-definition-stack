@@ -58,7 +58,7 @@ function setLanguage(editor) {
 
 async function addBlockToView(block) {
   const {id, name, relPath, lines} = block;
-  log(name.padEnd(15), relPath);
+  log('adding block to view', name.padEnd(15), relPath);
   let minWsIdx = Number.MAX_VALUE;
   for(const line of lines) {
     const wsIdx = line.firstNonWhitespaceCharacterIndex;
