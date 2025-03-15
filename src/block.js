@@ -1,4 +1,7 @@
+// console.log('loading block module');
+
 const vscode = require('vscode');
+const navi   = require('./navigate.js');
 const html   = require('./html.js');
 const comm   = require('./comm.js');
 const utils  = require('./utils.js');
@@ -8,6 +11,10 @@ const ignorePaths = ['node_modules', '.d.ts'];
 
 const blockByHash   = {};
 const blocksByRefId = {};
+
+function getBlockByHash(hash) {
+  return blockByHash[hash];
+}
 
 function getBlocksByRefId(refId) {
   return blocksByRefId[refId];
@@ -70,7 +77,7 @@ async function addLines(block) {
 async function addDefBlocks(block) {
   const blockUri = block.location.uri;
   for(const line of block.lines) {
-    const words = line.words;
+    let words = line.words;
     for(let idx = 0; idx < words.length; idx++) {
       const word = words[idx];
       const name = word.name;
@@ -93,7 +100,6 @@ async function addDefBlocks(block) {
         for(const ignorePath of ignorePaths) {
           if(defPath.includes(ignorePath)) continue defloop;
         }
-        defCount++;
         const defBlock = await getOrMakeBlock(name, defUri, defRange);
         word.defBlocks.push(defBlock);
       }
@@ -103,8 +109,9 @@ async function addDefBlocks(block) {
       }
       word.id = `ds-ref-${uniqueRefId++}`;
     }
-    line.words = words.filter(word => word);
-    for(const word of line.words) {
+    words = words.filter(word => word);
+    line.words = words;
+    for(const word of words) {
       const blocks = [];
       for(const defBlock of word.defBlocks) {
         blocks.push(defBlock);
@@ -113,18 +120,20 @@ async function addDefBlocks(block) {
     }
     html.markupRefs(line, "background-color: #ff0;");
   }
+  return block.lines;
+}
+
+async function addWords(block) {
+    await addPossibleWords(block);
+    return await addDefBlocks(block);
 }
 
 let uniqueBlkId = 1;
 
 async function getOrMakeBlock(name, uri, range) {
   const hash = JSON.stringify([name, uri.path, range]);
-  // log('getOrMakeBlock, hash:', hash);
-  const existingBlock = blockByHash[hash];
-  if(existingBlock) { 
-    // log('getOrMakeBlock, using existing block:', existingBlock.id, name);
-    return existingBlock;
-  }
+  const existingBlock = getBlockByHash(hash);
+  if(existingBlock) return existingBlock;
   const id = `ds-blk-${uniqueBlkId++}`;
   const location = new vscode.Location(uri, range);
   const document = await vscode.workspace.openTextDocument(location.uri)
@@ -171,7 +180,6 @@ async function getSurroundingBlock(uri, selectionRange) {
   }
 }
 
-let defCount;
 let uniqueRefId = 1;
 
 async function buildPage(contextIn, textEditor) {
@@ -188,14 +196,21 @@ async function buildPage(contextIn, textEditor) {
       return;
     }
   }
-  addPossibleWords(block);
-  defCount  = 0;
-  await addDefBlocks(block);
-  if(defCount == 0) {
+  const lines = await addWords(block);
+  let firstLineWithDef = null;
+  for(const line of lines) {
+    if(line.words.length > 0) {
+      firstLineWithDef = line;
+      break;
+    }
+  }
+  if(!firstLineWithDef) {
     html.showMsgInPage(`Found no symbol in selection with a definition.`);
     return;
   }
-  await html.addBlockToView(block);
+  const defBlock = firstLineWithDef.words[0].defBlocks[0];
+  await addWords(defBlock);
+  await navi.addBlockToView(defBlock);
 }
 
 async function buildPageWhenReady(contextIn, textEditor) {
@@ -207,6 +222,7 @@ async function buildPageWhenReady(contextIn, textEditor) {
 }
 
 module.exports = { 
-  buildPageWhenReady, addDefBlocks, addLines, addPossibleWords,
-  showAllBlocks, showAllRefs, getBlocksByRefId 
+  buildPageWhenReady, getBlocksByRefId,
+  addDefBlocks, addLines, addPossibleWords, addWords,
+  showAllBlocks, showAllRefs
 };

@@ -1,6 +1,8 @@
+// console.log('loading extension module');
+
 const vscode = require('vscode');
-const blk    = require('./block.js');
 const webv   = require('./webview.js');
+const blk    = require('./block.js');
 const utils  = require('./utils.js');
 const log    = utils.getLog('EXTS');
 

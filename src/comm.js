@@ -1,3 +1,5 @@
+// console.log('loading comm module');
+
 // const utils = require('./utils.js');
 // const log   = utils.getLog('COMM');
 

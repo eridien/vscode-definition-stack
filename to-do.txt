@@ -6,7 +6,6 @@ to-do ...
   set max lines output
   use vscode colors in banner or steal colors from prism theme
   ignore empty blocks
-  fix duplicates
   handle entire files (remove lines with no symbols)
   handle single-line defs (combine ones from same file)
   merge blocks that are immediately next to each other (e.g. toggleWaiting)

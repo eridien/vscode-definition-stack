@@ -1,3 +1,5 @@
+// console.log('loading html module');
+
 const vscode = require('vscode');
 const comm   = require('./comm.js');
 const utils  = require('./utils.js');

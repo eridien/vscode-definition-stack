@@ -1,3 +1,5 @@
+// console.log('loading utils module');
+
 const vscode = require('vscode');
 const path   = require('path');
 const log    = getLog('UTIL');

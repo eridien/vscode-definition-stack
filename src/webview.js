@@ -1,3 +1,5 @@
+// console.log('loading webview module');
+
 const vscode = require('vscode');
 const html   = require('./html.js');
 const navi   = require('./navigate.js');

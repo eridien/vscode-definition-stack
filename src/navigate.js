@@ -1,12 +1,18 @@
-const blk   = require('./block.js');
+// console.log('loading navigate module');
+
 const html   = require('./html.js');
 const comm  = require('./comm.js');
 const utils = require('./utils.js');
 const log   = utils.getLog('NAVI');
 
+let blk = null;
+
 function init() {
+  blk = require('./block.js');
   comm.registerWebviewRecv('refClick', true, refClick);
 }
+
+const blockStack = [];
 
 async function refClick(data) {
   const refId = data.id;
@@ -16,14 +22,18 @@ async function refClick(data) {
     blk.showAllBlocks();
     return;
   }
-  let blocksStr = '';
   for(const block of blocks) {
-    await blk.addPossibleWords(block);
-    await blk.addDefBlocks(block);
-    html.addBlockToView(block);
-    blocksStr += `${block.id }:${block.name}, `;
+    if(!blockStack.includes(block)) 
+      await blk.addWords(block);
+    await addBlockToView(block);
   }
-  log('click:', refId, blocksStr.slice(0, -2));
 }
 
-module.exports = { init };
+async function addBlockToView(block) {
+  if(blockStack.includes(block)) return;
+  log('addBlockToView:', block.id, block.name)
+  blockStack.push(block);
+  await html.addBlockToView(block);
+}
+
+module.exports = { init, addBlockToView };
