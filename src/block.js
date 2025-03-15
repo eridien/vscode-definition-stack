@@ -36,7 +36,9 @@ function showAllRefs() {
   };
 }
 
-function addPossibleWords(block) {
+function addWords(block) {
+  if(block.flags.haveWords) return;
+  block.flags.haveWords = true;
   const {lines} = block;
   const regexString = `\\b[a-zA-Z_$][\\w$]*?\\b`;
   const wordRegex = new RegExp(regexString, 'g');
@@ -55,6 +57,8 @@ function addPossibleWords(block) {
 }
 
 async function addLines(block) {
+  if(block.flags.haveLines) return;
+  block.flags.haveLines = true;
   const location  = block.location;
   const document  = await vscode.workspace.openTextDocument(location.uri)
   const range     = block.location.range;
@@ -74,7 +78,9 @@ async function addLines(block) {
   block.lines = lines;
 }
 
-async function addDefBlocks(block) {
+async function addDefs(block, firstDefOnly) {
+  if(block.flags.haveDefs) return;
+  block.flags.haveDefs = true;
   const blockUri = block.location.uri;
   for(const line of block.lines) {
     let words = line.words;
@@ -102,6 +108,11 @@ async function addDefBlocks(block) {
         }
         const defBlock = await getOrMakeBlock(name, defUri, defRange);
         word.defBlocks.push(defBlock);
+        if(firstDefOnly) {
+          words = words.filter(word => word);
+          line.words = words;
+          return;
+        }
       }
       if (word.defBlocks.length == 0) {
         delete words[idx];
@@ -123,11 +134,11 @@ async function addDefBlocks(block) {
   return block.lines;
 }
 
-async function addWords(block) {
-    await addPossibleWords(block);
-    return await addDefBlocks(block);
+async function addAllData(block, firstDefOnly) {
+  await addLines(block);
+  addWords(block);
+  await addDefs(block, firstDefOnly);
 }
-
 let uniqueBlkId = 1;
 
 async function getOrMakeBlock(name, uri, range) {
@@ -141,6 +152,7 @@ async function getOrMakeBlock(name, uri, range) {
   const projPath = vscode.workspace.workspaceFolders[projIdx].uri.path;
   const relPath  = uri.path.slice(projPath.length+1);
   const block = {id, name, location, relPath, hash};
+  block.flags = {};
   await addLines(block);
   blockByHash[hash] = block;
   // log('getOrMakeBlock, new block:', id, name);
@@ -182,7 +194,7 @@ async function getSurroundingBlock(uri, selectionRange) {
 
 let uniqueRefId = 1;
 
-async function buildPage(contextIn, textEditor) {
+async function showFirstBlock(contextIn, textEditor) {
   context = contextIn;
   const document  = textEditor.document;
   const uri       = document.uri;
@@ -196,7 +208,12 @@ async function buildPage(contextIn, textEditor) {
       return;
     }
   }
-  const lines = await addWords(block);
+  if(await utils.locationIsEntireFile(block.location)) {
+    html.showInWebview('Selection is the entire file. Select a block.');
+    return;
+  }
+  await addAllData(block, true);
+  const lines = block.lines;
   let firstLineWithDef = null;
   for(const line of lines) {
     if(line.words.length > 0) {
@@ -205,24 +222,29 @@ async function buildPage(contextIn, textEditor) {
     }
   }
   if(!firstLineWithDef) {
-    html.showMsgInPage(`Found no symbol in selection with a definition.`);
+    html.showInWebview(`Found no symbol with a definition.`);
     return;
   }
   const defBlock = firstLineWithDef.words[0].defBlocks[0];
-  await addWords(defBlock);
+  if(!defBlock) {
+    html.showInWebview(`Found no symbol with a definition.`);
+    return;
+  }
+  const isEntireFile = 
+          await utils.locationIsEntireFile(defBlock.location);
+  if(isEntireFile) defBlock.flags.isEntireFile = true;
+  if(!isEntireFile) await addAllData(defBlock);
   await navi.addBlockToView(defBlock);
 }
 
-async function buildPageWhenReady(contextIn, textEditor) {
+async function showFirstBlockWhenReady(contextIn, textEditor) {
   comm.registerWebviewRecv('ready', true, async () => {
-    await buildPage(contextIn, textEditor);
+    await showFirstBlock(contextIn, textEditor);
   });
   html.setLanguage(textEditor);
   await html.initWebviewHtml(textEditor);
 }
 
 module.exports = { 
-  buildPageWhenReady, getBlocksByRefId,
-  addDefBlocks, addLines, addPossibleWords, addWords,
-  showAllBlocks, showAllRefs
+  showFirstBlockWhenReady, getBlocksByRefId, showAllBlocks, showAllRefs
 };

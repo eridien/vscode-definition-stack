@@ -9,7 +9,6 @@ let context = null;
 let registeredRecvs = {};
 function registerWebviewRecv(command, exclusive, callback) {
   if(exclusive) registeredRecvs[command] = [];
-  // log('registerWebviewRecv: ', {command, exclusive});
   registeredRecvs[command] ??= [];
   registeredRecvs[command].push(callback);
 }

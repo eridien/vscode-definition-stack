@@ -1,5 +1,5 @@
 bugs ...
-  msg style broken
+
 
 to-do ...
   wrap
@@ -7,11 +7,9 @@ to-do ...
   use vscode colors in banner or steal colors from prism theme
   ignore empty blocks
   handle entire files (remove lines with no symbols)
-  handle single-line defs (combine ones from same file)
-  merge blocks that are immediately next to each other (e.g. toggleWaiting)
   show source when line num clicked
-  navigate with clicks
   add configs
+    show files
     ignorePath
     scale
     lang id mapping

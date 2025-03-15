@@ -58,9 +58,38 @@ function setLanguage(editor) {
   language ??= vscLangId;
 }
 
+function bannerHtml(name, relPath) {
+  return `<span style="margin-top:5px; padding:2px 15px 5px 15px;
+                       display:block; margin-bottom:-10px; 
+                       background-color:#ddd;">
+            <span style="color:#444;">
+              <span style="color:#f44;">${name}</span> in 
+              <span style="color:#f44;">${relPath}</span>
+            </span>
+          </span>`;
+}
+
+async function addEmptyBlockToView(id, name, relPath) {
+  log('adding empty block to view:', name.padEnd(15), relPath);
+  showInWebview('Hiding entire file. See settings.');
+  const blockHtml = 
+   `<div id="${id}" class="ds-block">`                 +
+      bannerHtml(name, relPath)                        +
+     `<pre data-start="0" `                            +
+          `class="line-numbers language-${language}">` +
+       `<code class="language-${language}"></code>`    +
+     `</pre>
+    </div>`;
+  await comm.send('addBlock', {blockHtml});
+}
+
 async function addBlockToView(block) {
   const {id, name, relPath, lines} = block;
-  log('adding block to view', name.padEnd(15), relPath);
+  if(block.flags.isEntireFile) {
+    addEmptyBlockToView(id, name, relPath)
+    return;
+  }
+  log('adding block to view:', name.padEnd(15), relPath);
   let minWsIdx = Number.MAX_VALUE;
   for(const line of lines) {
     const wsIdx = line.firstNonWhitespaceCharacterIndex;
@@ -70,18 +99,11 @@ async function addBlockToView(block) {
   for(const line of lines)
     code += ((line.html.slice(minWsIdx)) + "\n");
   const blockHtml = 
-   `<div id="${id}" class="ds-block">
-      <span style="margin-top:5px; padding:2px 15px 5px 15px;
-                    display:block; margin-bottom:-10px; 
-                    background-color:#ddd;">
-        <span style="color:#444;">
-          <span style="color:#f44;">${name}</span> in 
-          <span style="color:#f44;">${relPath}</span>
-        </span>
-      </span>
-      <pre data-start="${lines[0].lineNumber+1}" 
-           class="line-numbers language-${language}">` +
-        `<code class="language-${language}">${code}</code>`                     +
+   `<div id="${id}" class="ds-block">` +
+      bannerHtml(name, relPath)        +
+     `<pre data-start="${lines[0].lineNumber+1}" 
+           class="line-numbers language-${language}">`      +
+        `<code class="language-${language}">${code}</code>` +
      `</pre>
     </div>`;
   await comm.send('addBlock', {blockHtml});
@@ -122,14 +144,12 @@ async function initWebviewHtml(editor) {
   webview.html = html;
 }
 
-function showMsgInPage(msg) {
+function showInWebview(msg) {
   if(webview) {
     const msgHtml = 
       `<div style=" background: var(--vscode-editor-background);
                     color:      var(--vscode-editor-foreground);
-                    border-radius: 8px;
-                    padding: 10px;
-                    margin:  10px;
+                    font-size:17px; font-weight:bold;
                   "> ${msg} </div>`;
     webview.html = msgHtml;
   }
@@ -149,5 +169,6 @@ function markupRefs(line, style) {
   line.html = html;
 }
 
-module.exports = {setLanguage, init, initWebviewHtml, addBlockToView, 
-                  showMsgInPage, markupRefs};
+module.exports = {setLanguage, init, initWebviewHtml, 
+                  addEmptyBlockToView, addBlockToView, 
+                  showInWebview, markupRefs};

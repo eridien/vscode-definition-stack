@@ -15,16 +15,16 @@ function init() {
 const blockStack = [];
 
 async function refClick(data) {
-  const refId = data.id;
+  const refId  = data.id;
   const blocks = blk.getBlocksByRefId(refId);
   if(!blocks) {
     log('refClick: blocks not found, refId:', refId);
     blk.showAllBlocks();
+    blk.showAllRefs();
     return;
   }
   for(const block of blocks) {
-    if(!blockStack.includes(block)) 
-      await blk.addWords(block);
+    await blk.addAllData(block);
     await addBlockToView(block);
   }
 }
