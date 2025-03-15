@@ -133,13 +133,13 @@ function showMsgInPage(msg) {
   else log('info', msg);
 }
 
-function highlightRefs(line, style) {
+function markupRefs(line, style) {
   let html = line.text;
   for(let idx = line.words.length-1; idx >= 0; idx--) {
     const word = line.words[idx];
     const endOfs = word.endWordOfs;
     html = html.slice(0, endOfs) + '</span>' + html.slice(endOfs);
-    const span = `<span id="${word.id}" class="ds-ref" style="${style}">`;
+    const span = `<span id="${word.id}" class="ds-ref" onclick="refClick" style="${style}">`;
     const strtOfs = word.startWordOfs;
     html = html.slice(0, strtOfs) + span + html.slice(strtOfs);
   }
@@ -147,4 +147,4 @@ function highlightRefs(line, style) {
 }
 
 module.exports = {setLanguage, init, initWebviewHtml, addBlockToView, 
-                  showMsgInPage, highlightRefs};
+                  showMsgInPage, markupRefs};

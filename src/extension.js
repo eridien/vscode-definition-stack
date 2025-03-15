@@ -1,5 +1,5 @@
 const vscode = require('vscode');
-const block  = require('./block.js');
+const blk    = require('./block.js');
 const webv   = require('./webview.js');
 const utils  = require('./utils.js');
 const log    = utils.getLog('EXTS');
@@ -14,7 +14,7 @@ async function activate(context) {
         const textEditor = vscode.window.activeTextEditor;
         if (!textEditor) return;
         await webv.initWebview(context, textEditor);
-        await block.buildPageWhenReady(context, textEditor);
+        await blk.buildPageWhenReady(context, textEditor);
         log('openWebViewCmd finished');  
       }	
   );

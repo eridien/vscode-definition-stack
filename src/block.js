@@ -2,7 +2,7 @@ const vscode = require('vscode');
 const html   = require('./html.js');
 const comm   = require('./comm.js');
 const utils  = require('./utils.js');
-const log    = utils.getLog('PAGE');
+const log    = utils.getLog('BLCK');
 
 const ignorePaths = ['node_modules', '.d.ts'];
 
@@ -24,8 +24,39 @@ function addPossibleWords(block) {
   }
 }
 
-function makeBlock(name, document, range) {
-  const id        = 'blk-' + utils.getUniqueId();
+const blockByHash   = {};
+const blocksByRefId = {};
+
+function getBlocksByRefId(refId) {
+  return blocksByRefId[refId];
+}
+
+function showAllBlocks() {
+  for(const block of Object.values(blockByHash)) {
+    const {id, name} = block;
+    log(id, name);
+  };
+}
+
+function showAllRefs() {
+  for(const [refId, blocks] of Object.entries(blocksByRefId)) {
+    let blocksStr = '';
+    for(const block of blocks) 
+      blocksStr += `${block.id }:${block.name}, `;
+    log(refId, blocksStr.slice(0, -2));
+  };
+}
+
+let uniqueBlkId = 1;
+
+function getOrMakeBlock(name, document, range) {
+  const hash = JSON.stringify([name, document.uri.path, range]);
+  // log('getOrMakeBlock, hash:', hash);
+  const existingBlock = blockByHash[hash];
+  if(existingBlock) { 
+    // log('getOrMakeBlock, using existing block:', existingBlock.id, name);
+    return existingBlock;
+  }
   const projIdx   = utils.getProjectIdx(document);
   const projPath  = vscode.workspace.workspaceFolders[projIdx].uri.path;
   const relPath   = document.uri.path.slice(projPath.length+1);
@@ -42,8 +73,12 @@ function makeBlock(name, document, range) {
     line.endCharOfs   = endCharOfs;
     lines.push(line);
   };
+  const id = `ds-blk-${uniqueBlkId++}`;
   const location = new vscode.Location(document.uri, range);
-  return {id, name, relPath, lines, location};
+  const block = {id, name, relPath, lines, location, hash};
+  blockByHash[hash] = block;
+  // log('getOrMakeBlock, new block:', id, name);
+  return block;
 }
 
 function getSymbolsRecursive(rootSymbol) {
@@ -70,7 +105,7 @@ async function getSurroundingBlock(document, selectionRange) {
       .sort((a,b) => utils.getRangeSize(a.range) - 
                      utils.getRangeSize(b.range))[0];
     if (srcSymbol)
-      return makeBlock(srcSymbol.name, document, srcSymbol.range);
+      return getOrMakeBlock(srcSymbol.name, document, srcSymbol.range);
     return null;
   } 
   catch (error) {
@@ -80,6 +115,7 @@ async function getSurroundingBlock(document, selectionRange) {
 }
 
 let defCount;
+let uniqueRefId = 1;
 
 async function addDefBlocks(block) {
   const blockUri = block.location.uri;
@@ -109,17 +145,24 @@ async function addDefBlocks(block) {
           if(defPath.includes(ignorePath)) continue defloop;
         }
         defCount++;
-        const defBlock = makeBlock(name, document, defRange);
+        const defBlock = getOrMakeBlock(name, document, defRange);
         word.defBlocks.push(defBlock);
       }
       if (word.defBlocks.length == 0) {
         delete words[idx];
         continue;
       }
-      word.id = 'ref-' + utils.getUniqueId();
+      word.id = `ds-ref-${uniqueRefId++}`;
     }
     line.words = words.filter(word => word);
-    html.highlightRefs(line, "background-color: #ff0;");
+    for(const word of line.words) {
+      const blocks = [];
+      for(const defBlock of word.defBlocks) {
+        blocks.push(defBlock);
+      }
+      blocksByRefId[word.id] = blocks;
+    }
+    html.markupRefs(line, "background-color: #ff0;");
   }
 }
 
@@ -147,12 +190,11 @@ async function buildPage(contextIn, textEditor) {
 }
 
 async function buildPageWhenReady(contextIn, textEditor) {
-  comm.clearRecvCallbacks();
-  comm.registerWebviewRecv('ready', async () => {
+  comm.registerWebviewRecv('ready', true, async () => {
     await buildPage(contextIn, textEditor);
   });
   html.setLanguage(textEditor);
   await html.initWebviewHtml(textEditor);
 }
 
-module.exports = { buildPageWhenReady };
+module.exports = { buildPageWhenReady, showAllBlocks, showAllRefs, getBlocksByRefId };

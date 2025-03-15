@@ -1,5 +1,6 @@
 const vscode = require('vscode');
 const html   = require('./html.js');
+const navi   = require('./navigate.js');
 const comm   = require('./comm.js');
 // const utils  = require('./utils.js');
 // const log    = utils.getLog('WEBV');
@@ -32,6 +33,7 @@ async function initWebview(context) {
   webviewPanel.onDidDispose(() => {webviewPanel = null});
   await comm.init(context, webviewPanel.webview);
   await html.init(context, webviewPanel.webview);
+  navi.init();
 }
 
 module.exports = { initWebview };
