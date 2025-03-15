@@ -71,13 +71,14 @@ function bannerHtml(name, relPath) {
 
 async function addEmptyBlockToView(id, name, relPath) {
   log('adding empty block to view:', name.padEnd(15), relPath);
-  showInWebview('Hiding entire file. See settings.');
   const blockHtml = 
    `<div id="${id}" class="ds-block">`                 +
       bannerHtml(name, relPath)                        +
      `<pre data-start="0" `                            +
-          `class="line-numbers language-${language}">` +
-       `<code class="language-${language}"></code>`    +
+          `class="language-${language}">`    +
+       `<code class="language-${language}">` +
+         `Definition is an entire file and is hidden. See settings.` +
+       `</code>`    +
      `</pre>
     </div>`;
   await comm.send('addBlock', {blockHtml});

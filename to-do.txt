@@ -9,7 +9,7 @@ to-do ...
   handle entire files (remove lines with no symbols)
   show source when line num clicked
   add configs
-    show files
+    show entire files
     ignorePath
     scale
     lang id mapping
