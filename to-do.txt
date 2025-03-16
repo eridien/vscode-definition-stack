@@ -1,11 +1,7 @@
 bugs ...
-  selecting import does nothing
-  selecting loadAllShows at emby.js/49 shows wrong line
-  duplicate block and wrong block
-    click end of init, emby.js/39, shows getToken
-    click on getToken in getToken, shows duplicate
   
 to-do ...
+  scroll body under banner
   log end of processing
   code wrap
   hover cursor

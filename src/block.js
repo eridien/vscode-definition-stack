@@ -83,7 +83,7 @@ async function addLines(block) {
   block.lines = lines;
 }
 
-async function addDefs(block, firstDefOnly) {
+async function addDefs(block) {
   if(block.flags.haveDefs) return;
   block.flags.haveDefs = true;
   const blockUri = block.location.uri;
@@ -110,16 +110,14 @@ async function addDefs(block, firstDefOnly) {
         const defUri   = definition.targetUri;
         const defPath  = defUri.path;
         const location = new vscode.Location(defUri, defRange);
+        if(block.location.range.start.line == defRange.start.line &&
+           block.location.range.end.line   == defRange.end.line) continue;
         if(utils.containsLocation(block.location, location)) continue;
         for(const ignorePath of ignorePaths) {
           if(defPath.includes(ignorePath)) continue defloop;
         }
         const defBlock = await getOrMakeBlock(name, defUri, defRange);
         word.defBlocks.push(defBlock);
-        if(firstDefOnly) {
-          line.words = words.filter(word => word);
-          return;
-        }
       }
       if (word.defBlocks.length == 0) {
         delete words[idx];
@@ -147,10 +145,10 @@ async function addDefs(block, firstDefOnly) {
   }
 }
 
-async function addAllData(block, firstDefOnly) {
+async function addAllData(block) {
   await addLines(block);
   addWords(block);
-  await addDefs(block, firstDefOnly);
+  await addDefs(block);
 }
 
 let uniqueBlkId = 1;
@@ -229,29 +227,8 @@ async function showFirstBlock(contextIn, textEditor) {
     html.showInWebview('Selection is the entire file. Select a smaller block.');
     return;
   }
-  await addAllData(block, true);
-  const lines = block.lines;
-  let firstLineWithDef = null;
-  for(const line of lines) {
-    if(line.words.length > 0) {
-      firstLineWithDef = line;
-      break;
-    }
-  }
-  if(!firstLineWithDef) {
-    html.showInWebview(`Found no symbol with a definition.`);
-    return;
-  }
-  const defBlock = firstLineWithDef.words[0].defBlocks[0];
-  if(!defBlock) {
-    html.showInWebview(`Found no symbol with a definition.`);
-    return;
-  }
-  const isEntireFile = 
-          await utils.locationIsEntireFile(defBlock.location);
-  if(isEntireFile) defBlock.flags.isEntireFile = true;
-  if(!isEntireFile) await addAllData(defBlock);
-  await navi.addBlockToView(defBlock);
+  await addAllData(block, false);
+  await navi.addBlockToView(block);
 }
 
 async function showFirstBlockWhenReady(contextIn, textEditor) {

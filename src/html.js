@@ -172,6 +172,18 @@ function showInWebview(msg) {
   else log('info', msg);
 }
 
+function showMsgInPage(msg) {
+  if(webview) {
+    const msgHtml = 
+      `<div style=" background: var(--vscode-editor-background);
+                    color:      var(--vscode-editor-foreground);
+                    border-radius: 8px; font-size:17px; font-weight:bold;
+                    padding: 10px; margin:  10px; "> ${msg} </div>`;
+    webview.html = msgHtml;
+  }
+  else log('info', msg);
+}
+
 function markupRefs(line, style) {
   let html = line.text;
   for(let idx = line.words.length-1; idx >= 0; idx--) {
@@ -187,4 +199,4 @@ function markupRefs(line, style) {
 
 module.exports = {setLanguage, init, initWebviewHtml, 
                   addEmptyBlockToView, addBlockToView, 
-                  showInWebview, markupRefs};
+                  showInWebview, showMsgInPage, markupRefs};
