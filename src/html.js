@@ -19,14 +19,9 @@ const vscLangIdToPrism = {
 
 let context, webview, language;
 let templateHtml, templateJs, iframeHtmlIn, iframeJsIn;
-let lineNumCss, dsCss, prePrismJs, prismCoreJs, lineNumJs, keepMarkupJs;
+let iframeCssIn, lineNumCss, dsCss, prePrismJs, prismCoreJs, lineNumJs, keepMarkupJs;
 
 async function loadConstFiles() {
-  dsCss = `pre code {
-                  white-space: pre-wrap;
-                  word-wrap: break-word;
-                  overflow-wrap: break-word;
-                 }`;
   templateHtml = await utils.readTxt(context, false, 
                                                   'www', 'template.html');
   templateJs = await utils.readTxt(context, false, 
@@ -37,6 +32,9 @@ async function loadConstFiles() {
                                                       'www', 'iframe.js'); 
   lineNumCss = await utils.readTxt(context, true, 
             'prism', 'plugins', 'line-numbers', 'prism-line-numbers.css');
+            
+  iframeCssIn = await utils.readTxt(context, true, 
+                                                    'www', 'iframe.css'); 
   prePrismJs = `
     console.log('webview started');
     window.Prism = window.Prism || {};
@@ -75,8 +73,8 @@ function bannerHtml(name, relPath) {
                 svg.iconHtml('caret-up') +
                 svg.iconHtml('caret-down') +
                 svg.iconHtml('home3') + 
-             `<span style="color:#44f;">${name}</span> in 
-              <span style="color:#44f;">${relPath}</span>
+             `<span style="color:#44f;" class="hover">${name}</span> in 
+              <span style="color:#44f;" class="hover">${relPath}</span>
             </span>
           </span>`;
 }
@@ -130,7 +128,7 @@ async function initWebviewHtml(editor) {
   const prismCss = await utils.readTxt(context, true, 
                                           'prism', 'themes', 'prism.css');
                                           // 'prism', 'themes', 'prism-a11y-dark.css');
-  const iframeCss = prismCss + lineNumCss + dsCss;
+  const iframeCss = prismCss + lineNumCss + dsCss + iframeCssIn;
 
   const langClike = await utils.readTxt(context, false, 
                                   'prism', 'languages', 'prism-clike.js');
@@ -190,7 +188,8 @@ function markupRefs(line, style) {
     const word = line.words[idx];
     const endOfs = word.endWordOfs;
     html = html.slice(0, endOfs) + '</span>' + html.slice(endOfs);
-    const span = `<span id="${word.id}" class="ds-ref" onclick="refClick" style="${style}">`;
+    const span = `<span id="${word.id}" class="ds-ref hover" 
+                        onclick="refClick" style="${style}">`;
     const strtOfs = word.startWordOfs;
     html = html.slice(0, strtOfs) + span + html.slice(strtOfs);
   }
