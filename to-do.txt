@@ -1,14 +1,16 @@
 bugs ...
 
 to-do ...
+  persist multiple stacks?
   hover cursor
   collapse
-  show source (when line num clicked?)
+  show file (name clicked)
+  show and scroll file (code clicked)
   order of defs/refs
   scroll to align top
   load refs
   remove blank line at top
-  wrap
+  code wrap
   use vscode colors in banner or steal colors from prism theme
 
 banner buttons

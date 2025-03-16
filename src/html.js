@@ -19,9 +19,14 @@ const vscLangIdToPrism = {
 
 let context, webview, language;
 let templateHtml, templateJs, iframeHtmlIn, iframeJsIn;
-let lineNumCss, prePrismJs, prismCoreJs, lineNumJs, keepMarkupJs;
+let lineNumCss, dsCss, prePrismJs, prismCoreJs, lineNumJs, keepMarkupJs;
 
 async function loadConstFiles() {
+  dsCss = `pre code {
+                  white-space: pre-wrap;
+                  word-wrap: break-word;
+                  overflow-wrap: break-word;
+                 }`;
   templateHtml = await utils.readTxt(context, false, 
                                                   'www', 'template.html');
   templateJs = await utils.readTxt(context, false, 
@@ -65,11 +70,11 @@ function bannerHtml(name, relPath) {
                        background-color:#ddd;">
             <span style="color:#444;">` +
                 svg.iconHtml('close') +
-                svg.iconHtml('home3') + 
-                svg.iconHtml('expand-vert') +
+                // svg.iconHtml('expand-vert') +
                 svg.iconHtml('collapse-vert') +
                 svg.iconHtml('caret-up') +
                 svg.iconHtml('caret-down') +
+                svg.iconHtml('home3') + 
              `<span style="color:#44f;">${name}</span> in 
               <span style="color:#44f;">${relPath}</span>
             </span>
@@ -78,9 +83,9 @@ function bannerHtml(name, relPath) {
 
 function codeHtml(lines, code) {
   return `<pre data-start="${lines[0].lineNumber+1}" 
-               class="line-numbers language-${language}">`     +
+               class="line-numbers">`     +
            `<code class="language-${language}">${code}</code>` +
-         `</pre>`
+         `</pre>`;
 }
 
 async function addEmptyBlockToView(id, name, relPath) {
@@ -88,7 +93,7 @@ async function addEmptyBlockToView(id, name, relPath) {
   const blockHtml = 
    `<div id="${id}" class="ds-block">`                               +
       bannerHtml(name, relPath)                                      +
-     `<pre class="language-${language}">`                            +
+     `<pre>`                            +
        `<code class="language-${language}">`                         +
          `Definition is an entire file and is hidden. See settings.` +
        `</code>`                                                     +
@@ -125,7 +130,7 @@ async function initWebviewHtml(editor) {
   const prismCss = await utils.readTxt(context, true, 
                                           'prism', 'themes', 'prism.css');
                                           // 'prism', 'themes', 'prism-a11y-dark.css');
-  const iframeCss = prismCss + lineNumCss;
+  const iframeCss = prismCss + lineNumCss + dsCss;
 
   const langClike = await utils.readTxt(context, false, 
                                   'prism', 'languages', 'prism-clike.js');
