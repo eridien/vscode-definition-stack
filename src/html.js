@@ -2,6 +2,7 @@
 
 const vscode = require('vscode');
 const comm   = require('./comm.js');
+const svg    = require('./svg.js');
 const utils  = require('./utils.js');
 const log    = utils.getLog('HTML');
 
@@ -44,10 +45,6 @@ async function loadConstFiles() {
              'prism', 'plugins', 'line-numbers', 'prism-line-numbers.js');
 }
 
-function getIconHtml(name) {
-  return '<svg width="16" height="16" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="M464 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h416c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm0 394c0 3.3-2.7 6-6 6H54c-3.3 0-6-2.7-6-6V86c0-3.3 2.7-6 6-6h404c3.3 0 6 2.7 6 6v340zM356.5 194.6L295.1 256l61.4 61.4c4.6 4.6 4.6 12.1 0 16.8l-22.3 22.3c-4.6 4.6-12.1 4.6-16.8 0L256 295.1l-61.4 61.4c-4.6 4.6-12.1 4.6-16.8 0l-22.3-22.3c-4.6-4.6-4.6-12.1 0-16.8l61.4-61.4-61.4-61.4c-4.6-4.6-4.6-12.1 0-16.8l22.3-22.3c4.6-4.6 12.1-4.6 16.8 0l61.4 61.4 61.4-61.4c4.6-4.6 12.1-4.6 16.8 0l22.3 22.3c4.7 4.6 4.7 12.1 0 16.8z"/></svg>';
-}
-
 async function init(contextIn, webviewIn) {
   context      = contextIn;
   webview      = webviewIn;
@@ -67,9 +64,14 @@ function bannerHtml(name, relPath) {
                        display:block; margin-bottom:-10px; 
                        background-color:#ddd;">
             <span style="color:#444;">` +
-                getIconHtml('close-window') +
-             `<span style="color:#f44;">${name}</span> in 
-              <span style="color:#f44;">${relPath}</span>
+                svg.iconHtml('close') +
+                svg.iconHtml('home3') + 
+                svg.iconHtml('expand-vert') +
+                svg.iconHtml('collapse-vert') +
+                svg.iconHtml('caret-up') +
+                svg.iconHtml('caret-down') +
+             `<span style="color:#44f;">${name}</span> in 
+              <span style="color:#44f;">${relPath}</span>
             </span>
           </span>`;
 }

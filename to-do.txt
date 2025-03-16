@@ -1,7 +1,9 @@
 bugs ...
 
 to-do ...
-  show source when line num clicked
+  hover cursor
+  collapse
+  show source (when line num clicked?)
   order of defs/refs
   scroll to align top
   load refs
@@ -17,6 +19,7 @@ banner buttons
   close
 
 add configs
+  file name or path
   show entire files
   max lines output
   ignorePaths
