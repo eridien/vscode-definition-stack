@@ -1,26 +1,34 @@
 bugs ...
-
+  selecting import does nothing
+  selecting loadAllShows at emby.js/49 shows wrong line
+  duplicate block and wrong block
+    click end of init, emby.js/39, shows getToken
+    click on getToken in getToken, shows duplicate
+  
 to-do ...
-  persist multiple stacks?
+  log end of processing
+  code wrap
   hover cursor
   collapse
   show file (name clicked)
   show and scroll file (code clicked)
   order of defs/refs
   scroll to align top
-  load refs
   remove blank line at top
-  code wrap
   use vscode colors in banner or steal colors from prism theme
 
-banner buttons
+unlikely ...
+  persist multiple stacks
+  load ref blocks
+
+banner buttons ...
   home
   collapse
   prev
   next
   close
 
-add configs
+add configs ...
   file name or path
   show entire files
   max lines output
