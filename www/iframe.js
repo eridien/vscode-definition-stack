@@ -4,7 +4,7 @@
 
 console.log('iframe started');
 
-debugger;
+// debugger;
 
 function send(command, data) {  
   // console.log('iframe sending to webview', {command, data});
