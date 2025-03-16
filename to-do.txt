@@ -1,16 +1,26 @@
 bugs ...
 
-
 to-do ...
-  wrap
-  set max lines output
-  use vscode colors in banner or steal colors from prism theme
-  ignore empty blocks
   show source when line num clicked
-  add configs
-    show entire files
-    ignorePath
-    scale
-    lang id mapping
-    theme
-    order of defs/refs
+  order of defs/refs
+  scroll to align top
+  load refs
+  remove blank line at top
+  wrap
+  use vscode colors in banner or steal colors from prism theme
+
+banner buttons
+  home
+  collapse
+  prev
+  next
+  close
+
+add configs
+  show entire files
+  max lines output
+  ignorePaths
+  scale
+  lang id mapping
+  theme
+  order of defs/refs

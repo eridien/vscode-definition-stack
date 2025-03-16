@@ -103,8 +103,11 @@ async function addDefs(block, firstDefOnly) {
       word.defBlocks = [];
       defloop:
       for(const definition of definitions) {
-        const defUri   = definition.targetUri;
         const defRange = definition.targetRange;
+        if(defRange.start.line      == defRange.end.line  &&
+           defRange.start.character == defRange.end.character) 
+          continue defloop;
+        const defUri   = definition.targetUri;
         const defPath  = defUri.path;
         const location = new vscode.Location(defUri, defRange);
         if(utils.containsLocation(block.location, location)) continue;
@@ -131,6 +134,13 @@ async function addDefs(block, firstDefOnly) {
       for(const defBlock of word.defBlocks) {
         blocks.push(defBlock);
       }
+
+      const blk0 = blocks[0];
+      if(blk0                                    && 
+         blk0.location.range.end.line      == 0  &&
+         blk0.location.range.end.character == 0) 
+        debugger;
+
       blocksByRefId[word.id] = blocks;
     }
     html.markupRefs(line, "background-color: #ff0;");

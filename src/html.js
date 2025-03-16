@@ -69,16 +69,22 @@ function bannerHtml(name, relPath) {
           </span>`;
 }
 
+function codeHtml(lines, code) {
+  return `<pre data-start="${lines[0].lineNumber+1}" 
+               class="line-numbers language-${language}">`     +
+           `<code class="language-${language}">${code}</code>` +
+         `</pre>`
+}
+
 async function addEmptyBlockToView(id, name, relPath) {
   log('adding empty block to view:', name.padEnd(15), relPath);
   const blockHtml = 
-   `<div id="${id}" class="ds-block">`                 +
-      bannerHtml(name, relPath)                        +
-     `<pre data-start="0" `                            +
-          `class="language-${language}">`    +
-       `<code class="language-${language}">` +
+   `<div id="${id}" class="ds-block">`                               +
+      bannerHtml(name, relPath)                                      +
+     `<pre class="language-${language}">`                            +
+       `<code class="language-${language}">`                         +
          `Definition is an entire file and is hidden. See settings.` +
-       `</code>`    +
+       `</code>`                                                     +
      `</pre>
     </div>`;
   await comm.send('addBlock', {blockHtml});
@@ -102,11 +108,8 @@ async function addBlockToView(block) {
   const blockHtml = 
    `<div id="${id}" class="ds-block">` +
       bannerHtml(name, relPath)        +
-     `<pre data-start="${lines[0].lineNumber+1}" 
-           class="line-numbers language-${language}">`      +
-        `<code class="language-${language}">${code}</code>` +
-     `</pre>
-    </div>`;
+      codeHtml(lines, code)            +
+   `</div>`;
   await comm.send('addBlock', {blockHtml});
 }
 
