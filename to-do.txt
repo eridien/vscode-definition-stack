@@ -20,19 +20,25 @@ unlikely ...
   persist multiple stacks
   load ref blocks
 
-banner buttons ...
+header buttons ...
   home
-  collapse
   prev
   next
+  close?
+
+header config
+  select theme
+  scale (text size +-)
+
+banner buttons ...
   close
+  collapse
 
 add configs ...
-  file name or path
+  does file text include path
   show entire files
   max lines output
   ignorePaths
-  scale
   lang id mapping
   theme
   order of defs/refs
