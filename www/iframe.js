@@ -6,12 +6,10 @@ console.log('iframe started');
 
 // debugger;
 
-function send(command, data) {  
-  // console.log('iframe sending to webview', {command, data});
-  window.parent.postMessage({src:'iframe', command, data}, '*');
-};
+let dsBlocksElement;
 
 document.addEventListener('DOMContentLoaded', () => {
+  dsBlocksElement = document.getElementById('ds-blocks');
   send('ready', {});
 });
 
@@ -23,29 +21,38 @@ function addBlock(blockHtml) {
   Prism.highlightAll();
 }
 
-function recv(command, data) {
-  switch (command) {
-    case 'addBlock': addBlock(data.blockHtml); break;
+document.addEventListener('click', event => {
+  const ele = event.target;
+  if (ele.classList.contains('ref-span')) {
+    event.preventDefault();
+    const id = ele.getAttribute('id');
+    console.log('ref clicked:', {id});
+    send('refClick', {id});
   }
-}
+  if (ele.classList.contains('ds-block')) {
+    event.preventDefault();
+    const id = ele.getAttribute('id');
+    console.log('block clicked:', {id});
+    send('blkClick', {id});
+  }
+});
 
 // Listen for message from webview
 window.addEventListener('message', event => {
   const message = event.data;
   // console.log('iframe received message from webview:', message);
   const {command, data} = message;
-  recv(command, data);
-});
-
-document.addEventListener('click', event => {
-  const ele = event.target;
-  if (ele.classList.contains('ref-span')) {
-    event.preventDefault();
-    const id = ele.getAttribute('id');
-    console.log('Clicked:', {id});
-    send('refClick', {id});
+  switch (command) {
+    case 'insertBlock': insertBlock(data.blockHtml, data.index); break;
+    case 'moveBlock':   moveBlock(data.fromIdx, data.toIndex);   break;
+    case 'removeBlock': removeBlock(data.blockId);               break;
   }
 });
+
+function send(command, data) {  
+  // console.log('iframe sending to webview', {command, data});
+  window.parent.postMessage({src:'iframe', command, data}, '*');
+};
 
 // /* eslint-disable no-unused-vars */
 // /* eslint-enable no-unused-vars */
