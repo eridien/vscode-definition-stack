@@ -237,6 +237,7 @@ async function showFirstBlock(contextIn, textEditor) {
 
 async function showFirstBlockWhenReady(contextIn, textEditor) {
   comm.registerWebviewRecv('ready', true, async () => {
+    log('webview ready');
     await showFirstBlock(contextIn, textEditor);
   });
   html.setLanguage(textEditor);

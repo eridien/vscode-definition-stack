@@ -29,20 +29,11 @@ async function refClick(data) {
   }
 }
 
-// insertAt(parent, newElement, 2); 
-async function insertBlock(parentBlockId, newBlock, index) {
-comm.send('insertBlock', {parentBlockId, newBlock, index});
-}
-
-// moveElement(parent, 1, 3);
-async function moveBlock(parentBlockId, fromIdx, toIndex) {
-comm.send('moveBlock', {parentBlockId, fromIdx, toIndex});
-}
-
-// element.remove();
-async function removeBlock(blockId) {
-comm.send('removeBlock', {blockId});
-}
+/*
+  insertBlock(blockHtml, index);
+  moveBlock(fromIdx, toIndex);  
+  removeBlock(blockId);              
+*/
 
 async function addBlockToView(block) {
   if(blockStack.includes(block)) return;

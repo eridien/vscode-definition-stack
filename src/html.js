@@ -18,14 +18,14 @@ const vscLangIdToPrism = {
 }
 
 let context, webview, language;
-let templateHtml, templateJs, iframeHtmlIn, iframeJsIn;
+let webviewHtml, webviewJs, iframeHtmlIn, iframeJsIn;
 let iframeCssIn, lineNumCss, dsCss, prePrismJs, prismCoreJs, lineNumJs, keepMarkupJs;
 
 async function loadConstFiles() {
-  templateHtml = await utils.readTxt(context, false, 
-                                                  'www', 'template.html');
-  templateJs = await utils.readTxt(context, false, 
-                                                    'www', 'template.js');
+  webviewHtml = await utils.readTxt(context, false, 
+                                                  'www', 'webview.html');
+  webviewJs = await utils.readTxt(context, false, 
+                                                    'www', 'webview.js');
   iframeHtmlIn = await utils.readTxt(context, false, 
                                                     'www', 'iframe.html'); 
   iframeJsIn = await utils.readTxt(context, false, 
@@ -60,6 +60,7 @@ function setLanguage(editor) {
   const vscLangId = document.languageId;
   language = vscLangIdToPrism[vscLangId];
   language ??= vscLangId;
+  log('set language:', language);
 }
 
 function bannerHtml(name, relPath, symbol) {
@@ -126,7 +127,7 @@ async function addBlockToView(block) {
       bannerHtml(name, relPath, block.srcSymbol) +
       codeHtml(lines, code)                      +
    `</div>`;
-  await comm.send('addBlock', {blockHtml});
+  await comm.send('insertBlock', {blockHtml});
   log('block added with', block.lines.length, 'lines');
 }
 
@@ -158,8 +159,8 @@ async function initWebviewHtml(editor) {
       .replace('**fontWeight**', fontWeight))
       .replaceAll(/"/g, '&quot;');
 
-  const html = templateHtml
-      .replace('**templateJs**', templateJs)
+  const html = webviewHtml
+      .replace('**webviewJs**',  webviewJs)
       .replace('**iframeHtml**', iframeHtml);
       
   webview.html = html;
