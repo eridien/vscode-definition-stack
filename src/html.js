@@ -64,7 +64,9 @@ function setLanguage(editor) {
 }
 
 function bannerHtml(name, relPath, symbol) {
-  const symbolType = symbolTypeByKind(symbol?.kind);
+  const symbolTypeNum = symbol?.kind;
+  const symbolType    = symbolTypeByKind(symbolTypeNum);
+  log('bannerHtml symbol:', name.padEnd(15), {symbolTypeNum, symbolType});
   return `<span class="banner">
             <div>` +
               svg.iconHtml('close') +

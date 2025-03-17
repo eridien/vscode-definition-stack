@@ -169,6 +169,11 @@ async function getOrMakeBlock(name, uri, range) {
         await utils.locationIsEntireFile(location);
   await addLines(block);
   blockByHash[hash] = block;
+  if(!block.srcSymbol) {
+    const sel = new vscode.Selection(range.start, range.end);
+    block.srcSymbol = await getSurroundingBlock(uri, sel, true);
+  }
+  block.srcSymbol = block.srcSymbol || {name, range};
   // log('getOrMakeBlock, new block:', id, name);
   return block;
 }
@@ -184,7 +189,7 @@ function getSymbolsRecursive(rootSymbol) {
   return symbols;
 }
 
-async function getSurroundingBlock(uri, selectionRange) {
+async function getSurroundingBlock(uri, selectionRange, symbolOnly = false) {
   try {
     const docTopSymbols = await vscode.commands.executeCommand(
              'vscode.executeDocumentSymbolProvider', uri);
@@ -196,6 +201,7 @@ async function getSurroundingBlock(uri, selectionRange) {
       .filter(sym => utils.containsRange(sym.range, selectionRange))
       .sort((a,b) => utils.getRangeSize(a.range) - 
                      utils.getRangeSize(b.range))[0];
+    if(symbolOnly) return srcSymbol;
     if (srcSymbol) {
       const block = await getOrMakeBlock(
                               srcSymbol.name, uri, srcSymbol.range);
