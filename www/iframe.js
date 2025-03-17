@@ -45,12 +45,13 @@ async function insertBlock(blockHtml, index) {
   const newBlk = eleFromHtml(blockHtml);
   if(children.length == 0 || index === undefined) {
     dsBlocksElement.appendChild(newBlk);
-    return;
   } 
-  if (index === children.length)
-    dsBlocksElement.appendChild(newBlk);
-  else 
-    dsBlocksElement.insertBefore(newBlk, children[index]);
+  else {
+    if (index === children.length)
+      dsBlocksElement.appendChild(newBlk);
+    else 
+      dsBlocksElement.insertBefore(newBlk, children[index]);
+  }
   Prism.highlightAll();
 }
 
