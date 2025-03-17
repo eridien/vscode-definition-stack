@@ -141,8 +141,8 @@ async function initWebviewHtml(editor) {
                     keepMarkupJs + lineNumJs + iframeJsIn); 
 
   const config     = vscode.workspace.getConfiguration('editor', document.uri);
-  const fontFamily = ` */ font-family: ${config.fontFamily}; /* `;
-  const fontWeight = ` */ font-weight: ${config.fontWeight}; /* `;
+  const fontFamily = ` */ font-family: ${config.fontFamily};   /* `;
+  const fontWeight = ` */ font-weight: ${config.fontWeight};   /* `;
   const fontSize   = ` */ font-size:   ${config.fontSize}px;   /* `;
 
   const iframeHtml = (iframeHtmlIn
@@ -202,3 +202,55 @@ function symbolTypeByKind(kind) {
 module.exports = {setLanguage, init, initWebviewHtml, 
                   addEmptyBlockToView, addBlockToView, 
                   showInWebview, showMsgInPage, markupRefs};
+
+
+/*
+const themeMapping = {
+    "Dark+ (default dark)": "prism-dark",
+    "Monokai": "prism-monokai",
+    "One Dark": "prism-one-dark",
+    "Solarized Dark": "prism-solarized-dark",
+    "Dracula": "prism-dracula",
+    "Light+ (default light)": "prism-light",
+    "Solarized Light": "prism-solarized-light"
+};
+
+  function isLightTheme() {
+    const currentTheme = vscode.workspace.getConfiguration('workbench').get('colorTheme');
+    const darkThemes = [
+        'Dark+ (default dark)',
+        'Monokai',
+        'Abyss',
+        'One Dark Pro',
+        'Dracula',
+        'Night Owl',
+        'Cobalt2',
+        'Shades of Purple',
+        'One Dark',
+        'Solarized Dark',
+        'SynthWave ’84',
+        'Material Theme Darker',
+        'Nightfall',
+        'Vibrancy',
+        'Palenight',
+        'Gruvbox Dark'
+    ];
+    const lightThemes = [
+        'Light+ (default light)',
+        'Quiet Light',
+        'Solarized Light',
+        'GitHub Light',
+        'Kimbie Light',
+        'Ayu Light',
+        'Beauteous',
+        'Atom One Light',
+        'Cobalt Light',
+        'Palenight Light',
+        'Blueberry',
+        'Horizon Light',
+        'Winter Light'
+    ];
+    return lightThemes.some(theme => currentTheme.includes(theme));
+  }
+*/
+
