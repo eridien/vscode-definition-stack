@@ -1,6 +1,4 @@
 bugs ...
-  vue script shows as module (list.vue/311)
-  addBlockedWait in toggleWaiting not highlighted
   
 to-do ...
   scroll body under banner
@@ -16,6 +14,7 @@ to-do ...
   busy indicator
 
 unlikely ...
+  vue script shows as module (list.vue/311)
   persist multiple stacks
   load ref blocks
 

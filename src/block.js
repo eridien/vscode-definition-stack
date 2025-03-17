@@ -222,7 +222,7 @@ async function showFirstBlock(contextIn, textEditor) {
     await utils.sleep(2000);
     block = await getSurroundingBlock(uri, selection);
     if(!block) {
-      html.showMsgInPage('The selection is not in a block.');
+      html.showInWebview('The selection is not in a block.');
       return;
     }
   }

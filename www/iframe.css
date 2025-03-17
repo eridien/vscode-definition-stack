@@ -46,11 +46,7 @@ banner-text {
 .hover       { cursor: pointer; }
 /* .ref-span    { background: var(--vscode-editor-selectionBackground); } */
 .ref-span    { background-color:rgb(240, 240, 128); }
-.msgHtml {
-  background: var(--vscode-editor-background);
-  color:      var(--vscode-editor-foreground);
-  font-size:17px;  font-weight:bold;
-}
+
 
 /*
 --vscode-editor-background

@@ -127,6 +127,7 @@ async function addBlockToView(block) {
       codeHtml(lines, code)                      +
    `</div>`;
   await comm.send('addBlock', {blockHtml});
+  log('block added with', block.lines.length, 'lines');
 }
 
 async function initWebviewHtml(editor) {
@@ -167,7 +168,11 @@ async function initWebviewHtml(editor) {
 function showInWebview(msg) {
   if(webview) {
     const msgHtml = 
-      `<div class="msgHtml"> ${msg} </div>`;
+       `<div style="background: var(--vscode-editor-background);
+                   color: var(--vscode-editor-foreground);
+                   font-size:16px; font-weight:bold;"> 
+          ${msg} 
+        </div>`;
     webview.html = msgHtml;
   }
   else log('info', msg);
@@ -205,7 +210,7 @@ function symbolTypeByKind(kind) {
 
 module.exports = {setLanguage, init, initWebviewHtml, 
                   addEmptyBlockToView, addBlockToView, 
-                  showInWebview, showMsgInPage, markupRefs};
+                  showInWebview, markupRefs};
 
 
 /*
