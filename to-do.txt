@@ -1,5 +1,6 @@
 bugs ...
-  
+  vue script shows as module (list.vue/311)
+
 to-do ...
   scroll body under banner
   log end of processing
@@ -12,6 +13,7 @@ to-do ...
   scroll to align top
   remove blank line at top
   use vscode colors in banner or steal colors from prism theme
+  busy indicator
 
 unlikely ...
   persist multiple stacks
