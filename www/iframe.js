@@ -39,7 +39,7 @@ window.addEventListener('message', event => {
 
 document.addEventListener('click', event => {
   const ele = event.target;
-  if (ele.classList.contains('ds-ref')) {
+  if (ele.classList.contains('ref-span')) {
     event.preventDefault();
     const id = ele.getAttribute('id');
     console.log('Clicked:', {id});

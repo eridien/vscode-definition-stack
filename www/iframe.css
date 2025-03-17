@@ -2,23 +2,11 @@
 
 .line-numbers-rows > span:before {
   color: var(--vscode-editorLineNumber-foreground);
-  /* padding-right: 0.8em; */
 }
 .line-numbers .line-numbers-rows {
-    /* position: absolute;
-    pointer-events: none;
-    font-size: 100%;
-    width: 3em; */
-    /* letter-spacing: -1px; */
     letter-spacing: 0px;
-    /* left: -3.8em; */
     left: -3.4em;
     top:  -0.1em;
-    /* border-right: 1px solid #999;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none; */
 }
 .banner {
   margin: 5px 0 -10px 0; 
@@ -61,70 +49,4 @@ banner-text {
 --vscode-editorWhitespace-foreground
 --vscode-editorBracketMatch-background
 --vscode-editorBracketMatch-border
-
-pre code .line-number {
-    position: absolute;
-    left: 0;
-    top: 0;
-    color: var(--vscode-editorLineNumber-foreground);
-    font-family: monospace;
-    font-size: 12px;
-    padding-right: 5px;
-}
-
-  Apply VSCode line number variable
-pre {
-    position: relative;
-    padding-left: 40px; /* Space for line numbers 
-
-Line numbers for Prism.js syntax highlighting
-code {
-    display: block;
-    white-space: pre;
-    padding-left: 10px;
-}
-
-  Styling for line numbers using VSCode's editor variable
-pre code .line-number {
-    position: absolute;
-    left: 0;
-    top: 0;
-    color: var(--vscode-editorLineNumber-foreground);
-    font-family: monospace;
-    font-size: 12px;
-    padding-right: 5px;
-}
-
-  Ensure lines are spaced and highlighted
-pre code .line {
-    display: block;
-    padding: 2px 0;
-}
-
-  Highlight specific lines if needed
-pre code .line.highlight {
-    background-color: rgba(255, 255, 0, 0.2);
-}
-
-.line-numbers-rows > span:before {
-    content: counter(linenumber);
-    color: #999;
-    display: block;
-    padding-right: 0.8em;
-    text-align: right;
-    }
-
-.line-numbers .line-numbers-rows {
-    position: absolute;
-    pointer-events: none;
-    top: 0;
-    font-size: 100%;
-    left: -3.8em;
-    width: 3em;
-    letter-spacing: -1px;
-    border-right: 1px solid #999;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
 */

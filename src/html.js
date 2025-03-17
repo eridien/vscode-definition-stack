@@ -167,20 +167,12 @@ async function initWebviewHtml(editor) {
 
 function showInWebview(msg) {
   if(webview) {
-    const msgHtml = 
+    const msgHtml = // doesn't work in css file(?), even with !important
        `<div style="background: var(--vscode-editor-background);
                    color: var(--vscode-editor-foreground);
                    font-size:16px; font-weight:bold;"> 
           ${msg} 
         </div>`;
-    webview.html = msgHtml;
-  }
-  else log('info', msg);
-}
-
-function showMsgInPage(msg) {
-  if(webview) {
-    const msgHtml = `<div class="msgHtml"> ${msg} </div>`;
     webview.html = msgHtml;
   }
   else log('info', msg);
@@ -193,7 +185,7 @@ function markupRefs(line) {
     const endOfs = word.endWordOfs;
     html = html.slice(0, endOfs) + '</span>' + html.slice(endOfs);
     const span = `<span id="${word.id}" onclick="refClick"
-                        class="ds-ref hover ref-span">`;
+                        class="hover ref-span">`;
     const strtOfs = word.startWordOfs;
     html = html.slice(0, strtOfs) + span + html.slice(strtOfs);
   }

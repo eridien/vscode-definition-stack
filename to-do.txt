@@ -1,5 +1,6 @@
 bugs ...
-  
+  python
+
 to-do ...
   scroll body under banner
   log end of processing
@@ -23,6 +24,7 @@ header buttons ...
   prev
   next
   close?
+  collapse/expand (all blocks)
 
 header config
   select theme
@@ -30,7 +32,7 @@ header config
 
 banner buttons ...
   close
-  collapse
+  collapse/expand (1 block)
 
 add configs ...
   does file text include path
