@@ -29,7 +29,7 @@
   align-items: center; gap: 10px;
 }
 .button {
-  background-color: azure;
+  background-color: rgb(240, 240, 240);
   display: inline-block;
   width:20px; height:20px;
   position:relative; top:3px; left:-6px; 
@@ -45,7 +45,7 @@ banner-text {
 .banner-path { color:#44f; }
 .hover       { cursor: pointer; }
 /* .ref-span    { background: var(--vscode-editor-selectionBackground); } */
-.ref-span    { background-color:rgb(225, 225, 187); }
+.ref-span    { background-color:rgb(240, 240, 128); }
 .msgHtml {
   background: var(--vscode-editor-background);
   color:      var(--vscode-editor-foreground);
