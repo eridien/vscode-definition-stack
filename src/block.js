@@ -141,7 +141,7 @@ async function addDefs(block) {
 
       blocksByRefId[word.id] = blocks;
     }
-    html.markupRefs(line, "background-color: #ff0;");
+    html.markupRefs(line);
   }
 }
 
@@ -196,8 +196,12 @@ async function getSurroundingBlock(uri, selectionRange) {
       .filter(sym => utils.containsRange(sym.range, selectionRange))
       .sort((a,b) => utils.getRangeSize(a.range) - 
                      utils.getRangeSize(b.range))[0];
-    if (srcSymbol)
-      return getOrMakeBlock(srcSymbol.name, uri, srcSymbol.range);
+    if (srcSymbol) {
+      const block = await getOrMakeBlock(
+                              srcSymbol.name, uri, srcSymbol.range);
+      block.srcSymbol = srcSymbol;
+      return block;
+    }
     return null;
   }
   catch (error) {

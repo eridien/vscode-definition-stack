@@ -1,7 +1,4 @@
-const div = `<div style="display:inline-block; width:20px; height:20px;
-              position:relative; top:3px; left:-6px; margin:0 4px 0 4px;
-              border: 1px solid black; border-radius:5px; background-color:white;"
-              class="hover">`;
+const div = `<div class="hover button">`;
 
 function iconHtml(name) {
   switch(name) {

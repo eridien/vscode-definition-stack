@@ -3,8 +3,33 @@ pre code {
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
-
-.hover {
-  cursor: pointer;
+.banner {
+  margin: 5px 0 -10px 0; 
+  padding: 2px 15px 5px 15px;
+  display: block;
+  background-color:#ddd; color:#444;
+  display: flex; justify-content: flex-start;
+  align-items: center; gap: 10px;
 }
-
+.button {
+  background-color: azure;
+  display: inline-block;
+  width:20px; height:20px;
+  position:relative; top:3px; left:-6px; 
+  margin:0 4px 0 4px;
+  border: 1px solid black; border-radius:5px;
+}
+banner-text {
+  display: inline-block;
+  position: relative; top:-2px;
+}
+.banner-type { color:black; }
+.banner-name { color:#44f; }
+.banner-path { color:#44f; }
+.hover       { cursor: pointer; }
+.ref-span    { background-color:#ff0; }
+.msgHtml {
+  background: var(--vscode-editor-background);
+  color:      var(--vscode-editor-foreground);
+  font-size:17px; font-weight:bold;
+}

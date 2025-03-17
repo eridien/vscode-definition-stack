@@ -62,20 +62,22 @@ function setLanguage(editor) {
   language ??= vscLangId;
 }
 
-function bannerHtml(name, relPath) {
-  return `<span style="margin-top:5px; padding:2px 15px 5px 15px;
-                       display:block; margin-bottom:-10px; 
-                       background-color:#ddd;">
-            <span style="color:#444;">` +
-                svg.iconHtml('close') +
-                // svg.iconHtml('expand-vert') +
-                svg.iconHtml('collapse-vert') +
-                svg.iconHtml('caret-up') +
-                svg.iconHtml('caret-down') +
-                svg.iconHtml('home3') + 
-             `<span style="color:#44f;" class="hover">${name}</span> in 
-              <span style="color:#44f;" class="hover">${relPath}</span>
-            </span>
+function bannerHtml(name, relPath, symbol) {
+  const symbolType = symbolTypeByKind(symbol?.kind);
+  return `<span class="banner">
+            <div>` +
+              svg.iconHtml('close') +
+              // svg.iconHtml('expand-vert') +
+              svg.iconHtml('collapse-vert') +
+              svg.iconHtml('caret-up') +
+              svg.iconHtml('caret-down') +
+              svg.iconHtml('home3') + 
+           `</div>
+              <div class="banner-text"> 
+              <span class="banner-type">${symbolType}</span> 
+              <span class="hover banner-name">${name}</span> in 
+              <span class="hover banner-path">${relPath}</span>
+            </div>
           </span>`;
 }
 
@@ -91,7 +93,7 @@ async function addEmptyBlockToView(id, name, relPath) {
   const blockHtml = 
    `<div id="${id}" class="ds-block">`                               +
       bannerHtml(name, relPath)                                      +
-     `<pre>`                            +
+     `<pre>`                                                         +
        `<code class="language-${language}">`                         +
          `Definition is an entire file and is hidden. See settings.` +
        `</code>`                                                     +
@@ -116,9 +118,9 @@ async function addBlockToView(block) {
   for(const line of lines)
     code += ((line.html.slice(minWsIdx)) + "\n");
   const blockHtml = 
-   `<div id="${id}" class="ds-block">` +
-      bannerHtml(name, relPath)        +
-      codeHtml(lines, code)            +
+   `<div id="${id}" class="ds-block">`           +
+      bannerHtml(name, relPath, block.srcSymbol) +
+      codeHtml(lines, code)                      +
    `</div>`;
   await comm.send('addBlock', {blockHtml});
 }
@@ -161,10 +163,7 @@ async function initWebviewHtml(editor) {
 function showInWebview(msg) {
   if(webview) {
     const msgHtml = 
-      `<div style=" background: var(--vscode-editor-background);
-                    color:      var(--vscode-editor-foreground);
-                    font-size:17px; font-weight:bold;
-                  "> ${msg} </div>`;
+      `<div class="msgHtml"> ${msg} </div>`;
     webview.html = msgHtml;
   }
   else log('info', msg);
@@ -172,29 +171,33 @@ function showInWebview(msg) {
 
 function showMsgInPage(msg) {
   if(webview) {
-    const msgHtml = 
-      `<div style=" background: var(--vscode-editor-background);
-                    color:      var(--vscode-editor-foreground);
-                    border-radius: 8px; font-size:17px; font-weight:bold;
-                    padding: 10px; margin:  10px; "> ${msg} </div>`;
+    const msgHtml = `<div class="msgHtml"> ${msg} </div>`;
     webview.html = msgHtml;
   }
   else log('info', msg);
 }
 
-function markupRefs(line, style) {
+function markupRefs(line) {
   let html = line.text;
   for(let idx = line.words.length-1; idx >= 0; idx--) {
     const word = line.words[idx];
     const endOfs = word.endWordOfs;
     html = html.slice(0, endOfs) + '</span>' + html.slice(endOfs);
-    const span = `<span id="${word.id}" class="ds-ref hover" 
-                        onclick="refClick" style="${style}">`;
+    const span = `<span id="${word.id}" onclick="refClick"
+                        class="ds-ref hover ref-span">`;
     const strtOfs = word.startWordOfs;
     html = html.slice(0, strtOfs) + span + html.slice(strtOfs);
   }
   line.html = html;
 }
+
+function symbolTypeByKind(kind) {
+  return {
+    1: "File", 2: "Module", 3: "Namespace", 4: "Package", 5: "Class", 6: "Method", 7: "Property",
+    8: "Field", 9: "Constructor", 10: "Enum", 11: "Interface", 12: "Function", 13: "Variable",
+    14: "Constant", 15: "String", 16: "Number", 17: "Boolean", 18: "Array", 19: "Object", 20: "Key",
+    21: "Null", 22: "EnumMember", 23: "Struct", 24: "Event", 25: "Operator", 26: "TypeParameter" }
+  [kind+1] ?? ""};
 
 module.exports = {setLanguage, init, initWebviewHtml, 
                   addEmptyBlockToView, addBlockToView, 
