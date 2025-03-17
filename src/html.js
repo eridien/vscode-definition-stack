@@ -81,8 +81,12 @@ function bannerHtml(name, relPath, symbol) {
           </span>`;
 }
 
+// style doesn't work in css file(?), even with !important
 function codeHtml(lines, code) {
-  return `<pre data-start="${lines[0].lineNumber+1}" 
+  return `<pre style="white-space: pre-wrap; 
+                      word-wrap: break-word; 
+                      overflow-wrap: break-word;" 
+                      data-start="${lines[0].lineNumber+1}" 
                class="line-numbers">`     +
            `<code class="language-${language}">${code}</code>` +
          `</pre>`;

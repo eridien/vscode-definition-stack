@@ -1,8 +1,5 @@
-pre code {
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-}
+/* iframe.css */
+
 .line-numbers-rows > span:before {
   color: var(--vscode-editorLineNumber-foreground);
   /* padding-right: 0.8em; */
@@ -48,7 +45,7 @@ banner-text {
 .banner-path { color:#44f; }
 .hover       { cursor: pointer; }
 /* .ref-span    { background: var(--vscode-editor-selectionBackground); } */
-.ref-span    { background-color:#ff0; }
+.ref-span    { background-color:rgb(225, 225, 187); }
 .msgHtml {
   background: var(--vscode-editor-background);
   color:      var(--vscode-editor-foreground);

@@ -5,7 +5,6 @@ bugs ...
 to-do ...
   scroll body under banner
   log end of processing
-  code wrap
   hover cursor
   collapse
   show file (name clicked)
