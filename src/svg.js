@@ -1,5 +1,5 @@
 function iconDiv(name, blkId) {
-  return `<div id="${blkId}-icon-${name}" class="hover ds-button">`
+  return `<div id="${blkId}-icon-${name}" class="hover button">`
 };
 
 function iconHtml(name, blkId) {

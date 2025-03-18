@@ -4,7 +4,7 @@
 
 console.log('iframe started');
 
-debugger;
+// debugger;
 
 let dsBlocksElement;
 
@@ -14,9 +14,22 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 document.addEventListener('click', event => {
-  console.log('addEventListener click:', event);
+  const tagName = event.target.tagName.toLowerCase(); 
+  // console.log('addEventListener tagName:', tagName);
+  if (["path", "svg"].includes(tagName)) {
+    let ele = event.target.parentElement;
+    while (ele && !ele.classList.contains('button')) {
+      // console.log('addEventListener ele:', ele);
+      ele = ele.parentElement;
+    }
+    if (!ele) return;
+    // buttonClick(ele);
+    // console.log('addEventListener path click:', ele, ele.classList);
+    return;
+  }
   const ele = event.target;
   const classes = ele.classList;
+  console.log('addEventListener click classes:', classes);
   if (classes.contains('ref-span')) {
     event.preventDefault();
     const id = ele.getAttribute('id');

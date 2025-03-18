@@ -130,7 +130,7 @@ async function addBlockToView(block) {
       codeHtml(lines, code)                          +
    `</div>`;
   await comm.send('insertBlock', {blockHtml});
-  log('block added with', block.lines.length, 'lines', blockHtml);
+  log('block added with', block.lines.length, 'lines');
 }
 
 async function initWebviewHtml(editor) {
