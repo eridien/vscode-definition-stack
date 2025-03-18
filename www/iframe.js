@@ -41,33 +41,37 @@ function eleFromHtml(html) {
   return tempDiv.content.firstChild;
 }
 
-async function insertBlock(blockHtml, index) {
+async function insertBlock(blockHtml, toIndex) {
   const children = dsBlocksElement.children;
-  if(index === undefined) index = children.length;
-  console.log('insertBlock:', index);
-  if (index < 0 || index > children.length) {
-    send('error', {msg:'insertBlock bad index', index});
+  if(toIndex === undefined) toIndex = children.length;
+  console.log('insertBlock:', toIndex);
+  if (toIndex < 0 || toIndex > children.length) {
+    send('error', {msg:'insertBlock bad index', index: toIndex});
     return;
   }
   const newBlk = eleFromHtml(blockHtml);
-  if(children.length == 0 || index === children.length) {
+  if(children.length == 0 || toIndex === children.length) {
     dsBlocksElement.appendChild(newBlk);
   } 
-  else dsBlocksElement.insertBefore(newBlk, children[index]);
+  else dsBlocksElement.insertBefore(newBlk, children[toIndex]);
   Prism.highlightAll();
 }
 
 async function moveBlock(fromIndex, toIndex){
   const children = dsBlocksElement.children;
   if (fromIndex < 0 || fromIndex >= children.length || 
-      toIndex   < 0 || toIndex   >= children.length) {
+      toIndex   < 0 || toIndex   >  children.length) {
     send('error', {msg:'moveBlock bad indices', fromIndex, toIndex});
     return;
   } 
   const fromEle = children[fromIndex];
-  const toEle   = children[toIndex];
+  if(toIndex == children.length) {
+    dsBlocksElement.appendChild(fromEle);
+    return;
+  }
+  const toEle = children[toIndex];
   if (toIndex > fromIndex) {
-      dsBlocksElement.insertBefore(fromEle, toEle.nextSibling);
+      dsBlocksElement.insertBefore(fromEle, toEle);
   } else {
       dsBlocksElement.insertBefore(fromEle, toEle);
   }
@@ -87,8 +91,8 @@ window.addEventListener('message', event => {
   console.log('iframe received message from webview:', message);
   const {command, data} = message;
   switch (command) {
-    case 'insertBlock': insertBlock(data.blockHtml, data.index); break;
-    case 'moveBlock':   moveBlock(data.fromIdx, data.toIndex);   break;
+    case 'insertBlock': insertBlock(data.blockHtml, data.toIndex); break;
+    case 'moveBlock':   moveBlock(data.fromIndex, data.toIndex);   break;
     case 'removeBlock': removeBlock(data.blockId);               break;
   }
 });

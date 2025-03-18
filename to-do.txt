@@ -3,12 +3,9 @@ bugs ...
 
 to-do ...
   scroll body under banner
-  log end of processing
-  hover cursor
   collapse
   show file (name clicked)
   show and scroll file (code clicked)
-  order of defs/refs
   scroll to align top
   remove blank line at top
   use vscode colors in banner or steal colors from prism theme

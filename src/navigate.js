@@ -6,14 +6,14 @@ const utils = require('./utils.js');
 const log   = utils.getLog('NAVI');
 
 let blk = null;
+let blockStack = [];
 
 function init() {
   blk = require('./block.js');
   comm.registerWebviewRecv('refClick',    true, refClick);
   comm.registerWebviewRecv('buttonClick', true, buttonClick);
+  blockStack = [];
 }
-
-const blockStack = [];
 
 async function closeBlock(stackIdx, blockId) {
   blockStack.splice(stackIdx, 1);
@@ -73,7 +73,7 @@ async function refClick(data) {
 }
 
 async function addBlockToView(block, toIndex) {
-  log('addBlockToView:', {block, toIndex});
+  log('addBlockToView:', {block:block.id, toIndex});
   const fromIndex = blockStack.findIndex(b => b.id === block.id);
   if(fromIndex == -1) {
     if(toIndex === undefined || toIndex >= blockStack.length) {
@@ -84,7 +84,12 @@ async function addBlockToView(block, toIndex) {
     else blockStack.splice(toIndex, 0, block);
     await html.addBlockToView(block, toIndex);
   }
-  else await comm.send('moveBlock', {fromIndex, toIndex});
+  else {
+    const fromBlock = blockStack[fromIndex];
+    blockStack.splice(fromIndex, 1);
+    blockStack.splice(toIndex + (fromIndex < toIndex ? -1 : 0), 0, fromBlock);
+    await comm.send('moveBlock', {fromIndex, toIndex});
+  }
 }
 
 module.exports = { init, addBlockToView };

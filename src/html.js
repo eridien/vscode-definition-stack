@@ -66,7 +66,7 @@ function setLanguage(editor) {
 function bannerHtml(name, relPath, blkId, symbol) {
   const symbolTypeNum = symbol?.kind;
   const symbolType    = symbolTypeByKind(symbolTypeNum);
-  log('bannerHtml symbol:', name.padEnd(15), {symbolTypeNum, symbolType});
+  // log('bannerHtml symbol:', name.padEnd(15), {symbolTypeNum, symbolType});
   return `<span class="banner">
             <div>` +
               svg.iconHtml('close', blkId)          +
@@ -95,7 +95,7 @@ function codeHtml(lines, code) {
          `</pre>`;
 }
 
-async function addEmptyBlockToView(id, name, relPath) {
+async function addEmptyBlockToView(id, name, relPath, toIndex) {
   log('adding empty block to view:', name.padEnd(15), relPath);
   const blockHtml = 
    `<div id="${id}" class="ds-block">`                               +
@@ -106,13 +106,13 @@ async function addEmptyBlockToView(id, name, relPath) {
        `</code>`                                                     +
      `</pre>
     </div>`;
-  await comm.send('addBlock', {blockHtml});
+  await comm.send('insertBlock', {blockHtml, toIndex});
 }
 
 async function addBlockToView(block, toIndex) {
   const {id, name, relPath, lines} = block;
   if(block.flags.isEntireFile) {
-    addEmptyBlockToView(id, name, relPath)
+    addEmptyBlockToView(id, name, relPath, toIndex)
     return;
   }
   log('adding block to view:', {name, relPath, toIndex});
@@ -133,7 +133,7 @@ async function addBlockToView(block, toIndex) {
   const atEnd = (toIndex === undefined);
   if(!atEnd) data.toIndex = toIndex;
   await comm.send('insertBlock', data);
-  log(`added ${block.lines.length} line(s) at ${atEnd ? 'end' : toIndex}`);
+  log(`added block ${id} with ${block.lines.length} line(s) at ${atEnd ? 'end' : toIndex}`);
 }
 
 async function initWebviewHtml(editor) {
