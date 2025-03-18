@@ -68,7 +68,7 @@ function hdrHtml() {
             svg.iconHtml('home',     "iframe-hdr") + 
             svg.iconHtml('up-ptr',   "iframe-hdr") +
             svg.iconHtml('down-ptr', "iframe-hdr") +
-          `</div>`;
+         `</div>`;
 }
 
 function bannerHtml(name, relPath, blkId, symbol) {
