@@ -16,8 +16,10 @@ function init() {
 const blockStack = [];
 
 async function buttonClick(data) {
-  const btnId  = data.id;
-  log('buttonClick:', btnId);
+  const idParts = data.id.split('-');
+  const blkNo   = idParts[2];
+  const name    = idParts.slice(4).join('-');
+  log('buttonClick:', {blkNo, name});
 }
 
 async function refClick(data) {

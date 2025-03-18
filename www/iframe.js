@@ -14,33 +14,24 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 document.addEventListener('click', event => {
+  // console.log('addEventListener:', event);
   const tagName = event.target.tagName.toLowerCase(); 
-  // console.log('addEventListener tagName:', tagName);
   if (["path", "svg"].includes(tagName)) {
     let ele = event.target.parentElement;
-    while (ele && !ele.classList.contains('button')) {
-      // console.log('addEventListener ele:', ele);
-      ele = ele.parentElement;
-    }
+    while (ele && !ele.classList.contains('button')) 
+                   ele = ele.parentElement;
     if (!ele) return;
-    // buttonClick(ele);
-    // console.log('addEventListener path click:', ele, ele.classList);
+    const id = ele.getAttribute('id');
+    // console.log('button click:', id);
+    send('buttonClick', {id});
     return;
   }
   const ele = event.target;
   const classes = ele.classList;
-  console.log('addEventListener click classes:', classes);
   if (classes.contains('ref-span')) {
-    event.preventDefault();
     const id = ele.getAttribute('id');
-    console.log('ref clicked:', {id});
+    // console.log('ref clicked:', id);
     send('refClick', {id});
-  }
-  if (classes.contains('ds-button')) {
-    event.preventDefault();
-    const id = ele.getAttribute('id');
-    console.log('button clicked:', {id});
-    send('buttonClick', {id});
   }
 });
 
