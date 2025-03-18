@@ -16,10 +16,10 @@ function iconHtml(name, blkId) {
  case 'collapse-button': return iconDiv(name, blkId) + `
         <?xml version="1.0" ?><svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><polygon points="364.52 199.26 333.95 199.26 408.52 124.69 387.31 103.48 312.74 178.05 312.74 147.48 282.74 147.48 282.74 229.26 364.52 229.26 364.52 199.26"/><path d="M448,34H34V478H478V34Zm0,414H64V64H448Z"/><polygon points="312.74 333.95 387.31 408.52 408.52 387.31 333.95 312.74 364.52 312.74 364.52 282.74 282.74 282.74 282.74 364.52 312.74 364.52 312.74 333.95"/><polygon points="199.26 333.95 199.26 364.52 229.26 364.52 229.26 282.74 147.48 282.74 147.48 312.74 178.05 312.74 103.48 387.31 124.69 408.52 199.26 333.95"/><polygon points="147.48 199.26 147.48 229.26 229.26 229.26 229.26 147.48 199.26 147.48 199.26 178.05 124.69 103.48 103.48 124.69 178.05 199.26 147.48 199.26"/></svg></div>`;
 
- case 'caret-up': return iconDiv(name, blkId) + `
+ case 'up-ptr': return iconDiv(name, blkId) + `
         <?xml version="1.0" ?><svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><polygon points="396.6,352 416,331.3 256,160 96,331.3 115.3,352 256,201.5 "/></svg></div>`;
 
- case 'caret-down': return iconDiv(name, blkId) + `
+ case 'down-ptr': return iconDiv(name, blkId) + `
         <?xml version="1.0" ?><svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg"><rect fill="none" height="256" width="256"/><polyline fill="none" points="208 96 128 176 48 96" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/></svg></div>`;
 
  case 'home': return iconDiv(name, blkId) + `

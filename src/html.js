@@ -72,8 +72,8 @@ function bannerHtml(name, relPath, blkId, symbol) {
               svg.iconHtml('close', blkId)          +
               // svg.iconHtml('expand-vert', blkId) +
               svg.iconHtml('collapse-vert', blkId)  +
-              svg.iconHtml('caret-up', blkId)       +
-              svg.iconHtml('caret-down', blkId)     +
+              svg.iconHtml('up-ptr', blkId)       +
+              svg.iconHtml('down-ptr', blkId)     +
               svg.iconHtml('home', blkId)           + 
            `</div>
               <div class="banner-text"> 
