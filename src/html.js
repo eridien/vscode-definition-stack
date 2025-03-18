@@ -66,15 +66,14 @@ function setLanguage(editor) {
 function bannerHtml(name, relPath, blkId, symbol) {
   const symbolTypeNum = symbol?.kind;
   const symbolType    = symbolTypeByKind(symbolTypeNum);
-  // log('bannerHtml symbol:', name.padEnd(15), {symbolTypeNum, symbolType});
   return `<span class="banner">
-            <div>` +
-              svg.iconHtml('close', blkId)          +
-              // svg.iconHtml('expand-vert', blkId) +
-              svg.iconHtml('collapse-vert', blkId)  +
-              svg.iconHtml('up-ptr', blkId)       +
-              svg.iconHtml('down-ptr', blkId)     +
-              svg.iconHtml('home', blkId)           + 
+            <div class="hdrBtns">` +
+              svg.iconHtml('close',    blkId) +
+              svg.iconHtml('expand',   blkId, 'display:none') +
+              svg.iconHtml('collapse', blkId) +
+              svg.iconHtml('up-ptr',   blkId) +
+              svg.iconHtml('down-ptr', blkId) +
+              svg.iconHtml('home',     blkId) + 
            `</div>
               <div class="banner-text"> 
               <span class="banner-type">${symbolType}</span> 
@@ -85,8 +84,9 @@ function bannerHtml(name, relPath, blkId, symbol) {
 }
 
 // style doesn't work in css file(?), even with !important
-function codeHtml(lines, code) {
-  return `<pre style="white-space: pre-wrap; 
+function codeHtml(lines, code, blkId) {
+  return `<pre id="${blkId}-code"
+               style="white-space: pre-wrap; 
                       word-wrap: break-word; 
                       overflow-wrap: break-word;" 
                       data-start="${lines[0].lineNumber+1}" 
@@ -127,7 +127,7 @@ async function addBlockToView(block, toIndex) {
   const blockHtml = 
    `<div id="${id}" class="ds-block">`               +
       bannerHtml(name, relPath, id, block.srcSymbol) +
-      codeHtml(lines, code)                          +
+      codeHtml(lines, code, id)                          +
    `</div>`;
   const data  = {blockHtml};
   const atEnd = (toIndex === undefined);

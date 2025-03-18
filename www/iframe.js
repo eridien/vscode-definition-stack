@@ -13,6 +13,45 @@ document.addEventListener('DOMContentLoaded', () => {
   send('ready', {});
 });
 
+function blkIdFromId(id) {return id.split('-').splice(0, 3).join('-')}
+function nonBlkIdFromId(id) {return id.split('-').splice(3).join('-')}
+function setStyle(ele, prop, val) {ele.style[prop] = val}
+
+function collapse(blkId, btnEle) {
+  const codeEle = document.getElementById(`${blkId}-code`);
+
+  console.log('codeEle:', window.getComputedStyle(codeEle));
+
+  setStyle(codeEle, 'display', 'none');
+  const expandEle = btnEle.previousElementSibling;
+
+  console.log('expandEle:', window.getComputedStyle(expandEle));
+  
+  setStyle(btnEle,    'display', 'none');
+  setStyle(expandEle, 'display', 'inline-block');
+}
+
+async function expand(blkId, btnEle) {
+  const codeEle = document.getElementById(`${blkId}-code`);
+
+  console.log('codeEle:', window.getComputedStyle(codeEle));
+
+  setStyle(codeEle, 'display', 'inline');
+  const collapseEle = btnEle.nextElementSibling;
+
+  console.log('collapseEle:', collapseEle.getAttribute('style'));
+  
+  setStyle(btnEle,      'display', 'none');
+  setStyle(collapseEle, 'display', 'inline-block');
+
+}
+async function up(stackIdx) {
+}
+async function down(stackIdx) {
+}
+async function home(stackIdx) {
+}
+
 document.addEventListener('click', event => {
   // console.log('addEventListener:', event);
   const tagName = event.target.tagName.toLowerCase(); 
@@ -21,9 +60,18 @@ document.addEventListener('click', event => {
     while (ele && !ele.classList.contains('button')) 
                    ele = ele.parentElement;
     if (!ele) return;
-    const id = ele.getAttribute('id');
-    // console.log('button click:', id);
-    send('buttonClick', {id});
+    const btnid  = ele.getAttribute('id');
+    const blkId  = blkIdFromId(btnid);
+    const iconId = nonBlkIdFromId(btnid);
+    console.log('button click:', {blkId, iconId});
+    switch(iconId) {
+      case 'icon-collapse': collapse(blkId, ele); break;
+      case 'icon-expand':   expand(blkId, ele);   break;
+      case 'icon-up-ptr':   up(iconId);       break;
+      case 'icon-down-ptr': down(iconId);     break;
+      case 'icon-home':     home(iconId);     break;
+      default: send('buttonClick', {id: btnid});     break;
+    }
     return;
   }
   const ele = event.target;

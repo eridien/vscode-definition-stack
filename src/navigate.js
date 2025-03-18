@@ -20,21 +20,9 @@ async function closeBlock(stackIdx, blockId) {
   await comm.send('removeBlock', {blockId});
 }
 
-async function collapeBlock(stackIdx) {
-}
-async function expandBlock(stackIdx){
-}
-async function upBlock(stackIdx) {
-}
-async function downBlock(stackIdx) {
-}
-async function home(stackIdx) {
-}
-
 async function buttonClick(data) {
-  const idParts = data.id.split('-');
-  const blockId = idParts.slice(0, -2).join('-');
-  const name    = idParts.slice(4)    .join('-');
+  const blockId = utils.blkIdFromId(data.id);
+  const name    = utils.nonBlkIdFromId(data.id);
   log('buttonClick:', {blockId, name});
   const stackIdx = blockStack.findIndex(b => b.id === blockId);
   if(stackIdx == -1) {
@@ -42,12 +30,7 @@ async function buttonClick(data) {
     return;
   }
   switch(name) {
-    case 'close':         await closeBlock(stackIdx, blockId); break;
-    case 'collapse-vert': await collapeBlock(stackIdx); break;
-    case 'expand-vert':   await expandBlock(stackIdx); break;
-    case 'up-ptr':        await upBlock(stackIdx); break;
-    case 'down-ptr':      await downBlock(stackIdx); break;
-    case 'home':          await home(stackIdx); break;
+    case 'icon-close': await closeBlock(stackIdx, blockId); break;
   }
 }
 
@@ -60,7 +43,7 @@ async function refClick(data) {
     blk.showAllRefs();
     return;
   }
-  const refBlkId = refId.split('-').splice(0, 3).join('-');
+  const refBlkId = utils.blkIdFromId(refId);
   let refIndex   = blockStack.findIndex(b => b.id === refBlkId);
   if(refIndex == -1) {
     log('err', 'refClick: ref block not in blockStack', refBlkId, blockStack);
