@@ -109,13 +109,13 @@ async function addEmptyBlockToView(id, name, relPath) {
   await comm.send('addBlock', {blockHtml});
 }
 
-async function addBlockToView(block) {
+async function addBlockToView(block, toIndex) {
   const {id, name, relPath, lines} = block;
   if(block.flags.isEntireFile) {
     addEmptyBlockToView(id, name, relPath)
     return;
   }
-  log('adding block to view:', name.padEnd(15), relPath);
+  log('adding block to view:', {name, relPath, toIndex});
   let minWsIdx = Number.MAX_VALUE;
   for(const line of lines) {
     const wsIdx = line.firstNonWhitespaceCharacterIndex;
@@ -129,8 +129,11 @@ async function addBlockToView(block) {
       bannerHtml(name, relPath, id, block.srcSymbol) +
       codeHtml(lines, code)                          +
    `</div>`;
-  await comm.send('insertBlock', {blockHtml});
-  log('block added with', block.lines.length, 'lines');
+  const data  = {blockHtml};
+  const atEnd = (toIndex === undefined);
+  if(!atEnd) data.toIndex = toIndex;
+  await comm.send('insertBlock', data);
+  log(`added ${block.lines.length} line(s) at ${atEnd ? 'end' : toIndex}`);
 }
 
 async function initWebviewHtml(editor) {

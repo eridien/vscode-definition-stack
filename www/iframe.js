@@ -43,21 +43,17 @@ function eleFromHtml(html) {
 
 async function insertBlock(blockHtml, index) {
   const children = dsBlocksElement.children;
+  if(index === undefined) index = children.length;
   console.log('insertBlock:', index);
   if (index < 0 || index > children.length) {
     send('error', {msg:'insertBlock bad index', index});
     return;
   }
   const newBlk = eleFromHtml(blockHtml);
-  if(children.length == 0 || index === undefined) {
+  if(children.length == 0 || index === children.length) {
     dsBlocksElement.appendChild(newBlk);
   } 
-  else {
-    if (index === children.length)
-      dsBlocksElement.appendChild(newBlk);
-    else 
-      dsBlocksElement.insertBefore(newBlk, children[index]);
-  }
+  else dsBlocksElement.insertBefore(newBlk, children[index]);
   Prism.highlightAll();
 }
 

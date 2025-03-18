@@ -91,9 +91,9 @@ async function addDefs(block) {
     let words = line.words;
     for(let idx = 0; idx < words.length; idx++) {
       const word = words[idx];
-      const name = word.name;
+      const {name, startWordOfs} = word;
       const startWordPos = 
-              new vscode.Position(line.lineNumber, word.startWordOfs);
+              new vscode.Position(line.lineNumber, startWordOfs);
       const definitions = await vscode.commands.executeCommand(
                  'vscode.executeDefinitionProvider', blockUri, startWordPos);
       if (definitions.length == 0) {
@@ -123,7 +123,7 @@ async function addDefs(block) {
         delete words[idx];
         continue;
       }
-      word.id = `ds-ref-${uniqueRefId++}`;
+      word.id = `${block.id}-ref-${uniqueRefId++}`;
     }
     words = words.filter(word => word);
     line.words = words;
@@ -132,13 +132,6 @@ async function addDefs(block) {
       for(const defBlock of word.defBlocks) {
         blocks.push(defBlock);
       }
-
-      const blk0 = blocks[0];
-      if(blk0                                    && 
-         blk0.location.range.end.line      == 0  &&
-         blk0.location.range.end.character == 0) 
-        debugger;
-
       blocksByRefId[word.id] = blocks;
     }
     html.markupRefs(line);

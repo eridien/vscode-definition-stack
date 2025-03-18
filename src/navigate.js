@@ -60,23 +60,31 @@ async function refClick(data) {
     blk.showAllRefs();
     return;
   }
-  for(const block of blocks) {
-    await blk.addAllData(block);
-    await addBlockToView(block);
+  const refBlkId = refId.split('-').splice(0, 3).join('-');
+  let refIndex   = blockStack.findIndex(b => b.id === refBlkId);
+  if(refIndex == -1) {
+    log('err', 'refClick: ref block not in blockStack', refBlkId, blockStack);
+    return;
+  }
+  for(const defBlock of blocks) {
+    await blk.addAllData(defBlock);
+    await addBlockToView(defBlock, refIndex);
   }
 }
 
-/*
-  insertBlock(blockHtml, index);
-  moveBlock(fromIdx, toIndex);  
-  removeBlock(blockId);              
-*/
-
-async function addBlockToView(block) {
-  if(blockStack.includes(block)) return;
-  log('addBlockToView:', block.id, block.name)
-  blockStack.push(block);
-  await html.addBlockToView(block);
+async function addBlockToView(block, toIndex) {
+  log('addBlockToView:', {block, toIndex});
+  const fromIndex = blockStack.findIndex(b => b.id === block.id);
+  if(fromIndex == -1) {
+    if(toIndex === undefined || toIndex >= blockStack.length) {
+      blockStack.push(block);
+      await html.addBlockToView(block);
+      return;
+    }
+    else blockStack.splice(toIndex, 0, block);
+    await html.addBlockToView(block, toIndex);
+  }
+  else await comm.send('moveBlock', {fromIndex, toIndex});
 }
 
 module.exports = { init, addBlockToView };
