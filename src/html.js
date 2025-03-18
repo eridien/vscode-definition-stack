@@ -63,17 +63,22 @@ function setLanguage(editor) {
   log('set language:', language);
 }
 
+function hdrHtml() {
+  return `<div style="margin-left:14px; display:inline-block;">` +
+            svg.iconHtml('home',     "iframe-hdr") + 
+            svg.iconHtml('up-ptr',   "iframe-hdr") +
+            svg.iconHtml('down-ptr', "iframe-hdr") +
+          `</div>`;
+}
+
 function bannerHtml(name, relPath, blkId, symbol) {
   const symbolTypeNum = symbol?.kind;
   const symbolType    = symbolTypeByKind(symbolTypeNum);
   return `<span class="banner">
-            <div class="hdrBtns">` +
+            <div>` +
               svg.iconHtml('close',    blkId) +
               svg.iconHtml('expand',   blkId, 'display:none') +
               svg.iconHtml('collapse', blkId) +
-              svg.iconHtml('up-ptr',   blkId) +
-              svg.iconHtml('down-ptr', blkId) +
-              svg.iconHtml('home',     blkId) + 
            `</div>
               <div class="banner-text"> 
               <span class="banner-type">${symbolType}</span> 
@@ -155,13 +160,16 @@ async function initWebviewHtml(editor) {
   const fontFamily = ` */ font-family: ${config.fontFamily};   /* `;
   const fontWeight = ` */ font-weight: ${config.fontWeight};   /* `;
   const fontSize   = ` */ font-size:   ${config.fontSize}px;   /* `;
+  const headerHtml = ` --> ${hdrHtml()} <!-- `;
 
   const iframeHtml = (iframeHtmlIn
       .replace('**iframeCss**',  ` */ ${iframeCss} /*`)
       .replace('**iframeJs**',   iframeJs)
       .replace('**fontFamily**', fontFamily)
       .replace('**fontSize**',   fontSize)
-      .replace('**fontWeight**', fontWeight))
+      .replace('**fontWeight**', fontWeight)
+      .replace('**headerHtml**', headerHtml)
+      )
       .replaceAll(/"/g, '&quot;');
 
   const html = webviewHtml

@@ -6,10 +6,12 @@ console.log('iframe started');
 
 debugger;
 
+let iframeHeaderElement;
 let dsBlocksElement;
 
 document.addEventListener('DOMContentLoaded', () => {
-  dsBlocksElement = document.getElementById('ds-blocks');
+  iframeHeaderElement = document.getElementById('ds-iframe-header');
+  dsBlocksElement     = document.getElementById('ds-blocks');
   send('ready', {});
 });
 
@@ -31,16 +33,27 @@ async function expand(expandEle) {
   const blkId       = blkIdFromId(expandEle.getAttribute('id'));
   const preEle      = document.getElementById(`${blkId}-pre`);
   const collapseEle = expandEle.nextElementSibling;
-  // console.log('collapse eles:', {blkId, preEle, collapseEle});
   setStyle(preEle,      'display', 'block');
   setStyle(expandEle,   'display', 'none');
   setStyle(collapseEle, 'display', 'inline-block');
 }
-async function up(stackIdx) {
+
+async function home() {
 }
-async function down(stackIdx) {
+
+async function up() {
 }
-async function home(stackIdx) {
+
+async function down() {
+}
+
+function headerButtonClick(iconName) {
+  console.log('headerButtonClick iconName:', iconName);
+  switch(iconName) {
+    case 'home':     home(); break;
+    case 'up-ptr':   up();   break;
+    case 'down-ptr': down(); break;
+  }
 }
 
 document.addEventListener('click', event => {
@@ -55,6 +68,10 @@ document.addEventListener('click', event => {
     const blkId  = blkIdFromId(btnid);
     const iconId = nonBlkIdFromId(btnid);
     console.log('button click:', {blkId, iconId});
+    if(blkId == "iframe-hdr-icon") {
+      headerButtonClick(iconId);
+      return;
+    }
     switch(iconId) {
       case 'icon-collapse': collapse(ele); break;
       case 'icon-expand':   expand(ele);   break;

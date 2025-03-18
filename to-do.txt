@@ -7,7 +7,6 @@ to-do ...
   show file (name clicked)
   show and scroll file (code clicked)
   scroll to align top
-  remove blank line at top
   use vscode colors in banner or steal colors from prism theme
   busy indicator
 

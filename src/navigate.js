@@ -23,10 +23,10 @@ async function closeBlock(stackIdx, blockId) {
 async function buttonClick(data) {
   const blockId = utils.blkIdFromId(data.id);
   const name    = utils.nonBlkIdFromId(data.id);
-  log('buttonClick:', {blockId, name});
+  log('buttonClick:', blockId, name);
   const stackIdx = blockStack.findIndex(b => b.id === blockId);
   if(stackIdx == -1) {
-    log('err', 'buttonClick: block not found:', {blockId, blockStack});
+    log('err', 'buttonClick: block not found:', blockId);
     return;
   }
   switch(name) {
