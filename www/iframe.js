@@ -14,18 +14,20 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 document.addEventListener('click', event => {
+  console.log('addEventListener click:', event);
   const ele = event.target;
-  if (ele.classList.contains('ref-span')) {
+  const classes = ele.classList;
+  if (classes.contains('ref-span')) {
     event.preventDefault();
     const id = ele.getAttribute('id');
     console.log('ref clicked:', {id});
     send('refClick', {id});
   }
-  if (ele.classList.contains('ds-block')) {
+  if (classes.contains('ds-button')) {
     event.preventDefault();
     const id = ele.getAttribute('id');
-    console.log('block clicked:', {id});
-    send('blkClick', {id});
+    console.log('button clicked:', {id});
+    send('buttonClick', {id});
   }
 });
 

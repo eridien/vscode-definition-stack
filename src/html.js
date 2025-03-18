@@ -63,18 +63,18 @@ function setLanguage(editor) {
   log('set language:', language);
 }
 
-function bannerHtml(name, relPath, symbol) {
+function bannerHtml(name, relPath, blkId, symbol) {
   const symbolTypeNum = symbol?.kind;
   const symbolType    = symbolTypeByKind(symbolTypeNum);
   log('bannerHtml symbol:', name.padEnd(15), {symbolTypeNum, symbolType});
   return `<span class="banner">
             <div>` +
-              svg.iconHtml('close') +
-              // svg.iconHtml('expand-vert') +
-              svg.iconHtml('collapse-vert') +
-              svg.iconHtml('caret-up') +
-              svg.iconHtml('caret-down') +
-              svg.iconHtml('home3') + 
+              svg.iconHtml('close', blkId)          +
+              // svg.iconHtml('expand-vert', blkId) +
+              svg.iconHtml('collapse-vert', blkId)  +
+              svg.iconHtml('caret-up', blkId)       +
+              svg.iconHtml('caret-down', blkId)     +
+              svg.iconHtml('home', blkId)           + 
            `</div>
               <div class="banner-text"> 
               <span class="banner-type">${symbolType}</span> 
@@ -99,7 +99,7 @@ async function addEmptyBlockToView(id, name, relPath) {
   log('adding empty block to view:', name.padEnd(15), relPath);
   const blockHtml = 
    `<div id="${id}" class="ds-block">`                               +
-      bannerHtml(name, relPath)                                      +
+      bannerHtml(name, relPath, id)                                  +
      `<pre>`                                                         +
        `<code class="language-${language}">`                         +
          `Definition is an entire file and is hidden. See settings.` +
@@ -125,12 +125,12 @@ async function addBlockToView(block) {
   for(const line of lines)
     code += ((line.html.slice(minWsIdx)) + "\n");
   const blockHtml = 
-   `<div id="${id}" class="ds-block">`           +
-      bannerHtml(name, relPath, block.srcSymbol) +
-      codeHtml(lines, code)                      +
+   `<div id="${id}" class="ds-block">`               +
+      bannerHtml(name, relPath, id, block.srcSymbol) +
+      codeHtml(lines, code)                          +
    `</div>`;
   await comm.send('insertBlock', {blockHtml});
-  log('block added with', block.lines.length, 'lines');
+  log('block added with', block.lines.length, 'lines', blockHtml);
 }
 
 async function initWebviewHtml(editor) {
@@ -187,8 +187,7 @@ function markupRefs(line) {
     const word = line.words[idx];
     const endOfs = word.endWordOfs;
     html = html.slice(0, endOfs) + '</span>' + html.slice(endOfs);
-    const span = `<span id="${word.id}" onclick="refClick"
-                        class="hover ref-span">`;
+    const span = `<span id="${word.id}" class="hover ref-span">`;
     const strtOfs = word.startWordOfs;
     html = html.slice(0, strtOfs) + span + html.slice(strtOfs);
   }

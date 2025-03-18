@@ -9,10 +9,16 @@ let blk = null;
 
 function init() {
   blk = require('./block.js');
-  comm.registerWebviewRecv('refClick', true, refClick);
+  comm.registerWebviewRecv('refClick',    true, refClick);
+  comm.registerWebviewRecv('buttonClick', true, buttonClick);
 }
 
 const blockStack = [];
+
+async function buttonClick(data) {
+  const btnId  = data.id;
+  log('buttonClick:', btnId);
+}
 
 async function refClick(data) {
   const refId  = data.id;
