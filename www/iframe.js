@@ -4,7 +4,7 @@
 
 console.log('iframe started');
 
-// debugger;
+debugger;
 
 let dsBlocksElement;
 
@@ -17,33 +17,24 @@ function blkIdFromId(id) {return id.split('-').splice(0, 3).join('-')}
 function nonBlkIdFromId(id) {return id.split('-').splice(3).join('-')}
 function setStyle(ele, prop, val) {ele.style[prop] = val}
 
-function collapse(blkId, btnEle) {
-  const codeEle = document.getElementById(`${blkId}-code`);
-
-  console.log('codeEle:', window.getComputedStyle(codeEle));
-
-  setStyle(codeEle, 'display', 'none');
-  const expandEle = btnEle.previousElementSibling;
-
-  console.log('expandEle:', window.getComputedStyle(expandEle));
-  
-  setStyle(btnEle,    'display', 'none');
-  setStyle(expandEle, 'display', 'inline-block');
+function collapse(collapseEle) {
+  const blkId     = blkIdFromId(collapseEle.getAttribute('id'));
+  const preEle    = document.getElementById(`${blkId}-pre`);
+  const expandEle = collapseEle.previousElementSibling;
+  // console.log('collapse eles:', {blkId, preEle, expandEle});
+  setStyle(preEle,      'display', 'none');
+  setStyle(collapseEle, 'display', 'none');
+  setStyle(expandEle,   'display', 'inline-block');
 }
 
-async function expand(blkId, btnEle) {
-  const codeEle = document.getElementById(`${blkId}-code`);
-
-  console.log('codeEle:', window.getComputedStyle(codeEle));
-
-  setStyle(codeEle, 'display', 'inline');
-  const collapseEle = btnEle.nextElementSibling;
-
-  console.log('collapseEle:', collapseEle.getAttribute('style'));
-  
-  setStyle(btnEle,      'display', 'none');
+async function expand(expandEle) {
+  const blkId       = blkIdFromId(expandEle.getAttribute('id'));
+  const preEle      = document.getElementById(`${blkId}-pre`);
+  const collapseEle = expandEle.nextElementSibling;
+  // console.log('collapse eles:', {blkId, preEle, collapseEle});
+  setStyle(preEle,      'display', 'block');
+  setStyle(expandEle,   'display', 'none');
   setStyle(collapseEle, 'display', 'inline-block');
-
 }
 async function up(stackIdx) {
 }
@@ -65,8 +56,8 @@ document.addEventListener('click', event => {
     const iconId = nonBlkIdFromId(btnid);
     console.log('button click:', {blkId, iconId});
     switch(iconId) {
-      case 'icon-collapse': collapse(blkId, ele); break;
-      case 'icon-expand':   expand(blkId, ele);   break;
+      case 'icon-collapse': collapse(ele); break;
+      case 'icon-expand':   expand(ele);   break;
       case 'icon-up-ptr':   up(iconId);       break;
       case 'icon-down-ptr': down(iconId);     break;
       case 'icon-home':     home(iconId);     break;

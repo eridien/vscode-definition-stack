@@ -85,7 +85,7 @@ function bannerHtml(name, relPath, blkId, symbol) {
 
 // style doesn't work in css file(?), even with !important
 function codeHtml(lines, code, blkId) {
-  return `<pre id="${blkId}-code"
+  return `<pre id="${blkId}-pre"
                style="white-space: pre-wrap; 
                       word-wrap: break-word; 
                       overflow-wrap: break-word;" 
