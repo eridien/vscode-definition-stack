@@ -19,7 +19,7 @@ const vscLangIdToPrism = {
 
 let context, webview, language;
 let webviewHtml, webviewJs, iframeHtmlIn, iframeJsIn;
-let iframeCssIn, lineNumCss, dsCss, prePrismJs, prismCoreJs, lineNumJs, keepMarkupJs;
+let iframeCssIn, lineNumCss, prePrismJs, prismCoreJs, lineNumJs, keepMarkupJs;
 
 async function loadConstFiles() {
   webviewHtml = await utils.readTxt(context, false, 
@@ -141,7 +141,7 @@ async function initWebviewHtml(editor) {
   const prismCss = await utils.readTxt(context, true, 
                                           'prism', 'themes', 'prism.css');
                                           // 'prism', 'themes', 'prism-a11y-dark.css');
-  const iframeCss = prismCss + lineNumCss + dsCss + iframeCssIn;
+  const iframeCss = prismCss + lineNumCss + iframeCssIn;
 
   const langClike = await utils.readTxt(context, false, 
                                   'prism', 'languages', 'prism-clike.js');
