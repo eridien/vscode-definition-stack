@@ -35,9 +35,9 @@ async function initWebview(context) {
   context.subscriptions.push(webviewPanel);
   webviewPanel.onDidDispose(() => {webviewPanel = null});
   await comm.init(context, webviewPanel.webview);
-  // await html.init(context, webviewPanel.webview);
-  // navi.init();
-  // blk.init();
+  await html.init(context, webviewPanel.webview);
+  navi.init();
+  blk.init();
 }
 
 module.exports = { initWebview };

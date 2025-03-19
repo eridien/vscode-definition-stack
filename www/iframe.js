@@ -6,12 +6,10 @@ console.log('iframe started');
 
 debugger;
 
-let iframeHeaderElement;
 let dsBlocksElement;
 
 document.addEventListener('DOMContentLoaded', () => {
-  iframeHeaderElement = document.getElementById('ds-iframe-header');
-  dsBlocksElement     = document.getElementById('ds-blocks');
+  dsBlocksElement = document.getElementById('ds-blocks');
   send('ready', {});
 });
 
