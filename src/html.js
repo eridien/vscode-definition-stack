@@ -82,10 +82,12 @@ function bannerHtml(name, relPath, blkId, symbol) {
               svg.iconHtml('expand',   blkId, 'display:none') +
               svg.iconHtml('collapse', blkId) +
            `</div>
-              <div class="banner-text"> 
+            <div class="banner-text"> 
               <span class="banner-type">${symbolType}</span> 
-              <span class="hover banner-name">${name}</span> in 
-              <span class="hover banner-path">${relPath}</span>
+              <span id="${blkId}-banner-name" 
+                    class="hover banner-name">${name}</span> in 
+              <span id=${blkId}-banner-path" 
+                    class="hover banner-path">${relPath}</span>
             </div>
           </span>`;
 }

@@ -10,8 +10,8 @@ let blockStack = [];
 
 function init() {
   blk = require('./block.js');
-  comm.registerWebviewRecv('refClick',    true, refClick);
-  comm.registerWebviewRecv('buttonClick', true, buttonClick);
+  comm.registerWebviewRecv('refClick',         true, refClick);
+  comm.registerWebviewRecv('closeButtonClick', true, closeButtonClick);
   blockStack = [];
 }
 
@@ -20,18 +20,15 @@ async function closeBlock(stackIdx, blockId) {
   await comm.send('removeBlock', {blockId});
 }
 
-async function buttonClick(data) {
-  const blockId = utils.blkIdFromId(data.id);
-  const name    = utils.nonBlkIdFromId(data.id);
-  log('buttonClick:', blockId, name);
-  const stackIdx = blockStack.findIndex(b => b.id === blockId);
+async function closeButtonClick(data) {
+  const blkId = data.blkId;
+  log('closeButtonClick:', blkId);
+  const stackIdx = blockStack.findIndex(b => b.id === blkId);
   if(stackIdx == -1) {
-    log('err', 'buttonClick: block not found:', blockId);
+    log('err', 'closeButtonClick: block not found:', blkId);
     return;
   }
-  switch(name) {
-    case 'icon-close': await closeBlock(stackIdx, blockId); break;
-  }
+  await closeBlock(stackIdx, blkId);
 }
 
 async function refClick(data) {

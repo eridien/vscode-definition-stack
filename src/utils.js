@@ -121,12 +121,12 @@ function blkIdFromId(id) {
   return id.split('-').splice(0, 3).join('-');
 }
 
-function nonBlkIdFromId(id) {
+function tailFromId(id) {
   return id.split('-').splice(3).join('-');
 }
 
 module.exports = { 
   getLog, getTextFromDoc, fixDriveLetter, sleep, getProjectIdx,
   containsRange, containsLocation, locationIsEntireFile, getRangeSize, readTxt,
-  blkIdFromId, nonBlkIdFromId
+  blkIdFromId, tailFromId
 };
