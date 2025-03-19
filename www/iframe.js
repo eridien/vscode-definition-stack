@@ -75,10 +75,12 @@ function scrollBlockIntoView(ele) {
 
 function scrollToFromRef(fromRefId) {
   if(fromRefId === 'root') return;
+  const refEle = document.getElementById(fromRefId);
+  setFromRefHighlight(refEle);
   const refBlkId = blkIdFromId(fromRefId);
   const refBlkEle = document.getElementById(refBlkId);
   if(!refBlkEle) {
-    console.log('scrollToFromRef, ref block not found:', refBlkId);
+    console.log('scrollToFromRef, ref block missing:', refBlkId);
     return;
   }
   scrollBlockIntoView(refBlkEle);
@@ -115,13 +117,17 @@ function bannerPathClick( ele, bannerPathId) {
 
 }
 
-function refClick(ele, refId) {
-  console.log('refClick:', refId, ele.innerText);
-  const {ele:blkEle}    = findAncestorByClass(ele, 'ds-block');
+function setFromRefHighlight(refEle) {
+  const {ele:blkEle}    = findAncestorByClass(refEle, 'ds-block');
   const lastClickedEles = blkEle.querySelectorAll('.ref-last-clicked');
   for(const lastClickedEle of lastClickedEles) 
     lastClickedEle.classList.remove('ref-last-clicked');
-  ele.classList.add('ref-last-clicked');
+  refEle.classList.add('ref-last-clicked');
+}
+
+function refClick(ele, refId) {
+  console.log('refClick:', refId, ele.innerText);
+  setFromRefHighlight(ele);
   send('refClick', {refId});
 }
 
