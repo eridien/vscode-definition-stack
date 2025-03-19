@@ -104,10 +104,10 @@ function codeHtml(lines, code, blkId) {
          `</pre>`;
 }
 
-async function addEmptyBlockToView(id, name, relPath, toIndex) {
+async function addEmptyBlockToView(id, name, relPath, toIndex, fromRef) {
   log('adding empty block to view:', name.padEnd(15), relPath);
   const blockHtml = 
-   `<div id="${id}" class="ds-block">`                               +
+   `<div id="${id}" class="ds-block" from-ref="${fromRef}>`                               +
       bannerHtml(name, relPath, id)                                  +
      `<pre>`                                                         +
        `<code class="language-${language}">`                         +
@@ -118,10 +118,10 @@ async function addEmptyBlockToView(id, name, relPath, toIndex) {
   await comm.send('insertBlock', {blockHtml, toIndex});
 }
 
-async function addBlockToView(block, toIndex) {
+async function addBlockToView(block, fromRef, toIndex) {
   const {id, name, relPath, lines} = block;
   if(block.flags.isEntireFile) {
-    addEmptyBlockToView(id, name, relPath, toIndex)
+    addEmptyBlockToView(id, name, relPath, toIndex, fromRef)
     return;
   }
   log('adding block to view:', {name, relPath, toIndex});
@@ -134,7 +134,7 @@ async function addBlockToView(block, toIndex) {
   for(const line of lines)
     code += ((line.html.slice(minWsIdx)) + "\n");
   const blockHtml = 
-   `<div id="${id}" class="ds-block">`               +
+   `<div id="${id}" class="ds-block" from-ref="${fromRef}">`               +
       bannerHtml(name, relPath, id, block.srcSymbol) +
       codeHtml(lines, code, id)                      +
    `</div>`;

@@ -65,6 +65,25 @@ async function collapseAll() {
   }
 }
 
+function scrollBlockIntoView(ele) {
+  ele.scrollIntoView({
+    behavior: 'smooth', // Smooth scrolling animation
+    block:    'start',     // Align the block with the top of the viewport
+    inline:   'nearest'   // Keep horizontal alignment as is
+  });
+}
+
+function scrollToFromRef(fromRefId) {
+  if(fromRefId === 'root') return;
+  const refBlkId = blkIdFromId(fromRefId);
+  const refBlkEle = document.getElementById(refBlkId);
+  if(!refBlkEle) {
+    console.log('scrollToFromRef, ref block not found:', refBlkId);
+    return;
+  }
+  scrollBlockIntoView(refBlkEle);
+}
+
 function headerButtonClick(iconName) {
   switch(iconName) {
     case 'home':     home();        break;
@@ -85,12 +104,25 @@ function bannerButtonClick(ele, id, blkId, tail) {
 
 function bannerNameClick(ele, bannerNameId) {
   console.log('bannerNameClick:', bannerNameId, ele.innerText);
-
+  const {ele:blkEle} = findAncestorByClass(ele, 'ds-block');
+  const fromRefId = blkEle.getAttribute('from-ref');
+  if(!fromRefId) console.log('bannerNameClick, no fromRefId:', bannerNameId);
+  else scrollToFromRef(fromRefId);
 }
 
 function bannerPathClick( ele, bannerPathId) {
   console.log('bannerPathClick:', bannerPathId, ele.innerText);
 
+}
+
+function refClick(ele, refId) {
+  console.log('refClick:', refId, ele.innerText);
+  const {ele:blkEle}    = findAncestorByClass(ele, 'ds-block');
+  const lastClickedEles = blkEle.querySelectorAll('.ref-last-clicked');
+  for(const lastClickedEle of lastClickedEles) 
+    lastClickedEle.classList.remove('ref-last-clicked');
+  ele.classList.add('ref-last-clicked');
+  send('refClick', {refId});
 }
 
 function findAncestorByClass(ele, klass) {
@@ -123,9 +155,8 @@ document.addEventListener('click', event => {
   const classes = ele.classList;
   if      (classes.contains('banner-name')) bannerNameClick(ele, id);
   else if (classes.contains('banner-path')) bannerPathClick(ele, id);
-  else if (classes.contains('ref-span'))    send('refClick', {id});
-  else console.error('unknown click event:', tagName, id);
-});
+  else if (classes.contains('ref-span'))    refClick(ele, id);}
+);
 
 function eleFromHtml(html) {
   const tempDiv = document.createElement('template');
@@ -142,6 +173,8 @@ async function insertBlock(blockHtml, toIndex) {
     return;
   }
   const newBlk = eleFromHtml(blockHtml);
+  const fromRefId = newBlk.getAttribute('from-ref');
+  if(fromRefId) scrollToFromRef(fromRefId);
   console.log('insertBlock newBlk innerHTML:', newBlk.innerHTML);
   if(children.length == 0 || toIndex === children.length) {
     dsBlocksElement.appendChild(newBlk);
@@ -150,7 +183,7 @@ async function insertBlock(blockHtml, toIndex) {
   Prism.highlightAll();
 }
 
-async function moveBlock(fromIndex, toIndex){
+async function moveBlock(fromIndex, toIndex, fromRefId){
   const children = dsBlocksElement.children;
   if (fromIndex < 0 || fromIndex >= children.length || 
       toIndex   < 0 || toIndex   >  children.length) {
@@ -158,16 +191,9 @@ async function moveBlock(fromIndex, toIndex){
     return;
   } 
   const fromEle = children[fromIndex];
-  if(toIndex == children.length) {
-    dsBlocksElement.appendChild(fromEle);
-    return;
-  }
-  const toEle = children[toIndex];
-  if (toIndex > fromIndex) {
-      dsBlocksElement.insertBefore(fromEle, toEle);
-  } else {
-      dsBlocksElement.insertBefore(fromEle, toEle);
-  }
+  if(toIndex == children.length) dsBlocksElement.appendChild(fromEle);
+  else dsBlocksElement.insertBefore(fromEle, children[toIndex]);
+  scrollToFromRef(fromRefId);
 } 
 
 async function removeBlock(blockId){
