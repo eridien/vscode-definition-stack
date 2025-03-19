@@ -11,27 +11,22 @@
       // **iframeJs**
     </script>
   </head>
-  <body style='display: initial; /* avoid empty warning */
+  <body style='overflow: hidden; 
                /* these are replaced */
                /* font-weight: **fontWeight**; */
                /* font-size:   **fontSize**;   */
                /* font-family: **fontFamily**; */'>
-    <div style='display: flex; 
-                                      align-items: center; 
-                                      margin-top: 8px;'>
-      <h1 style='margin: 0; padding: 0;'>
-        <!-- **title** -->
-      </h1>
-      <div id='ds-iframe-close' style='margin-left: auto;'>
-        <!-- **closeHtml** -->
+    <div id='body-content' style='display: flex; flex-direction: column; 
+                                  height: 100vh; overflow: hidden;'>
+                                  
+      <div id="ds-iframe-header" style="position: sticky; top: 0; height:28px;
+                                        z-index: 10; background: white;">
+        <!-- **headerHtml** -->
       </div>
-    <div id='ds-iframe-header' style='position:fixed;'>
-      <!-- **headerHtml** -->
-    </div>
-    <div style='overflow-y:scroll; margin-top:24px; 
-                position:absolute; top:24; bottom:0; left:0; right:0;'>
-      <div id='ds-blocks'>
+
+      <div id="ds-blocks" style="overflow-y: auto; flex: 1;">
       </div>
-    </div>
+
+    </div>    
   </body>
 </html>
