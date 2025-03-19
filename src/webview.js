@@ -28,8 +28,7 @@ async function initWebview(context) {
     {
       enableFindWidget: true,
       retainContextWhenHidden: true,
-      enableScripts: true,
-      // localResourceRoots: [vscode.Uri.file(context.extensionPath)]
+      enableScripts: true
     }  
   );
   context.subscriptions.push(webviewPanel);

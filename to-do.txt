@@ -3,7 +3,6 @@ bugs ...
 
 to-do ...
   scroll body under banner
-  collapse
   show file (name clicked)
   show and scroll file (code clicked)
   scroll to align top
@@ -14,13 +13,6 @@ unlikely ...
   vue script shows as module (list.vue/311)
   persist multiple stacks
   load ref blocks
-
-header buttons ...
-  home
-  prev
-  next
-  close?
-  collapse/expand (all blocks)
 
 header config
   select theme

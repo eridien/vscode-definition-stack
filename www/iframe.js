@@ -17,66 +17,86 @@ function blkIdFromId(id) {return id.split('-').splice(0, 3).join('-')}
 function nonBlkIdFromId(id) {return id.split('-').splice(3).join('-')}
 function setStyle(ele, prop, val) {ele.style[prop] = val}
 
-function collapse(collapseEle) {
-  const blkId     = blkIdFromId(collapseEle.getAttribute('id'));
-  const preEle    = document.getElementById(`${blkId}-pre`);
-  const expandEle = collapseEle.previousElementSibling;
-  // console.log('collapse eles:', {blkId, preEle, expandEle});
-  setStyle(preEle,      'display', 'none');
-  setStyle(collapseEle, 'display', 'none');
-  setStyle(expandEle,   'display', 'inline-block');
+function collapse(collapseBtnEle) {
+  const blkId        = blkIdFromId(collapseBtnEle.getAttribute('id'));
+  console.log('collapse', blkId);
+  const preEle       = document.getElementById(`${blkId}-pre`);
+  const expandBtnEle = collapseBtnEle.previousElementSibling;
+  setStyle(preEle,         'display', 'none');
+  setStyle(collapseBtnEle, 'display', 'none');
+  setStyle(expandBtnEle,   'display', 'inline-block');
 }
 
-async function expand(expandEle) {
-  const blkId       = blkIdFromId(expandEle.getAttribute('id'));
-  const preEle      = document.getElementById(`${blkId}-pre`);
-  const collapseEle = expandEle.nextElementSibling;
-  setStyle(preEle,      'display', 'block');
-  setStyle(expandEle,   'display', 'none');
-  setStyle(collapseEle, 'display', 'inline-block');
+async function expand(expandBtnEle) {
+  const blkId          = blkIdFromId(expandBtnEle.getAttribute('id'));
+  console.log('expand', blkId);
+  const preEle         = document.getElementById(`${blkId}-pre`);
+  const collapseBtnEle = expandBtnEle.nextElementSibling;
+  setStyle(preEle,         'display', 'block');
+  setStyle(expandBtnEle,   'display', 'none');
+  setStyle(collapseBtnEle, 'display', 'inline-block');
 }
 
 async function home() {
+  console.log('header home click');
 }
-
 async function up() {
+  console.log('header up  click');
+}
+async function down() {
+  console.log('header down  click');
 }
 
-async function down() {
+async function expandAll() {
+  // console.log('header expandAll click');
+  const blkEles = document.querySelectorAll('.ds-block');
+  for(const blkEle of blkEles) {
+    const blkId = blkEle.getAttribute('id');
+    const expandBtnEle = document.getElementById(`${blkId}-icon-expand`);
+    expand(expandBtnEle);
+  }
+}
+
+async function collapseAll() {
+  // console.log('header collapseAll click');
+  const blkEles = document.querySelectorAll('.ds-block');
+  for(const blkEle of blkEles) {
+    const blkId = blkEle.getAttribute('id');
+    const collapseBtnEle = document.getElementById(`${blkId}-icon-collapse`);
+    collapse(collapseBtnEle);
+  }
 }
 
 function headerButtonClick(iconName) {
-  console.log('headerButtonClick iconName:', iconName);
   switch(iconName) {
-    case 'home':     home(); break;
-    case 'up-ptr':   up();   break;
-    case 'down-ptr': down(); break;
+    case 'home':     home();        break;
+    case 'up-ptr':   up();          break;
+    case 'down-ptr': down();        break;
+    case 'expand':   expandAll();   break;
+    case 'collapse': collapseAll(); break;
   }
 }
 
 document.addEventListener('click', event => {
-  // console.log('addEventListener:', event);
   const tagName = event.target.tagName.toLowerCase(); 
-  if (["path", "svg"].includes(tagName)) {
+  if (["path", "svg", "polygon"].includes(tagName)) {
     let ele = event.target.parentElement;
-    while (ele && !ele.classList.contains('button')) 
-                   ele = ele.parentElement;
-    if (!ele) return;
+    while (!ele.classList.contains('button'))
+            ele = ele.parentElement;
     const btnid  = ele.getAttribute('id');
     const blkId  = blkIdFromId(btnid);
     const iconId = nonBlkIdFromId(btnid);
-    console.log('button click:', {blkId, iconId});
     if(blkId == "iframe-hdr-icon") {
       headerButtonClick(iconId);
       return;
     }
     switch(iconId) {
-      case 'icon-collapse': collapse(ele); break;
-      case 'icon-expand':   expand(ele);   break;
-      case 'icon-up-ptr':   up(iconId);       break;
-      case 'icon-down-ptr': down(iconId);     break;
-      case 'icon-home':     home(iconId);     break;
-      default: send('buttonClick', {id: btnid});     break;
+      case 'icon-collapse': collapse(ele);       break;
+      case 'icon-expand':   expand(ele);         break;
+      case 'icon-up-ptr':   up(iconId);          break;
+      case 'icon-down-ptr': down(iconId);        break;
+      case 'icon-home':     home(iconId);        break;
+      default: send('buttonClick', {id: btnid}); break;
     }
     return;
   }

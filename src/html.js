@@ -68,6 +68,8 @@ function hdrHtml() {
             svg.iconHtml('home',     "iframe-hdr") + 
             svg.iconHtml('up-ptr',   "iframe-hdr") +
             svg.iconHtml('down-ptr', "iframe-hdr") +
+            svg.iconHtml('collapse', "iframe-hdr") +
+            svg.iconHtml('expand',   "iframe-hdr") +
          `</div>`;
 }
 
@@ -132,7 +134,7 @@ async function addBlockToView(block, toIndex) {
   const blockHtml = 
    `<div id="${id}" class="ds-block">`               +
       bannerHtml(name, relPath, id, block.srcSymbol) +
-      codeHtml(lines, code, id)                          +
+      codeHtml(lines, code, id)                      +
    `</div>`;
   const data  = {blockHtml};
   const atEnd = (toIndex === undefined);
