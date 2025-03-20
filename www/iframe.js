@@ -6,12 +6,10 @@ console.log('iframe started');
 
 debugger;
 
-let fixedContainerEle;
 let scrollContainerEle;
 let blocksContentEle;
 
 document.addEventListener('DOMContentLoaded', () => {
-  fixedContainerEle  = document.getElementById('fixed-height-container');
   scrollContainerEle = document.getElementById('scroll-container');
   blocksContentEle   = document.getElementById('blocks-content');
   send('ready', {});
@@ -70,16 +68,16 @@ async function collapseAll() {
 }
 
 function scrollBlockIntoView(ele) {
-  console.log('scrollBlockIntoView:', 
-      {fixedContainerEle, scrollContainerEle, blocksContentEle});
-  const fixedHeight     = fixedContainerEle.clientHeight;
-  const containerHeight = scrollContainerEle.clientHeight;
-  const contentHeight   = blocksContentEle.clientHeight;
-  const scrollPos       = scrollContainerEle.scrollTop;
-  const tempContHeight  = Math.min(containerHeight, contentHeight-scrollPos);
-  // scrollContainerEle.style.height = `${containerHeight}px`;
-  console.log('scrollBlockIntoView:', 
-      {fixedHeight, containerHeight, tempContHeight, contentHeight, scrollPos});
+  // console.log('scrollBlockIntoView:', 
+  //     {fixedContainerEle, scrollContainerEle, blocksContentEle});
+  // const fixedHeight     = fixedContainerEle.clientHeight;
+  // const containerHeight = scrollContainerEle.clientHeight;
+  // const contentHeight   = blocksContentEle.clientHeight;
+  // const scrollPos       = scrollContainerEle.scrollTop;
+  // const tempContHeight  = Math.min(containerHeight, contentHeight-scrollPos);
+  // // scrollContainerEle.style.height = `${containerHeight}px`;
+  // console.log('scrollBlockIntoView:', 
+  //     {fixedHeight, containerHeight, tempContHeight, contentHeight, scrollPos});
   ele.scrollIntoView({
     behavior: 'smooth', // Smooth scrolling animation
     block:    'start',     // Align the block with the top of the viewport
@@ -197,7 +195,7 @@ async function insertBlock(blockHtml, toIndex) {
     blocksContentEle.appendChild(newBlk);
   } 
   else blocksContentEle.insertBefore(newBlk, children[toIndex]);
-  scrollBlockIntoView(children[Math.max(0, toIndex-1)]);
+  // scrollBlockIntoView(children[Math.max(0, toIndex-1)]);
   Prism.highlightAll();
 }
 
@@ -211,7 +209,7 @@ async function moveBlock(fromIndex, toIndex, fromRefId){
   const fromEle = children[fromIndex];
   if(toIndex == children.length) blocksContentEle.appendChild(fromEle);
   else blocksContentEle.insertBefore(fromEle, children[toIndex]);
-  scrollBlockIntoView(children[Math.max(0, toIndex-1)]);
+  // scrollBlockIntoView(children[Math.max(0, toIndex-1)]);
 } 
 
 async function removeBlock(blockId){
