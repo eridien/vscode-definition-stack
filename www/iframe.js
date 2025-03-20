@@ -200,7 +200,7 @@ async function insertBlock(blockHtml, toIndex) {
     blocksContentEle.appendChild(newBlk);
   } 
   else blocksContentEle.insertBefore(newBlk, children[toIndex]);
-  // scrollBlockIntoView(children[Math.max(0, toIndex-1)]);
+  scrollBlockIntoView(children[toIndex]);
   Prism.highlightAll();
 }
 
