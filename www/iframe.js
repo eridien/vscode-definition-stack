@@ -6,10 +6,14 @@ console.log('iframe started');
 
 debugger;
 
-let dsBlocksElement;
+let fixedContainerEle;
+let scrollContainerEle;
+let blocksContentEle;
 
 document.addEventListener('DOMContentLoaded', () => {
-  dsBlocksElement = document.getElementById('ds-blocks');
+  fixedContainerEle  = document.getElementById('fixed-height-container');
+  scrollContainerEle = document.getElementById('scroll-container');
+  blocksContentEle   = document.getElementById('blocks-content');
   send('ready', {});
 });
 
@@ -66,6 +70,16 @@ async function collapseAll() {
 }
 
 function scrollBlockIntoView(ele) {
+  console.log('scrollBlockIntoView:', 
+      {fixedContainerEle, scrollContainerEle, blocksContentEle});
+  const fixedHeight     = fixedContainerEle.clientHeight;
+  const containerHeight = scrollContainerEle.clientHeight;
+  const contentHeight   = blocksContentEle.clientHeight;
+  const scrollPos       = scrollContainerEle.scrollTop;
+  const tempContHeight  = Math.min(containerHeight, contentHeight-scrollPos);
+  // scrollContainerEle.style.height = `${containerHeight}px`;
+  console.log('scrollBlockIntoView:', 
+      {fixedHeight, containerHeight, tempContHeight, contentHeight, scrollPos});
   ele.scrollIntoView({
     behavior: 'smooth', // Smooth scrolling animation
     block:    'start',     // Align the block with the top of the viewport
@@ -170,7 +184,7 @@ function eleFromHtml(html) {
 }
 
 async function insertBlock(blockHtml, toIndex) {
-  const children = dsBlocksElement.children;
+  const children = blocksContentEle.children;
   if(toIndex === undefined) toIndex = children.length;
   console.log('insertBlock toIndex:', toIndex);
   if (toIndex < 0 || toIndex > children.length) {
@@ -180,23 +194,23 @@ async function insertBlock(blockHtml, toIndex) {
   const newBlk = eleFromHtml(blockHtml);
   // const fromRefId = newBlk.getAttribute('from-ref');
   if(children.length == 0 || toIndex === children.length) {
-    dsBlocksElement.appendChild(newBlk);
+    blocksContentEle.appendChild(newBlk);
   } 
-  else dsBlocksElement.insertBefore(newBlk, children[toIndex]);
+  else blocksContentEle.insertBefore(newBlk, children[toIndex]);
   scrollBlockIntoView(children[Math.max(0, toIndex-1)]);
   Prism.highlightAll();
 }
 
 async function moveBlock(fromIndex, toIndex, fromRefId){
-  const children = dsBlocksElement.children;
+  const children = blocksContentEle.children;
   if (fromIndex < 0 || fromIndex >= children.length || 
       toIndex   < 0 || toIndex   >  children.length) {
     send('error', {msg:'moveBlock bad indices', fromIndex, toIndex});
     return;
   } 
   const fromEle = children[fromIndex];
-  if(toIndex == children.length) dsBlocksElement.appendChild(fromEle);
-  else dsBlocksElement.insertBefore(fromEle, children[toIndex]);
+  if(toIndex == children.length) blocksContentEle.appendChild(fromEle);
+  else blocksContentEle.insertBefore(fromEle, children[toIndex]);
   scrollBlockIntoView(children[Math.max(0, toIndex-1)]);
 } 
 
@@ -206,7 +220,7 @@ async function removeBlock(blockId){
 
 // Listen for message from webview
 window.addEventListener('message', event => {
-  if(!dsBlocksElement) {
+  if(!blocksContentEle) {
     send('Error, not ready', {});
     return;
   }
