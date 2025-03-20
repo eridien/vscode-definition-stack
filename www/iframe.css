@@ -26,6 +26,13 @@ body {
   display:inline-block;
 }
 
+#scroll-container{overflow-y:auto;}
+
+#body-content {
+  display: flex; flex-direction: column; 
+  height: 100vh; overflow: hidden;
+}
+
 .banner {
   margin: 5px 0 -10px 0; 
   padding: 2px 15px 5px 15px;
