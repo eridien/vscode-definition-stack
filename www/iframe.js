@@ -39,7 +39,10 @@ async function expand(blkId, expandBtnEle) {
 
 async function home() {
   console.log('header home click');
+  const rootEle = document.querySelector('[from-ref = "root"]');
+  scrollBlockIntoView(rootEle);
 }
+
 async function up() {
   console.log('header up  click');
 }
@@ -68,6 +71,8 @@ async function collapseAll() {
 }
 
 function scrollBlockIntoView(ele) {
+  if(!ele) { console.log('scrollBlockIntoView, ele not found'); return; }
+
   // console.log('scrollBlockIntoView:', 
   //     {fixedContainerEle, scrollContainerEle, blocksContentEle});
   // const fixedHeight     = fixedContainerEle.clientHeight;

@@ -4,6 +4,7 @@ bugs ...
   Definition is an entire file msg screwed up
 
 to-do ...
+  allow scroll to align bottom block with white space below
   show banner positions in scrollbar
   do prism highlight one block at a time
   toggle collapse/expand on banner click
