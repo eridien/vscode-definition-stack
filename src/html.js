@@ -64,7 +64,7 @@ function setLanguage(editor) {
 }
 
 function hdrHtml() {
-  return `<div style="margin-left:14px; display:inline-block;">` +
+  return `<div id="iframe-header">` +
             svg.iconHtml('home',     "iframe-hdr") + 
             svg.iconHtml('up-ptr',   "iframe-hdr") +
             svg.iconHtml('down-ptr', "iframe-hdr") +

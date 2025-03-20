@@ -13,6 +13,19 @@ body {
     left: -3.4em;
     top:  -0.1em;
 }
+
+#ds-iframe-header {
+  position: sticky; top: 0;
+  z-index: 10; background: white;
+}
+
+#iframe-header {
+  position: relative; top: 10px;
+  height:42px;
+  margin-left:14px; 
+  display:inline-block;
+}
+
 .banner {
   margin: 5px 0 -10px 0; 
   padding: 2px 15px 5px 15px;
