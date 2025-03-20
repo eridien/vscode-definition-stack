@@ -1,6 +1,6 @@
 //////////////// definition stack iframe script //////////////////
   
-  /* global window document Prism ResizeObserver */
+  /* global window document Prism ResizeObserver requestAnimationFrame */
 
 console.log('iframe started');
 
@@ -12,13 +12,17 @@ let blocksContentEle;
 document.addEventListener('DOMContentLoaded', () => {
   scrollContainerEle = document.getElementById('scroll-container');
   blocksContentEle   = document.getElementById('blocks-content');
-  const observer     = new ResizeObserver(adjustPaddingBlockHeight);
-  const contEle      = document.getElementById('scroll-container');
-  observer.observe(contEle);
+  watchForContainerChange();
   send('ready', {});
 });
 
+// setInterval(() => {
+//   const scrollContainerHeight  = scrollContainerEle.getBoundingClientRect().height;
+//   console.log('scrollContainerHeight:', scrollContainerHeight);
+// }, 1000);
+
 function adjustPaddingBlockHeight() {
+  console.log('adjustPaddingBlockHeight');
   const paddingBlockEle = document.getElementById('padding-block');
   const lastRealBlock   = paddingBlockEle.previousElementSibling;
   if(!lastRealBlock) return;
@@ -26,8 +30,23 @@ function adjustPaddingBlockHeight() {
   const scrollContainerHeight  = scrollContainerEle.getBoundingClientRect().height;
   const bottomWhiteSpaceHeight = scrollContainerHeight - lastRealBlockHeight;
   paddingBlockEle.style.height = `${bottomWhiteSpaceHeight}px`;
-  console.log('adjustPaddingBlockHeight:', 
-      {lastRealBlockHeight, scrollContainerHeight, bottomWhiteSpaceHeight});
+  // console.log('adjustPaddingBlockHeight:', 
+  //     {lastRealBlockHeight, scrollContainerHeight, bottomWhiteSpaceHeight});
+}
+
+function watchForContainerChange() {
+  const observer = new ResizeObserver(entries => {
+  console.log('watchForContainerChange');
+    requestAnimationFrame(() => {
+      for(const entry of entries) {
+        if(entry.target === scrollContainerEle) {
+          adjustPaddingBlockHeight();
+          break;
+        }
+      }
+    });
+  });
+  observer.observe(scrollContainerEle);
 }
 
 function blkIdFromId(id) {return id.split('-').splice(0, 3).join('-')}
@@ -88,12 +107,26 @@ async function home() {
   scrollBlockIntoView(rootEle);
 }
 
+function isAnyBlockAtTop() {
+  const containerTop = 
+          scrollContainerEle.getBoundingClientRect().top;
+  for(const blockEle of scrollContainerEle.children) {
+    const blockRect = blockEle.getBoundingClientRect();
+    if(Math.abs(blockRect.top - containerTop) < 3) return true;
+  }
+  return false;
+}
+
 async function up() {
   console.log('header up  click');
   const topEle = getTopElement(scrollContainerEle, '.ds-block');
   if(!topEle) { console.log('header up, no top element'); return; }
-  const prevEle = topEle.previousElementSibling;
-  if(prevEle) scrollBlockIntoView(prevEle);
+  let eleToMoveToTop;
+  const anyBlockAtTop = isAnyBlockAtTop();
+  console.log('anyBlockAtTop:', anyBlockAtTop);
+  if(anyBlockAtTop()) eleToMoveToTop = topEle.previousElementSibling;
+  else eleToMoveToTop = topEle;
+  if(eleToMoveToTop) scrollBlockIntoView(eleToMoveToTop);
 }
 
 async function down() {
@@ -256,7 +289,7 @@ async function insertBlock(blockHtml, toIndex) {
   else blocksContentEle.insertBefore(newBlk, children[toIndex]);
   scrollBlockIntoView(children[toIndex]);
   Prism.highlightAllUnder(newBlk, false, () => {
-    console.log('Prism highlight done', newBlk.id);
+    // console.log('Prism highlight done', newBlk.id);
   });
   adjustPaddingBlockHeight();
 }

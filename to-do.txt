@@ -4,9 +4,7 @@ bugs ...
   Definition is an entire file msg screwed up
 
 to-do ...
-  allow scroll to align bottom block with white space below
   show banner positions in scrollbar
-  toggle collapse/expand on banner click
   scroll body under banner?
   show file (path clicked)
   show and scroll file (code clicked)
