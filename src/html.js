@@ -73,7 +73,7 @@ function hdrHtml() {
          `</div>`;
 }
 
-function bannerHtml(name, relPath, blkId, symbol) {
+function bannerHtml(name, path, blkId, symbol) {
   const symbolTypeNum = symbol?.kind;
   const symbolType    = symbolTypeByKind(symbolTypeNum);
   return `<span class="banner">
@@ -87,7 +87,7 @@ function bannerHtml(name, relPath, blkId, symbol) {
               <span id="${blkId}-banner-name" 
                     class="hover banner-name">${name}</span> in 
               <span id=${blkId}-banner-path" 
-                    class="hover banner-path">${relPath}</span>
+                    class="hover banner-path">${path}</span>
             </div>
           </span>`;
 }

@@ -155,7 +155,9 @@ async function getOrMakeBlock(name, uri, range) {
   const document = await vscode.workspace.openTextDocument(location.uri)
   const projIdx  = utils.getProjectIdx(document);
   const projPath = vscode.workspace.workspaceFolders[projIdx].uri.path;
-  const relPath  = uri.path.slice(projPath.length+1);
+  // const relPath  = uri.path.slice(projPath.length+1);
+  const relPath  = uri.path;
+  
   const block = {id, name, location, relPath, hash};
   block.flags = {};
   block.flags.isEntireFile = 

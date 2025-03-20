@@ -4,9 +4,8 @@ bugs ...
   Definition is an entire file msg screwed up
 
 to-do ...
+  restore relpath and save full path in block element
   show banner positions in scrollbar
-  show file (path clicked)
-  show and scroll file (code clicked)
   use vscode colors in banner or steal colors from prism theme
   busy indicator
 
