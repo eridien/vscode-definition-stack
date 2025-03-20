@@ -37,6 +37,34 @@ async function expand(blkId, expandBtnEle) {
   setStyle(collapseBtnEle, 'display', 'inline-block');
 }
 
+/**
+ * Finds the element at the top of a scrollable container.
+ * @param {HTMLElement} container - The scrollable container element.
+ * @param {string} childSelector - A CSS selector to match the child elements.
+ * @returns {HTMLElement|null} - The child element at the top of the container, or null if none is found.
+ */
+function getTopElement(container, childSelector) {
+  if (!container) {
+    console.error('Container not found');
+    return null;
+  }
+  const containerRect = container.getBoundingClientRect();
+  const children = container.querySelectorAll(childSelector);
+  let topElement = null;
+  let minDistance = Infinity;
+  for (const child of children) {
+    const childRect = child.getBoundingClientRect();
+    const distance = Math.abs(childRect.top - containerRect.top);
+    // Check if the child is closer to the top of the container
+    if (distance < minDistance) {
+      minDistance = distance;
+      topElement = child;
+    }
+  }
+  if (!topElement) console.log('No element at top of container.');
+  return topElement;
+}
+
 async function home() {
   console.log('header home click');
   const rootEle = document.querySelector('[from-ref = "root"]');
@@ -45,9 +73,18 @@ async function home() {
 
 async function up() {
   console.log('header up  click');
+  const topEle = getTopElement(scrollContainerEle, '.ds-block');
+  if(!topEle) { console.log('header up, no top element'); return; }
+  const prevEle = topEle.previousElementSibling;
+  if(prevEle) scrollBlockIntoView(prevEle);
 }
+
 async function down() {
   console.log('header down  click');
+  const topEle = getTopElement(scrollContainerEle, '.ds-block');
+  if(!topEle) { console.log('header down, no top element'); return; }
+  const nextEle = topEle.nextElementSibling;
+  if(nextEle) scrollBlockIntoView(nextEle);
 }
 
 async function expandAll() {
