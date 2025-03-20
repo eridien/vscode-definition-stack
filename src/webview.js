@@ -48,17 +48,16 @@ async function initWebview(context) {
 
 async function openEditor(data) {
   const {filePath, lineNo} = data;
-  let column;
+  let viewColumn;
   if(currentColumn === vscode.ViewColumn.Two)
-    column = vscode.ViewColumn.One;
+    viewColumn = vscode.ViewColumn.One;
   else
-    column = vscode.ViewColumn.Two;
+    viewColumn = vscode.ViewColumn.Two;
+  log('openEditor viewColumn:', viewColumn);
   try {
     const document = await vscode.workspace.openTextDocument(filePath);
-    await vscode.window.showTextDocument(document, {
-      column,
-      preserveFocus: false
-    });
+    await vscode.window.showTextDocument(document, 
+            { viewColumn, preserveFocus: false });
     if(lineNo !== undefined) {
       const line         = document.lineAt(+lineNo);
       const begOfLinePos = line.range.start;
