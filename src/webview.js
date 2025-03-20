@@ -5,10 +5,16 @@ const blk    = require('./block.js');
 const html   = require('./html.js');
 const navi   = require('./navigate.js');
 const comm   = require('./comm.js');
-// const utils  = require('./utils.js');
-// const log    = utils.getLog('WEBV');
+const utils  = require('./utils.js');
+const log    = utils.getLog('WEBV');
 
 let webviewPanel  = null;
+let currentColumn = null;
+
+function init(context) {
+  comm.registerWebviewRecv('openEditor', true, openEditor);
+  initWebview(context);
+}
 
 function inactiveColumn() {
   const editor = vscode.window.activeTextEditor;
@@ -21,10 +27,11 @@ function inactiveColumn() {
 
 async function initWebview(context) {
   if(webviewPanel) webviewPanel.dispose();
+  currentColumn = inactiveColumn();
   webviewPanel = vscode.window.createWebviewPanel(
     'defstack-webview',   
     'Definition Stack',   
-      inactiveColumn(),
+     currentColumn,
     {
       enableFindWidget: true,
       retainContextWhenHidden: true,
@@ -39,4 +46,29 @@ async function initWebview(context) {
   blk.init();
 }
 
-module.exports = { initWebview };
+async function openEditor(data) {
+  const {filePath, lineNo} = data;
+  let column;
+  if(currentColumn === vscode.ViewColumn.Two)
+    column = vscode.ViewColumn.One;
+  else
+    column = vscode.ViewColumn.Two;
+  try {
+    const document = await vscode.workspace.openTextDocument(filePath);
+    await vscode.window.showTextDocument(document, {
+      column,
+      preserveFocus: false
+    });
+    if(lineNo !== undefined) {
+      const line         = document.lineAt(+lineNo);
+      const begOfLinePos = line.range.start;
+      const range        = new vscode.Range(begOfLinePos, begOfLinePos);
+      await vscode.window.activeTextEditor
+                  .revealRange(range, vscode.TextEditorRevealType.InCenter);
+    }
+  } catch (error) {
+    log('info', 'Failed to open file:', error.message);
+  }
+}
+
+module.exports = { init };

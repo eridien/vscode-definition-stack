@@ -15,7 +15,7 @@ async function activate(context) {
       async function() {
         const textEditor = vscode.window.activeTextEditor;
         if (!textEditor) return;
-        await webv.initWebview(context, textEditor);
+        await webv.init(context, textEditor);
         await blk.showFirstBlockWhenReady(context, textEditor);
         log('openWebViewCmd finished');  
       }	

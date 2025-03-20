@@ -217,8 +217,16 @@ function bannerNameClick(ele, bannerNameId) {
 }
 
 function bannerPathClick( ele, bannerPathId) {
-  console.log('bannerPathClick:', bannerPathId, ele.innerText);
+  const filePath = ele.innerText;
+  console.log('bannerPathClick:', bannerPathId, filePath);
+  send('openEditor', {filePath});
+}
 
+function codeClick(blkEle) {
+  const filePath = blkEle.querySelector('.banner-path').innerText;
+  const lineNo   = blkEle.querySelector('pre').getAttribute('data-start');
+  console.log('codeClick filePath, lineNo:', filePath, lineNo);
+  send('openEditor', {filePath, lineNo});
 }
 
 function setFromRefHighlight(refEle) {
@@ -262,10 +270,12 @@ document.addEventListener('click', event => {
     return;
   }
   const classes = ele.classList;
-  if      (classes.contains('banner-name')) bannerNameClick(ele, id);
-  else if (classes.contains('banner-path')) bannerPathClick(ele, id);
-  else if (classes.contains('ref-span'))    refClick(ele, id);}
-);
+  let blkEle;
+  if      (classes.contains('banner-name'))   bannerNameClick(ele, id);
+  else if (classes.contains('banner-path'))   bannerPathClick(ele, id);
+  else if (classes.contains('ref-span'))      refClick(ele, id);
+  else if (blkEle = ele.closest(".ds-block")) codeClick(blkEle);
+});
 
 function eleFromHtml(html) {
   const tempDiv = document.createElement('template');

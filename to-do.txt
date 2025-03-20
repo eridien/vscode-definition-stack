@@ -5,13 +5,13 @@ bugs ...
 
 to-do ...
   show banner positions in scrollbar
-  scroll body under banner?
   show file (path clicked)
   show and scroll file (code clicked)
   use vscode colors in banner or steal colors from prism theme
   busy indicator
 
 unlikely ...
+  scroll body under banner?
   vue script shows as module (list.vue/311)
   persist multiple stacks
   load ref blocks

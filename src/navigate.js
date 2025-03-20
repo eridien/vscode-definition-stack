@@ -1,12 +1,12 @@
 // console.log('loading navigate module');
 
 const html   = require('./html.js');
-const comm  = require('./comm.js');
-const utils = require('./utils.js');
-const log   = utils.getLog('NAVI');
+const comm   = require('./comm.js');
+const utils  = require('./utils.js');
+const log    = utils.getLog('NAVI');
 
-let blk = null;
-let blockStack = [];
+let blk           = null;
+let blockStack    = [];
 
 function init() {
   blk = require('./block.js');
