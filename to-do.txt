@@ -1,16 +1,16 @@
 bugs ...
   python
   list.vue, end of 281 -> small empty scrolling window
+  Definition is an entire file msg screwed up
 
 to-do ...
   show banner positions in scrollbar
-  only highlight one block at a time
+  do prism highlight one block at a time
   toggle collapse/expand on banner click
   scroll to newly opened block
   scroll body under banner?
-  show file (name clicked)
+  show file (path clicked)
   show and scroll file (code clicked)
-  scroll to align top
   use vscode colors in banner or steal colors from prism theme
   busy indicator
 

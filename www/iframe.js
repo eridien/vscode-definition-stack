@@ -74,7 +74,7 @@ function scrollBlockIntoView(ele) {
 }
 
 function scrollToFromRef(fromRefId) {
-  if(fromRefId === 'root') return;
+  if(!fromRefId || fromRefId === 'root') return;
   const refEle = document.getElementById(fromRefId);
   setFromRefHighlight(refEle);
   const refBlkId = blkIdFromId(fromRefId);
@@ -132,10 +132,9 @@ function refClick(ele, refId) {
 }
 
 function findAncestorByClass(ele, klass) {
-  while (ele && !ele.classList.contains(klass))
-                 ele = ele.parentElement;
+  ele = ele.closest(`.${klass}`);
   if(!ele) {
-    console.log('findParentByClass, class not found:', klass);
+    console.log('findAncestorByClass, class not found:', klass);
     return null;
   }
   const id    = ele.getAttribute('id');
@@ -179,13 +178,12 @@ async function insertBlock(blockHtml, toIndex) {
     return;
   }
   const newBlk = eleFromHtml(blockHtml);
-  const fromRefId = newBlk.getAttribute('from-ref');
-  if(fromRefId) scrollToFromRef(fromRefId);
-  console.log('insertBlock newBlk innerHTML:', newBlk.innerHTML);
+  // const fromRefId = newBlk.getAttribute('from-ref');
   if(children.length == 0 || toIndex === children.length) {
     dsBlocksElement.appendChild(newBlk);
   } 
   else dsBlocksElement.insertBefore(newBlk, children[toIndex]);
+  scrollBlockIntoView(children[Math.max(0, toIndex-1)]);
   Prism.highlightAll();
 }
 
@@ -199,7 +197,7 @@ async function moveBlock(fromIndex, toIndex, fromRefId){
   const fromEle = children[fromIndex];
   if(toIndex == children.length) dsBlocksElement.appendChild(fromEle);
   else dsBlocksElement.insertBefore(fromEle, children[toIndex]);
-  scrollToFromRef(fromRefId);
+  scrollBlockIntoView(children[Math.max(0, toIndex-1)]);
 } 
 
 async function removeBlock(blockId){
