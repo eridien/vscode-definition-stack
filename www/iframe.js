@@ -209,7 +209,7 @@ async function moveBlock(fromIndex, toIndex, fromRefId){
   const fromEle = children[fromIndex];
   if(toIndex == children.length) blocksContentEle.appendChild(fromEle);
   else blocksContentEle.insertBefore(fromEle, children[toIndex]);
-  // scrollBlockIntoView(children[Math.max(0, toIndex-1)]);
+  scrollBlockIntoView(fromEle);
 } 
 
 async function removeBlock(blockId){
