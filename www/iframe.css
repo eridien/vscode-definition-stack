@@ -32,6 +32,10 @@ body {
   display: flex; flex-direction: column; 
   height: 100vh; overflow: hidden;
 }
+#padding-block { 
+  width:10px;
+  height:0px;
+}
 
 .banner {
   margin: 5px 0 -10px 0; 

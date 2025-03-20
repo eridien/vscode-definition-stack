@@ -1,6 +1,6 @@
 //////////////// definition stack iframe script //////////////////
   
-  /* global window document Prism */
+  /* global window document Prism ResizeObserver */
 
 console.log('iframe started');
 
@@ -12,8 +12,23 @@ let blocksContentEle;
 document.addEventListener('DOMContentLoaded', () => {
   scrollContainerEle = document.getElementById('scroll-container');
   blocksContentEle   = document.getElementById('blocks-content');
+  const observer     = new ResizeObserver(adjustPaddingBlockHeight);
+  const contEle      = document.getElementById('scroll-container');
+  observer.observe(contEle);
   send('ready', {});
 });
+
+function adjustPaddingBlockHeight() {
+  const paddingBlockEle = document.getElementById('padding-block');
+  const lastRealBlock   = paddingBlockEle.previousElementSibling;
+  if(!lastRealBlock) return;
+  const lastRealBlockHeight    = lastRealBlock.getBoundingClientRect().height;
+  const scrollContainerHeight  = scrollContainerEle.getBoundingClientRect().height;
+  const bottomWhiteSpaceHeight = scrollContainerHeight - lastRealBlockHeight;
+  paddingBlockEle.style.height = `${bottomWhiteSpaceHeight}px`;
+  console.log('adjustPaddingBlockHeight:', 
+      {lastRealBlockHeight, scrollContainerHeight, bottomWhiteSpaceHeight});
+}
 
 function blkIdFromId(id) {return id.split('-').splice(0, 3).join('-')}
 function tailFromId(id) {return id.split('-').splice(3).join('-')}
@@ -26,6 +41,7 @@ function collapse(blkId, collapseBtnEle) {
   setStyle(preEle,         'display', 'none');
   setStyle(collapseBtnEle, 'display', 'none');
   setStyle(expandBtnEle,   'display', 'inline-block');
+  adjustPaddingBlockHeight();
 }
 
 async function expand(blkId, expandBtnEle) {
@@ -35,6 +51,7 @@ async function expand(blkId, expandBtnEle) {
   setStyle(preEle,         'display', 'block');
   setStyle(expandBtnEle,   'display', 'none');
   setStyle(collapseBtnEle, 'display', 'inline-block');
+  adjustPaddingBlockHeight();
 }
 
 /**
@@ -225,7 +242,7 @@ function eleFromHtml(html) {
 
 async function insertBlock(blockHtml, toIndex) {
   const children = blocksContentEle.children;
-  if(toIndex === undefined) toIndex = children.length;
+  if(toIndex === undefined) toIndex = children.length-1;
   console.log('insertBlock toIndex:', toIndex);
   if (toIndex < 0 || toIndex > children.length) {
     send('error', {msg:'insertBlock bad index', index: toIndex});
@@ -241,6 +258,7 @@ async function insertBlock(blockHtml, toIndex) {
   Prism.highlightAllUnder(newBlk, false, () => {
     console.log('Prism highlight done', newBlk.id);
   });
+  adjustPaddingBlockHeight();
 }
 
 async function moveBlock(fromIndex, toIndex, fromRefId){
@@ -258,6 +276,7 @@ async function moveBlock(fromIndex, toIndex, fromRefId){
 
 async function removeBlock(blockId){
   document.getElementById(blockId)?.remove();
+  adjustPaddingBlockHeight();
 }      
 
 // Listen for message from webview
