@@ -11,9 +11,9 @@ const log    = utils.getLog('WEBV');
 let webviewPanel  = null;
 let currentColumn = null;
 
-function init(context) {
+async function init(context) {
   comm.registerWebviewRecv('openEditor', true, openEditor);
-  initWebview(context);
+  await initWebview(context);
 }
 
 function inactiveColumn() {

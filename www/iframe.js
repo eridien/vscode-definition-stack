@@ -304,7 +304,7 @@ async function insertBlock(blockHtml, toIndex) {
   adjustPaddingBlockHeight();
 }
 
-async function moveBlock(fromIndex, toIndex, fromRefId){
+async function moveBlock(fromIndex, toIndex){
   const children = blocksContentEle.children;
   if (fromIndex < 0 || fromIndex >= children.length || 
       toIndex   < 0 || toIndex   >  children.length) {
