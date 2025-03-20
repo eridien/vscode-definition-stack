@@ -84,7 +84,7 @@ function scrollBlockIntoView(ele) {
   // console.log('scrollBlockIntoView:', 
   //     {fixedHeight, containerHeight, tempContHeight, contentHeight, scrollPos});
   ele.scrollIntoView({
-    behavior: 'smooth', // Smooth scrolling animation
+    behavior: 'auto', // 'smooth',
     block:    'start',     // Align the block with the top of the viewport
     inline:   'nearest'   // Keep horizontal alignment as is
   });
@@ -201,7 +201,9 @@ async function insertBlock(blockHtml, toIndex) {
   } 
   else blocksContentEle.insertBefore(newBlk, children[toIndex]);
   scrollBlockIntoView(children[toIndex]);
-  Prism.highlightAll();
+  Prism.highlightAllUnder(newBlk, false, () => {
+    console.log('Prism highlight done', newBlk.id);
+  });
 }
 
 async function moveBlock(fromIndex, toIndex, fromRefId){
