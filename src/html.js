@@ -19,7 +19,8 @@ const vscLangIdToPrism = {
 
 let context, webview, language;
 let webviewHtml, webviewJs, iframeHtmlIn, iframeJsIn;
-let iframeCssIn, lineNumCss, prePrismJs, prismCoreJs, lineNumJs, keepMarkupJs;
+let iframeCssIn, lineNumCss, prePrismJs, prismCoreJs;
+let lineNumJs, keepMarkupJs, keepEscJs;
 
 async function loadConstFiles() {
   webviewHtml = await utils.readTxt(context, false, 
@@ -46,6 +47,8 @@ async function loadConstFiles() {
                'prism', 'plugins', 'keep-markup', 'prism-keep-markup.js');
   lineNumJs = await utils.readTxt(context, false, 
              'prism', 'plugins', 'line-numbers', 'prism-line-numbers.js');
+  keepEscJs = await utils.readTxt(context, false, 
+                                       'prism', 'plugins', 'keep-esc.js');
 }
 
 async function init(contextIn, webviewIn) {
@@ -138,7 +141,7 @@ async function addBlockToView(block, fromRef, toIndex) {
       bannerHtml(name, relPath, id, block.srcSymbol)         +
       codeHtml(lines, code, id)                              +
    `</div>`;
-  console.log('blockHtml:', blockHtml);
+  // console.log('blockHtml:', blockHtml);
   const data  = {blockHtml};
   const atEnd = (toIndex === undefined);
   if(!atEnd) data.toIndex = toIndex;
@@ -157,9 +160,8 @@ async function initWebviewHtml(editor) {
                                   'prism', 'languages', 'prism-clike.js');
   const langJavascript = await utils.readTxt(context, false, 
                             'prism', 'languages', 'prism-javascript.js');
-  const iframeJs = (prePrismJs + prismCoreJs + 
-                    langClike + langJavascript + 
-                    keepMarkupJs + lineNumJs + iframeJsIn); 
+  const iframeJs = (prePrismJs + prismCoreJs + langClike + langJavascript + 
+                    keepMarkupJs + lineNumJs + keepEscJs + iframeJsIn); 
 
   const config     = vscode.workspace.getConfiguration('editor', document.uri);
   const fontFamily = ` */ font-family: ${config.fontFamily};   /* `;
@@ -197,38 +199,11 @@ function showInWebview(msg) {
   else log('info', msg);
 }
 
-const ampMrkr   = "\u0001";
-const ltMrkr    = "\u0002";
-const gtMrkr    = "\u0003";
-const quoteMrkr = "\u0004";
-const tickMrkr  = "\u0005";
-
-function charsToMrkrs(str) {
-  return str
-      .replaceAll(/&/g, ampMrkr)
-      .replaceAll(/</g, ltMrkr)
-      .replaceAll(/>/g, gtMrkr)
-      .replaceAll(/"/g, quoteMrkr)
-      .replaceAll(/'/g, tickMrkr);
-}
-
-function mrkrsToEsc(str) {
-    return str
-        .replaceAll(ampMrkr,   "&amp;" )
-        .replaceAll(ltMrkr,    "&lt;"  )
-        .replaceAll(gtMrkr,    "&gt;"  )
-        .replaceAll(quoteMrkr, "&quot;")
-        .replaceAll(tickMrkr,  "&#39;" );
-}
-
 function markupRefs(line) {
   let html = line.text;
-
-  const testLine = html.includes('<') || html.includes('&');
-  if(testLine) console.log(1, html);
-
-  html = charsToMrkrs(html);  
-  if(testLine) console.log(2, html);
+  html = html.replaceAll(/&/g, "\u0001")
+             .replaceAll(/</g, "\u0002")
+             .replaceAll(/>/g, "\u0003");
   for(let idx = line.words.length-1; idx >= 0; idx--) {
     const word = line.words[idx];
     const endOfs = word.endWordOfs;
@@ -237,10 +212,10 @@ function markupRefs(line) {
     const strtOfs = word.startWordOfs;
     html = html.slice(0, strtOfs) + span + html.slice(strtOfs);
   }
-  html = mrkrsToEsc(html);
-
-  if(testLine) console.log(3, html);
-
+  // html = html 
+  //     .replaceAll("\u0001", "&amp;amp;" )
+  //     .replaceAll("\u0002", "&amp;lt;"  )
+  //     .replaceAll("\u0003", "&amp;gt;"  );
   line.html = html;
 }
 
