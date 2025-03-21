@@ -73,68 +73,51 @@ async function expand(blkId, expandBtnEle) {
   adjustPaddingBlockHeight();
 }
 
-/**
- * Finds the element at the top of a scrollable container.
- * @param {HTMLElement} container - The scrollable container element.
- * @param {string} childSelector - A CSS selector to match the child elements.
- * @returns {HTMLElement|null} - The child element at the top of the container, or null if none is found.
- */
-function getTopElement(container, childSelector) {
-  if (!container) {
-    console.error('Container not found');
-    return null;
-  }
-  const containerRect = container.getBoundingClientRect();
-  const children = container.querySelectorAll(childSelector);
-  let topElement = null;
-  let minDistance = Infinity;
-  for (const child of children) {
-    const childRect = child.getBoundingClientRect();
-    const distance = Math.abs(childRect.top - containerRect.top);
-    // Check if the child is closer to the top of the container
-    if (distance < minDistance) {
-      minDistance = distance;
-      topElement = child;
-    }
-  }
-  if (!topElement) console.log('No element at top of container.');
-  return topElement;
-}
-
 async function home() {
   console.log('header home click');
   const rootEle = document.querySelector('[from-ref = "root"]');
   scrollBlockIntoView(rootEle);
 }
 
-function isAnyBlockAtTop() {
-  const containerTop = 
-          scrollContainerEle.getBoundingClientRect().top;
-  for(const blockEle of scrollContainerEle.children) {
-    const blockRect = blockEle.getBoundingClientRect();
-    if(Math.abs(blockRect.top - containerTop) < 3) return true;
+function getTopElement(container, childSelector) {
+  if (!container) {
+    console.error('Container not found');
+    return null;
   }
-  return false;
+  const containerRect = container.getBoundingClientRect();
+  const children      = container.querySelectorAll(childSelector);
+  for (const childEle of children) {
+    const childRect = childEle.getBoundingClientRect();
+    if (childRect.top-6 <= containerRect.top &&
+        childRect.bottom > containerRect.top) {
+      return { topEle: childEle, 
+         distTopToTop: Math.abs(childRect.top - containerRect.top)};
+    }
+  }
+  return null;
 }
 
 async function up() {
   console.log('header up  click');
-  const topEle = getTopElement(scrollContainerEle, '.ds-block');
-  if(!topEle) { console.log('header up, no top element'); return; }
+  const topRes = getTopElement(scrollContainerEle, '.ds-block');
+  if(!topRes) { console.log('up, no top element'); return; }
+  // console.log('up topRes:', topRes);
+  const {topEle, distTopToTop} = topRes;
   let eleToMoveToTop;
-  const anyBlockAtTop = isAnyBlockAtTop();
-  console.log('anyBlockAtTop:', anyBlockAtTop);
-  if(anyBlockAtTop()) eleToMoveToTop = topEle.previousElementSibling;
-  else eleToMoveToTop = topEle;
+  const blockAtTop = distTopToTop < 3;
+  if(blockAtTop) eleToMoveToTop = topEle.previousElementSibling;
+  else           eleToMoveToTop = topEle;
   if(eleToMoveToTop) scrollBlockIntoView(eleToMoveToTop);
 }
 
 async function down() {
   console.log('header down  click');
-  const topEle = getTopElement(scrollContainerEle, '.ds-block');
-  if(!topEle) { console.log('header down, no top element'); return; }
-  const nextEle = topEle.nextElementSibling;
-  if(nextEle) scrollBlockIntoView(nextEle);
+  const topRes = getTopElement(scrollContainerEle, '.ds-block');
+  if(!topRes) { console.log('down, no top element'); return; }
+  // console.log('down topRes:', topRes);
+  const {topEle} = topRes;
+  const eleToMoveToTop = topEle.nextElementSibling;
+  if(eleToMoveToTop) scrollBlockIntoView(eleToMoveToTop);
 }
 
 async function expandAll() {
@@ -159,17 +142,6 @@ async function collapseAll() {
 
 function scrollBlockIntoView(ele) {
   if(!ele) { console.log('scrollBlockIntoView, ele not found'); return; }
-
-  // console.log('scrollBlockIntoView:', 
-  //     {fixedContainerEle, scrollContainerEle, blocksContentEle});
-  // const fixedHeight     = fixedContainerEle.clientHeight;
-  // const containerHeight = scrollContainerEle.clientHeight;
-  // const contentHeight   = blocksContentEle.clientHeight;
-  // const scrollPos       = scrollContainerEle.scrollTop;
-  // const tempContHeight  = Math.min(containerHeight, contentHeight-scrollPos);
-  // // scrollContainerEle.style.height = `${containerHeight}px`;
-  // console.log('scrollBlockIntoView:', 
-  //     {fixedHeight, containerHeight, tempContHeight, contentHeight, scrollPos});
   ele.scrollIntoView({
     behavior: 'auto', // 'smooth',
     block:    'start',     // Align the block with the top of the viewport
