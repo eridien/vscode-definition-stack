@@ -2,7 +2,6 @@ bugs ...
   python
   list.vue, end of 281 -> small empty scrolling window
   Definition is an entire file msg screwed up
-  html doesn't show (showInWebview)
   move stack to another column -> editor appears in same column
 
 to-do ...
@@ -16,7 +15,7 @@ unlikely ...
   scroll body under banner?
   vue script shows as module (list.vue/311)
   persist multiple stacks
-  load ref blocks
+  show blocks with references to given def block
 
 header config
   select theme
