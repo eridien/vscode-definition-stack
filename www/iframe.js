@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // }, 1000);
 
 function adjustPaddingBlockHeight() {
-  console.log('adjustPaddingBlockHeight');
+  // console.log('adjustPaddingBlockHeight');
   const paddingBlockEle = document.getElementById('padding-block');
   const lastRealBlock   = paddingBlockEle.previousElementSibling;
   if(!lastRealBlock) return;
@@ -36,7 +36,7 @@ function adjustPaddingBlockHeight() {
 
 function watchForContainerChange() {
   const observer = new ResizeObserver(entries => {
-  console.log('watchForContainerChange');
+  // console.log('watchForContainerChange');
     requestAnimationFrame(() => {
       for(const entry of entries) {
         if(entry.target === scrollContainerEle) {
@@ -253,7 +253,8 @@ document.addEventListener('click', event => {
 
 function eleFromHtml(html) {
   const tempDiv = document.createElement('template');
-  tempDiv.innerHTML = html.trim();
+  // console.log('eleFromHtml:', html);
+  tempDiv.innerHTML = html;
   return tempDiv.content.firstChild;
 }
 

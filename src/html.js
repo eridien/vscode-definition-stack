@@ -134,10 +134,11 @@ async function addBlockToView(block, fromRef, toIndex) {
   for(const line of lines)
     code += ((line.html.slice(minWsIdx)) + "\n");
   const blockHtml = 
-   `<div id="${id}" class="ds-block" from-ref="${fromRef}">`               +
-      bannerHtml(name, relPath, id, block.srcSymbol) +
-      codeHtml(lines, code, id)                      +
+   `<div id="${id}" class="ds-block" from-ref="${fromRef}">` +
+      bannerHtml(name, relPath, id, block.srcSymbol)         +
+      codeHtml(lines, code, id)                              +
    `</div>`;
+  console.log('blockHtml:', blockHtml);
   const data  = {blockHtml};
   const atEnd = (toIndex === undefined);
   if(!atEnd) data.toIndex = toIndex;
@@ -196,8 +197,38 @@ function showInWebview(msg) {
   else log('info', msg);
 }
 
+const ampMrkr   = "\u0001";
+const ltMrkr    = "\u0002";
+const gtMrkr    = "\u0003";
+const quoteMrkr = "\u0004";
+const tickMrkr  = "\u0005";
+
+function charsToMrkrs(str) {
+  return str
+      .replaceAll(/&/g, ampMrkr)
+      .replaceAll(/</g, ltMrkr)
+      .replaceAll(/>/g, gtMrkr)
+      .replaceAll(/"/g, quoteMrkr)
+      .replaceAll(/'/g, tickMrkr);
+}
+
+function mrkrsToEsc(str) {
+    return str
+        .replaceAll(ampMrkr,   "&amp;" )
+        .replaceAll(ltMrkr,    "&lt;"  )
+        .replaceAll(gtMrkr,    "&gt;"  )
+        .replaceAll(quoteMrkr, "&quot;")
+        .replaceAll(tickMrkr,  "&#39;" );
+}
+
 function markupRefs(line) {
   let html = line.text;
+
+  const testLine = html.includes('<') || html.includes('&');
+  if(testLine) console.log(1, html);
+
+  html = charsToMrkrs(html);  
+  if(testLine) console.log(2, html);
   for(let idx = line.words.length-1; idx >= 0; idx--) {
     const word = line.words[idx];
     const endOfs = word.endWordOfs;
@@ -206,6 +237,10 @@ function markupRefs(line) {
     const strtOfs = word.startWordOfs;
     html = html.slice(0, strtOfs) + span + html.slice(strtOfs);
   }
+  html = mrkrsToEsc(html);
+
+  if(testLine) console.log(3, html);
+
   line.html = html;
 }
 

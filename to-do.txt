@@ -2,8 +2,11 @@ bugs ...
   python
   list.vue, end of 281 -> small empty scrolling window
   Definition is an entire file msg screwed up
+  html doesn't show (showInWebview)
+  move stack to another column -> editor appears in same column
 
 to-do ...
+  ctrl-c
   auto-copy on selection
   show banner positions in scrollbar
   use vscode colors in banner or steal colors from prism theme
@@ -31,3 +34,6 @@ add configs ...
   lang id mapping
   theme
   order of defs/refs
+
+npm install -g @vscode/vsce
+vsce package
