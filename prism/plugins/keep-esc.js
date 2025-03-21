@@ -1,4 +1,3 @@
-  /* global Prism */
 
 // keep-esc is a teensie-weensie plugin to escape HTML 
 // entities in Prism.js.
@@ -13,13 +12,6 @@ function charsToMrkrs(str) {
             .replaceAll(/"/g, "\u0004");
 }
 */
-
-// Prism.hooks.add('before-insert', function (env) {
-//   env.highlightedCode = env.highlightedCode 
-//       .replaceAll("\u0001", "&amp;" )
-//       .replaceAll("\u0002", "&lt;"  )
-//       .replaceAll("\u0003", "&gt;"  );
-// });
 
 Prism.hooks.add('before-insert', function (env) {
   env.highlightedCode = env.highlightedCode 

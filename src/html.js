@@ -212,10 +212,6 @@ function markupRefs(line) {
     const strtOfs = word.startWordOfs;
     html = html.slice(0, strtOfs) + span + html.slice(strtOfs);
   }
-  // html = html 
-  //     .replaceAll("\u0001", "&amp;amp;" )
-  //     .replaceAll("\u0002", "&amp;lt;"  )
-  //     .replaceAll("\u0003", "&amp;gt;"  );
   line.html = html;
 }
 
