@@ -216,17 +216,19 @@ function bannerNameClick(ele, bannerNameId) {
   else scrollToFromRef(fromRefId);
 }
 
-function bannerPathClick( ele, bannerPathId) {
-  const filePath = ele.innerText;
-  console.log('bannerPathClick:', bannerPathId, filePath);
-  send('openEditor', {filePath});
+function bannerPathClick(ele, bannerPathId) {
+  const blkId = blkIdFromId(bannerPathId);
+  console.log('bannerPathClick:', bannerPathId);
+  send('openEditor', {blkId});
 }
 
 function codeClick(blkEle) {
-  const filePath = blkEle.querySelector('.banner-path').innerText;
-  const lineNo   = blkEle.querySelector('pre').getAttribute('data-start');
-  console.log('codeClick filePath, lineNo:', filePath, lineNo);
-  send('openEditor', {filePath, lineNo});
+  const blkId = blkEle.id
+  let lineNo  = +blkEle.querySelector('pre')
+                        .getAttribute('data-start');
+  lineNo -= 2;
+  console.log('codeClick:', {blkId, lineNo});
+  send('openEditor', {blkId, lineNo});
 }
 
 function setFromRefHighlight(refEle) {

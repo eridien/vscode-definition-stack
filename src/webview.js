@@ -46,24 +46,36 @@ async function initWebview(context) {
   blk.init();
 }
 
+function revealAndHighlightLine(editor, lineNumber) {
+  const position = new vscode.Position(lineNumber+1, 0);
+  const range = new vscode.Range(position, position);
+  editor.revealRange(range, vscode.TextEditorRevealType.AtTop);
+  const highlightDecoration = vscode.window
+          .createTextEditorDecorationType({
+              backgroundColor: "rgba(255,255,0,0.3)",
+              isWholeLine: true,
+          });
+  editor.setDecorations(highlightDecoration, [range]);
+  setTimeout(() => {
+      editor.setDecorations(highlightDecoration, []);
+  }, 2000);
+}
+
 async function openEditor(data) {
-  const {filePath, lineNo} = data;
+  const {blkId, lineNo} = data;
   let viewColumn;
   if(currentColumn === vscode.ViewColumn.Two)
-    viewColumn = vscode.ViewColumn.One;
-  else
-    viewColumn = vscode.ViewColumn.Two;
-  log('openEditor viewColumn:', viewColumn);
+       viewColumn = vscode.ViewColumn.One;
+  else viewColumn = vscode.ViewColumn.Two;
   try {
-    const document = await vscode.workspace.openTextDocument(filePath);
+    const document = await vscode.workspace
+            .openTextDocument(blk.getPathByBlkId(blkId));
     await vscode.window.showTextDocument(document, 
             { viewColumn, preserveFocus: false });
     if(lineNo !== undefined) {
-      const line         = document.lineAt(+lineNo);
-      const begOfLinePos = line.range.start;
-      const range        = new vscode.Range(begOfLinePos, begOfLinePos);
-      await vscode.window.activeTextEditor
-                  .revealRange(range, vscode.TextEditorRevealType.InCenter);
+      const line   = document.lineAt(lineNo);
+      const editor = vscode.window.activeTextEditor;
+      revealAndHighlightLine(editor, line.lineNumber);
     }
   } catch (error) {
     log('info', 'Failed to open file:', error.message);

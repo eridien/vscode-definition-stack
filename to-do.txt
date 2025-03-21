@@ -2,9 +2,9 @@ bugs ...
   python
   list.vue, end of 281 -> small empty scrolling window
   Definition is an entire file msg screwed up
+  arrow buttons broken
 
 to-do ...
-  restore relpath and save full path in block element
   show banner positions in scrollbar
   use vscode colors in banner or steal colors from prism theme
   busy indicator

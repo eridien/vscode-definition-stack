@@ -11,10 +11,12 @@ const ignorePaths = ['node_modules', '.d.ts'];
 
 let blockByHash   = {};
 let blocksByRefId = {};
+let pathByBlkId   = {};
 
 function init() {
   blockByHash   = {};
   blocksByRefId = {};
+  pathByBlkId   = {};
 }
 
 function getBlockByHash(hash) {
@@ -23,6 +25,10 @@ function getBlockByHash(hash) {
 
 function getBlocksByRefId(refId) {
   return blocksByRefId[refId];
+}
+
+function getPathByBlkId(blkId) {
+  return pathByBlkId[blkId];
 }
 
 function showAllBlocks() {
@@ -155,8 +161,7 @@ async function getOrMakeBlock(name, uri, range) {
   const document = await vscode.workspace.openTextDocument(location.uri)
   const projIdx  = utils.getProjectIdx(document);
   const projPath = vscode.workspace.workspaceFolders[projIdx].uri.path;
-  // const relPath  = uri.path.slice(projPath.length+1);
-  const relPath  = uri.path;
+  const relPath  = uri.path.slice(projPath.length+1);
   
   const block = {id, name, location, relPath, hash};
   block.flags = {};
@@ -164,6 +169,7 @@ async function getOrMakeBlock(name, uri, range) {
         await utils.locationIsEntireFile(location);
   await addLines(block);
   blockByHash[hash] = block;
+  pathByBlkId[id]   = uri.path;
   if(!block.srcSymbol) {
     const sel = new vscode.Selection(range.start, range.end);
     block.srcSymbol = await getSurroundingBlock(uri, sel, true);
@@ -246,6 +252,6 @@ async function showFirstBlockWhenReady(contextIn, textEditor) {
 }
 
 module.exports = { 
-  init, showFirstBlockWhenReady, getBlocksByRefId, 
+  init, showFirstBlockWhenReady, getBlocksByRefId, getPathByBlkId,
   showAllBlocks, showAllRefs, addAllData
 };
