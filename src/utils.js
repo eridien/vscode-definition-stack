@@ -4,6 +4,12 @@ const vscode = require('vscode');
 const path   = require('path');
 const log    = getLog('UTIL');
 
+let context = null;
+
+function init(contextIn) {
+  context = contextIn;
+}
+
 const outputChannel = 
          vscode.window.createOutputChannel('Definition Stack');
 outputChannel.clear();
@@ -32,7 +38,22 @@ function getLog(module) {
   return log;
 }
 
-async function readTxt(context, noComments, ...paths) {
+async function readDirByRelPath(relPath) {
+  const dirPath = path.join(context.extensionPath, ".", relPath);
+  const dirUri = vscode.Uri.file(dirPath); // Convert path string to Uri
+  try {
+    const entries = await vscode.workspace.fs.readDirectory(dirUri);
+    const files = entries
+      .filter(([_, type]) => type === vscode.FileType.File)
+      .map(([name]) => name);
+    return files;
+  } catch (error) {
+    log('err', "readDirByRelPath Error reading directory:", error.message);
+    return null;
+  }
+}
+
+async function readTxt(noComments, ...paths) {
   let text;
   const filePath = path.join(context.extensionPath, ...paths);
   try {
@@ -126,7 +147,7 @@ function tailFromId(id) {
 }
 
 module.exports = { 
-  getLog, getTextFromDoc, fixDriveLetter, sleep, getProjectIdx,
+  init, getLog, getTextFromDoc, fixDriveLetter, sleep, getProjectIdx,
   containsRange, containsLocation, locationIsEntireFile, getRangeSize, readTxt,
-  blkIdFromId, tailFromId
+  blkIdFromId, tailFromId, readDirByRelPath
 };

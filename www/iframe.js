@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   scrollContainerEle = document.getElementById('scroll-container');
   blocksContentEle   = document.getElementById('blocks-content');
   watchForContainerChange();
-  watchForSelectionChange();
+  // watchForSelectionChange();
   send('ready', {});
 });
 
@@ -50,19 +50,19 @@ function watchForContainerChange() {
   observer.observe(scrollContainerEle);
 }
 
-function watchForSelectionChange() {
-  document.addEventListener("selectionchange", async () => {
-    const selection = window.getSelection().toString().trim();
-    if (selection) {
-      console.log('selection:', selection);
-      await navigator.clipboard.writeText("Text to copy");
-      // vscode.postMessage({
-      //   command: "selectionChanged",
-      //   text: selection
-      // });
-    }
-  });
-}
+// function watchForSelectionChange() {
+//   document.addEventListener("selectionchange", async () => {
+//     const selection = window.getSelection().toString().trim();
+//     if (selection) {
+//       console.log('selection:', selection);
+//       await navigator.clipboard.writeText("Text to copy");
+//       // vscode.postMessage({
+//       //   command: "selectionChanged",
+//       //   text: selection
+//       // });
+//     }
+//   });
+// }
   
 function blkIdFromId(id) {return id.split('-').splice(0, 3).join('-')}
 function tailFromId(id) {return id.split('-').splice(3).join('-')}

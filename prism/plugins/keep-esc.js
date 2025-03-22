@@ -1,3 +1,4 @@
+  /* global Prism */
 
 // keep-esc is a teensie-weensie plugin to escape HTML 
 // entities in Prism.js.

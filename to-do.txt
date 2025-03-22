@@ -2,6 +2,7 @@ bugs ...
   python
 
 to-do ...
+  add line count
   find
   ctrl-c
   auto-copy on selection

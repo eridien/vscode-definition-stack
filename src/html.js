@@ -23,31 +23,25 @@ let iframeCssIn, lineNumCss, prePrismJs, prismCoreJs;
 let lineNumJs, keepMarkupJs, keepEscJs;
 
 async function loadConstFiles() {
-  webviewHtml = await utils.readTxt(context, false, 
-                                                  'www', 'webview.html');
-  webviewJs = await utils.readTxt(context, false, 
-                                                    'www', 'webview.js');
-  iframeHtmlIn = await utils.readTxt(context, false, 
-                                                    'www', 'iframe.html'); 
-  iframeJsIn = await utils.readTxt(context, false, 
-                                                      'www', 'iframe.js'); 
-  lineNumCss = await utils.readTxt(context, true, 
-            'prism', 'plugins', 'line-numbers', 'prism-line-numbers.css');
-            
-  iframeCssIn = await utils.readTxt(context, true, 
-                                                    'www', 'iframe.css'); 
+  webviewHtml = await utils.readTxt( false, 'www', 'webview.html');
+  webviewJs = await utils.readTxt(   false, 'www', 'webview.js');
+  iframeHtmlIn = await utils.readTxt(false, 'www', 'iframe.html'); 
+  iframeJsIn = await utils.readTxt(  false, 'www', 'iframe.js'); 
+  lineNumCss = await utils.readTxt(  true,  'prism', 'plugins', 
+                      'line-numbers', 'prism-line-numbers.css');
+  iframeCssIn = await utils.readTxt( true,  'www', 'iframe.css'); 
   prePrismJs = `
     console.log('webview started');
     window.Prism = window.Prism || {};
 		window.Prism.manual = true;
   `;
-  prismCoreJs = await utils.readTxt(context, false, 
+  prismCoreJs = await utils.readTxt(false, 
                                                 'prism', 'prism-core.js');
-  keepMarkupJs = await utils.readTxt(context, false, 
+  keepMarkupJs = await utils.readTxt(false, 
                'prism', 'plugins', 'keep-markup', 'prism-keep-markup.js');
-  lineNumJs = await utils.readTxt(context, false, 
+  lineNumJs = await utils.readTxt(false, 
              'prism', 'plugins', 'line-numbers', 'prism-line-numbers.js');
-  keepEscJs = await utils.readTxt(context, false, 
+  keepEscJs = await utils.readTxt(false, 
                                        'prism', 'plugins', 'keep-esc.js');
 }
 
@@ -151,15 +145,15 @@ async function addBlockToView(block, fromRef, toIndex) {
 
 async function initWebviewHtml(editor) {
   const document = editor.document;
-  const prismCss = await utils.readTxt(context, true, 
+  const prismCss = await utils.readTxt(true, 
                                           'prism', 'themes', 'prism.css');
                                           // 'prism', 'themes', 'prism-a11y-dark.css');
   const iframeCss = prismCss + lineNumCss + iframeCssIn;
 
-  const langClike = await utils.readTxt(context, false, 
-                                  'prism', 'languages', 'prism-clike.js');
-  const langJavascript = await utils.readTxt(context, false, 
-                            'prism', 'languages', 'prism-javascript.js');
+  const langClike = await utils.readTxt(false, 
+                                  'prism', 'languages', 'prism-clike.min.js');
+  const langJavascript = await utils.readTxt(false, 
+                            'prism', 'prism-javascript.js');
   const iframeJs = (prePrismJs + prismCoreJs + langClike + langJavascript + 
                     keepMarkupJs + lineNumJs + keepEscJs + iframeJsIn); 
 

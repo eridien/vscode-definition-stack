@@ -8,6 +8,7 @@ module.exports = [
       sourceType: "commonjs"   // ✅ Enables CommonJS support
     },
     rules: {
+      "no-console": "off",
       "no-undef": "error",      // Disallow using undefined variables
       "no-unused-vars": "warn"  // Warn about unused variables
     }
