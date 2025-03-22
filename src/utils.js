@@ -38,13 +38,13 @@ function getLog(module) {
   return log;
 }
 
-async function readDirByRelPath(relPath) {
-  const dirPath = path.join(context.extensionPath, ".", relPath);
-  const dirUri = vscode.Uri.file(dirPath); // Convert path string to Uri
+async function readDirByRelPath(...relPath) {
+  const dirPath = path.join(context.extensionPath, ".", ...relPath);
+  const dirUri = vscode.Uri.file(dirPath);
   try {
     const entries = await vscode.workspace.fs.readDirectory(dirUri);
     const files = entries
-      .filter(([_, type]) => type === vscode.FileType.File)
+      .filter(([, type]) => type === vscode.FileType.File)
       .map(([name]) => name);
     return files;
   } catch (error) {

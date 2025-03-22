@@ -219,8 +219,7 @@ async function getSurroundingBlock(uri, selectionRange, symbolOnly = false) {
 
 let uniqueRefId = 1;
 
-async function showFirstBlock(contextIn, textEditor) {
-  context = contextIn;
+async function showFirstBlock(textEditor) {
   const document  = textEditor.document;
   const uri       = document.uri;
   const selection = textEditor.selection; 
@@ -242,12 +241,13 @@ async function showFirstBlock(contextIn, textEditor) {
   await navi.addBlockToView(block);
 }
 
-async function showFirstBlockWhenReady(contextIn, textEditor) {
+async function showFirstBlockWhenReady(textEditor) {
   comm.registerWebviewRecv('ready', true, async () => {
     log('webview ready');
-    await showFirstBlock(contextIn, textEditor);
+    html.setTheme(textEditor);
+    html.setLanguage(textEditor);
+    await showFirstBlock(textEditor);
   });
-  html.setLanguage(textEditor);
   await html.initWebviewHtml(textEditor);
 }
 

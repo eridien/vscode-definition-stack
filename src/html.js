@@ -17,7 +17,7 @@ const vscLangIdToPrism = {
   "vue":           "javascript"
 }
 
-let context, webview, language;
+let webview, context, language, theme;
 let webviewHtml, webviewJs, iframeHtmlIn, iframeJsIn;
 let iframeCssIn, lineNumCss, prePrismJs, prismCoreJs;
 let lineNumJs, keepMarkupJs, keepEscJs;
@@ -46,8 +46,8 @@ async function loadConstFiles() {
 }
 
 async function init(contextIn, webviewIn) {
-  context      = contextIn;
-  webview      = webviewIn;
+  context = contextIn;
+  webview = webviewIn;
   webview.html = "";
   await loadConstFiles();
 }
@@ -57,16 +57,57 @@ function setLanguage(editor) {
   const vscLangId = document.languageId;
   language = vscLangIdToPrism[vscLangId];
   language ??= vscLangId;
+  comm.send('setLanguage', {language});
   log('set language:', language);
 }
 
-function hdrHtml() {
+async function langSelectHtml() {
+  let options = `<select id="lang-select-hdr" readonly="true">`;
+  const files = await utils.readDirByRelPath('prism', 'languages');
+  for(const file of files) {
+    const matches = /^prism-(.*)\.min\.js$/.exec(file);
+    if(!matches) continue;
+    const lang = matches[1];
+    options += `<option value="${lang}">${lang}</option>\n`;
+  }
+  return options + `</select>`  ;
+}
+
+function setTheme(editor) {
+  const document = editor.document;
+  theme = context.globalState.get('theme', 'dark');
+  comm.send('setTheme', {theme});
+  log('setTheme:', theme);
+}
+
+// context.globalState.update('theme', theme);
+
+async function themeSelectHtml() {
+  let options = `<select id="theme-select-hdr" readonly="true">`;
+  const files = await utils.readDirByRelPath('prism', 'themes');
+  for(const file of files) {
+    let isMin = true;
+    let matches = /^prism-(.*)(\.min)\.css$/.exec(file);
+    if(!matches) {
+      isMin = false;
+      matches = /^prism-(.*)\.css$/.exec(file);
+    }
+    if(!matches) continue;
+    const theme = matches[1];
+    options += `<option value="${theme}">${theme}</option>\n`;
+  }
+  return options + `</select>`  ;
+}
+
+async function hdrHtml() {
   return `<div id="iframe-header">` +
             svg.iconHtml('home',     "iframe-hdr") + 
             svg.iconHtml('up-ptr',   "iframe-hdr") +
             svg.iconHtml('down-ptr', "iframe-hdr") +
             svg.iconHtml('collapse', "iframe-hdr") +
             svg.iconHtml('expand',   "iframe-hdr") +
+            (await themeSelectHtml()) + ' ' +
+            (await langSelectHtml())               +
          `</div>`;
 }
 
@@ -161,7 +202,7 @@ async function initWebviewHtml(editor) {
   const fontFamily = ` */ font-family: ${config.fontFamily};   /* `;
   const fontWeight = ` */ font-weight: ${config.fontWeight};   /* `;
   const fontSize   = ` */ font-size:   ${config.fontSize}px;   /* `;
-  const headerHtml = ` --> ${hdrHtml()} <!-- `;
+  const headerHtml = ` --> ${await hdrHtml()} <!-- `;
 
   const iframeHtml = (iframeHtmlIn
       .replace('**iframeCss**',  ` */ ${iframeCss} /*`)
@@ -217,7 +258,7 @@ function symbolTypeByKind(kind) {
     21: "Null", 22: "EnumMember", 23: "Struct", 24: "Event", 25: "Operator", 26: "TypeParameter" }
   [kind+1] ?? ""};
 
-module.exports = {setLanguage, init, initWebviewHtml, 
+module.exports = {setTheme, setLanguage, init, initWebviewHtml, 
                   addEmptyBlockToView, addBlockToView, 
                   showInWebview, markupRefs};
 

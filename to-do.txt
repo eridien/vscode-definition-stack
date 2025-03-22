@@ -2,6 +2,7 @@ bugs ...
   python
 
 to-do ...
+  get refs
   add line count
   find
   ctrl-c
@@ -14,7 +15,6 @@ unlikely ...
   scroll body under banner?
   vue script shows as module (list.vue/311)
   persist multiple stacks
-  show blocks with references to given def block
 
 header config
   select theme

@@ -17,7 +17,7 @@ async function activate(context) {
         if (!textEditor) return;
         await utils.init(context);
         await webv.init(context, textEditor);
-        await blk.showFirstBlockWhenReady(context, textEditor);
+        await blk.showFirstBlockWhenReady(textEditor);
         log('openWebViewCmd finished');  
       }	
   );

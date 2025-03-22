@@ -37,6 +37,13 @@ body {
   height:0px;
 }
 
+#lang-select-hdr, #theme-select-hdr {
+  font-size:16px;
+  width: 100px;
+  text-align:center;
+  background-color: #f0f0f0;
+}
+
 .banner {
   margin: 5px 0 -10px 0; 
   padding: 2px 15px 5px 15px;

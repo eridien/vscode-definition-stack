@@ -1,3 +1,5 @@
+
+
 //////////////// definition stack iframe script //////////////////
   
   /* global console window document Prism ResizeObserver requestAnimationFrame */
@@ -89,6 +91,14 @@ async function expand(blkId, expandBtnEle) {
   setStyle(expandBtnEle,   'display', 'none');
   setStyle(collapseBtnEle, 'display', 'inline-block');
   adjustPaddingBlockHeight();
+}
+
+async function setTheme(theme) {
+  document.getElementById('theme-select-hdr').value = theme;
+}
+
+async function setLanguage(language) {
+  document.getElementById('language-select-hdr').value = language;
 }
 
 async function home() {
@@ -326,8 +336,10 @@ window.addEventListener('message', event => {
   const {command, data} = message;
   switch (command) {
     case 'insertBlock': insertBlock(data.blockHtml, data.toIndex); break;
-    case 'moveBlock':   moveBlock(data.fromIndex, data.toIndex);   break;
-    case 'removeBlock': removeBlock(data.blockId);               break;
+    case 'moveBlock':   moveBlock(  data.fromIndex, data.toIndex); break;
+    case 'removeBlock': removeBlock(data.blockId);                 break;
+    case 'setLanguage': setLanguage(data.language);                break;
+    case 'setTheme':    setTheme(   data.theme);                   break;
   }
 });
 
