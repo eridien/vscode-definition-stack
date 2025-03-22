@@ -7,6 +7,7 @@
     "editor.selectionHighlightBorder": "#f00",
     "editor.findMatchBackground": "#eeeeeed2",
     "editor.findMatchHighlightBackground": "#fcc2",
+    "editorIndentGuide.background1": "#8f8",
     "terminal.inactiveSelectionBackground": "#00ff40",
     "terminal.selectionBackground": "#ff0",
     "diffEditor.insertedTextBackground": "#0f02",
@@ -21,7 +22,6 @@
     "tab.inactiveModifiedBorder": "#00f",
     "comment2": "input fields or text areas, not editor or terminal)",
     "selection.background": "#ee0",
-    "selection.foreground": "#000",
-    "editorIndentGuide.background1": "#8f8"
+    "selection.foreground": "#000"
   }
 }

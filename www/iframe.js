@@ -1,6 +1,6 @@
 //////////////// definition stack iframe script //////////////////
   
-  /* global window document Prism ResizeObserver requestAnimationFrame */
+  /* global console window document Prism ResizeObserver requestAnimationFrame */
 
 console.log('iframe started');
 
@@ -317,7 +317,3 @@ function send(command, data) {
   // console.log('iframe sending to webview', {command, data});
   window.parent.postMessage({src:'iframe', command, data}, '*');
 };
-
-// /* eslint-disable no-unused-vars */
-// /* eslint-enable no-unused-vars */
-
