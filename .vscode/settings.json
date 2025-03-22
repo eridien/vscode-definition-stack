@@ -23,5 +23,6 @@
     "comment2": "input fields or text areas, not editor or terminal)",
     "selection.background": "#ee0",
     "selection.foreground": "#000"
-  }
+  },
+  "cSpell.enabled": true
 }
