@@ -1,7 +1,6 @@
 bugs ...
   python
   list.vue, end of 281 -> small empty scrolling window
-  Definition is an entire file msg screwed up
   move stack to another column -> editor appears in same column
 
 to-do ...

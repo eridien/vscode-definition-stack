@@ -108,9 +108,9 @@ function codeHtml(lines, code, blkId) {
 }
 
 async function addEmptyBlockToView(id, name, relPath, toIndex, fromRef) {
-  log('adding empty block to view:', name.padEnd(15), relPath);
+  // log('adding empty block to view:', name, relPath);
   const blockHtml = 
-   `<div id="${id}" class="ds-block" from-ref="${fromRef}>`                               +
+   `<div id="${id}" class="ds-block" from-ref="${fromRef}">`          +
       bannerHtml(name, relPath, id)                                  +
      `<pre>`                                                         +
        `<code class="language-${language}">`                         +
