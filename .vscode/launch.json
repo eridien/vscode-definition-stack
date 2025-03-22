@@ -20,6 +20,7 @@
 			"type": "extensionHost",
 			"request": "launch",
       "args": [
+        "--disable-gpu-sandbox",
         "--extensionDevelopmentPath=${workspaceFolder}",
         "--folder-uri=c:/Users/mark/apps/test-app"
       ]

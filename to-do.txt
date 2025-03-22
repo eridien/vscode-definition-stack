@@ -1,9 +1,8 @@
 bugs ...
   python
-  list.vue, end of 281 -> small empty scrolling window
-  move stack to another column -> editor appears in same column
 
 to-do ...
+  find
   ctrl-c
   auto-copy on selection
   show banner positions in scrollbar
