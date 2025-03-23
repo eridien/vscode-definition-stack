@@ -69,9 +69,10 @@ function sendLanguage() {
 }
 
 function setLanguage(editor) {
-  language = context.globalState.get('language', 'notset');
+  const document = editor.document;
+  const path = document.uri.fsPath;
+  language = context.globalState.get(`lang-for-path-${path}`, 'notset');
   if(language == 'notset') {
-    const document  = editor.document;
     const vscLangId = document.languageId;
     language = vscLangIdToPrism[vscLangId];
     language ??= vscLangId;
