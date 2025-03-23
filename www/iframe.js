@@ -1,5 +1,4 @@
 
-
 //////////////// definition stack iframe script //////////////////
   
   /* global console window document Prism ResizeObserver requestAnimationFrame */
@@ -16,10 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   blocksContentEle   = document.getElementById('blocks-content');
   watchForContainerChange();
   // watchForSelectionChange();
-  const themeSelEle = document.getElementById('theme-select-hdr');
-  themeSelEle.value = window.defstackTheme;
-  const langSelEle  = document.getElementById('lang-select-hdr');
-  langSelEle.value  = window.defstackLanguage;
+  watchForThemeSelChange();
   send('ready', {});
 });
 
@@ -54,6 +50,14 @@ function watchForContainerChange() {
     });
   });
   observer.observe(scrollContainerEle);
+}
+
+function watchForThemeSelChange() {
+  const selectEle = document.getElementById("theme-select-hdr");
+  selectEle.addEventListener("change", function () {
+    console.log('themeSelChange:', selectEle.value);
+    send('themeSelChange', {theme: selectEle.value});
+  });
 }
 
 // function watchForSelectionChange() {

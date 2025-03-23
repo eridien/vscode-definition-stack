@@ -5,7 +5,12 @@ module.exports = [
     files: ["**/*.js"],
     languageOptions: {
       ecmaVersion: "latest",  // Supports modern JavaScript
-      sourceType: "commonjs"   // ✅ Enables CommonJS support
+      sourceType: "commonjs", 
+      globals: {
+        console: "readonly",
+        Buffer: "readonly",
+        setTimeout: "readonly"
+      }
     },
     rules: {
       "no-console": "off",

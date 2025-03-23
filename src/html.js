@@ -6,6 +6,8 @@ const svg    = require('./svg.js');
 const utils  = require('./utils.js');
 const log    = utils.getLog('HTML');
 
+let webv;
+
 const vscLangIdToPrism = {
   "bat":           "batch",
   "dockerfile":    "docker",
@@ -47,15 +49,28 @@ async function loadConstFiles() {
 }
 
 async function init(contextIn, webviewIn) {
+  webv    = require('./webview.js');
   context = contextIn;
   webview = webviewIn;
   webview.html = "";
+  comm.registerWebviewRecv('themeSelChange', themeSelChange);
   await loadConstFiles();
 }
 
 function setTheme() {
   theme = context.globalState.get('theme', 'dark');
   log('setTheme:', theme);
+}
+
+async function themeSelChange(data) {
+  const themeIn = data.theme;
+  if(themeIn == theme) return;
+  theme = themeIn;
+  context.globalState.update('theme', theme);
+  log('theme changed:', theme);
+  await utils.init(context);
+  await webv.init(context);
+  initWebviewHtml();
 }
 
 function setLanguage(editor) {
@@ -70,29 +85,15 @@ function setLanguage(editor) {
   log('set language:', language);
 }
 
-async function langSelectHtml() {
-  let options = `<select id="lang-select-hdr" readonly="true">\n
-                   <option value="unknown">Unknown</option>\n`;
-  const files = await utils.readDirByRelPath('prism', 'languages');
-  for(const file of files) {
-    const matches = /^prism-(.*)\.min\.js$/.exec(file);
-    if(!matches) continue;
-    const lang = matches[1];
-    options += `<option value="${lang}">${lang}</option>\n`;
-  }
-  return options + `</select>`  ;
-}
-
-// context.globalState.update('theme', theme);
-
 async function themeSelectHtml() {
   let options = `<select id="theme-select-hdr" readonly="true">`;
   const files = await utils.readDirByRelPath('prism', 'themes');
   for(const file of files) {
     const matches = /^prism-(.*)\.css$/.exec(file);
     if(!matches) continue;
-    const theme = matches[1];
-    options += `<option value="${theme}">${theme}</option>\n`;
+    const themeIn = matches[1];
+    options += `<option value="${themeIn}" 
+           ${themeIn == theme ? "selected" : ''}>${themeIn}</option>\n`;
   }
   return options + `</select>`  ;
 }
@@ -105,7 +106,6 @@ async function hdrHtml() {
             svg.iconHtml('collapse', "iframe-hdr") +
             svg.iconHtml('expand',   "iframe-hdr") +
             (await themeSelectHtml()) + ' ' +
-            (await langSelectHtml())               +
          `</div>`;
 }
 
@@ -182,6 +182,8 @@ async function addBlockToView(block, fromRef, toIndex) {
   log(`added block ${id} with ${block.lines.length} line(s) at ${atEnd ? 'end' : toIndex}`);
 }
 
+let config = null;
+
 async function initWebviewHtml(editor) {
   const prismCss = await utils.readTxt(true, 'prism', 'themes', `prism-${theme}.css`);
   const iframeCss = prismCss + lineNumCss + iframeCssIn;
@@ -207,14 +209,19 @@ async function initWebviewHtml(editor) {
       languageJs = langTxt + languageJs;
     }
   }
-  prePrismJs += `window.defstackLanguage = "${language}";\n` +
-                `window.defstackTheme    = "${theme}";\n`;
-
   const iframeJs = (prePrismJs + prismCoreJs + languageJs + 
                     keepMarkupJs + lineNumJs + keepEscJs + iframeJsIn); 
 
-  const document   = editor.document;
-  const config     = vscode.workspace.getConfiguration('editor', document.uri);
+  if(!editor && !config) {
+    config = {};
+    config.fontFamily = 'monospace';
+    config.fontSize   =  14;
+    config.fontWeight = 'normal';
+  }
+  if(editor) {  
+    const document = editor.document;
+    config = vscode.workspace.getConfiguration('editor', document.uri);
+  }
   const fontFamily = ` */ font-family: ${config.fontFamily};   /* `;
   const fontWeight = ` */ font-weight: ${config.fontWeight};   /* `;
   const fontSize   = ` */ font-size:   ${config.fontSize}px;   /* `;

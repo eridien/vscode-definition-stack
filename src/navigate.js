@@ -10,8 +10,8 @@ let blockStack    = [];
 
 function init() {
   blk = require('./block.js');
-  comm.registerWebviewRecv('refClick',         true, refClick);
-  comm.registerWebviewRecv('closeButtonClick', true, closeButtonClick);
+  comm.registerWebviewRecv('refClick', refClick);
+  comm.registerWebviewRecv('closeButtonClick', closeButtonClick);
   blockStack = [];
 }
 

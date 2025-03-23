@@ -12,7 +12,7 @@ let webviewPanel  = null;
 let currentColumn = null;
 
 async function init(context) {
-  comm.registerWebviewRecv('openEditor', true, openEditor);
+  comm.registerWebviewRecv('openEditor', openEditor);
   await initWebview(context);
 }
 

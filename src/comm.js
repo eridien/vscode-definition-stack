@@ -8,13 +8,11 @@ let context = null;
 
 let registeredRecvs = {};
 
-function registerWebviewRecv(command, exclusive, callback) {
-  if(exclusive) registeredRecvs[command] = [];
-  registeredRecvs[command] ??= [];
-  registeredRecvs[command].push(callback);
+function registerWebviewRecv(command, callback) {
+  registeredRecvs[command] = callback;
 }
 
-registerWebviewRecv('error', false, async data => {
+registerWebviewRecv('error', async data => {
   log('err', 'from webview:', data);
 });
 
@@ -23,9 +21,13 @@ async function init(contextIn, webviewIn) {
   context = contextIn;
   const recvDisposable = webview.onDidReceiveMessage(async message => {
     const {command, data} = message;
-    const callbacks = registeredRecvs[command] ?? [];
+    const callback = registeredRecvs[command];
+    if(!callback) {
+      log('err', 'Recv Message command not found:', {command, data});
+      return;
+    }
     // log('command from webview: ', {command, data});
-    for(const callback of callbacks) await callback(data);
+    await callback(data);
   });
   context.subscriptions.push(recvDisposable);
 }

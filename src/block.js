@@ -242,7 +242,7 @@ async function showFirstBlock(textEditor) {
 }
 
 async function showFirstBlockWhenReady(textEditor) {
-  comm.registerWebviewRecv('ready', true, async () => {
+  comm.registerWebviewRecv('ready', async () => {
     log('webview ready');
     await showFirstBlock(textEditor);
   });
