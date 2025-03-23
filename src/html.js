@@ -32,6 +32,7 @@ async function loadConstFiles() {
   iframeCssIn = await utils.readTxt( true,  'www', 'iframe.css'); 
   prePrismJs = `
     console.log('webview started');
+    debugger;
     window.Prism = window.Prism || {};
 		window.Prism.manual = true;
   `;
@@ -190,21 +191,31 @@ async function addBlockToView(block, fromRef, toIndex) {
 }
 
 async function initWebviewHtml(editor) {
-  const document = editor.document;
   const prismCss = await utils.readTxt(true, 'prism', 'themes', `prism-${theme}.css`);
   const iframeCss = prismCss + lineNumCss + iframeCssIn;
 
-  const languageJs = await utils.readTxt(false, 'prism', 
+  log(`reading language file for ${language}`);
+  let languageJs = await utils.readTxt(false, 'prism', 
                                   'languages', `prism-${language}.min.js`);
-
-
-  const langClike = await utils.readTxt(false, 
-                                  'prism', 'languages', 'prism-clike.min.js');
-                                  
-
+  if(languageJs === null) {
+    log('errinfo', 'initWebviewHtml, language file missing:', language);
+    languageJs = '';
+  }
+  let langTxt = languageJs;
+  while(true) { 
+    const matches = /Prism\.languages\.extend\s*\(\s*["'](.*?)["']/.exec(langTxt);
+    if(!matches) break;
+    const extLang = matches[1];
+    langTxt = await utils.readTxt(false, 'prism', 
+                                  'languages', `prism-${extLang}.min.js`);
+    if(langTxt === null) break;
+    log(`language ${language} extends ${extLang}`);
+    languageJs = langTxt + languageJs;
+  }
   const iframeJs = (prePrismJs + prismCoreJs + languageJs + 
                     keepMarkupJs + lineNumJs + keepEscJs + iframeJsIn); 
 
+  const document   = editor.document;
   const config     = vscode.workspace.getConfiguration('editor', document.uri);
   const fontFamily = ` */ font-family: ${config.fontFamily};   /* `;
   const fontWeight = ` */ font-weight: ${config.fontWeight};   /* `;
