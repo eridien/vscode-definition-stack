@@ -53,19 +53,9 @@ async function init(contextIn, webviewIn) {
   await loadConstFiles();
 }
 
-function sendTheme() {
-  comm.send('setTheme', {theme});
-  log('send Theme:', theme);
-}
-
 function setTheme() {
   theme = context.globalState.get('theme', 'dark');
   log('setTheme:', theme);
-}
-
-function sendLanguage() {
-  comm.send('setLanguage', {language});
-  log('send Language:', language);
 }
 
 function setLanguage(editor) {
@@ -81,7 +71,8 @@ function setLanguage(editor) {
 }
 
 async function langSelectHtml() {
-  let options = `<select id="lang-select-hdr" readonly="true">`;
+  let options = `<select id="lang-select-hdr" readonly="true">\n
+                   <option value="unknown">Unknown</option>\n`;
   const files = await utils.readDirByRelPath('prism', 'languages');
   for(const file of files) {
     const matches = /^prism-(.*)\.min\.js$/.exec(file);
@@ -199,20 +190,26 @@ async function initWebviewHtml(editor) {
   let languageJs = await utils.readTxt(false, 'prism', 
                                   'languages', `prism-${language}.min.js`);
   if(languageJs === null) {
-    log('errinfo', 'initWebviewHtml, language file missing:', language);
+    log('errinfo', 'Unknown language, select one.');
     languageJs = '';
+    language   = 'unknown';
   }
-  let langTxt = languageJs;
-  while(true) { 
-    const matches = /Prism\.languages\.extend\s*\(\s*["'](.*?)["']/.exec(langTxt);
-    if(!matches) break;
-    const extLang = matches[1];
-    langTxt = await utils.readTxt(false, 'prism', 
-                                  'languages', `prism-${extLang}.min.js`);
-    if(langTxt === null) break;
-    log(`language ${language} extends ${extLang}`);
-    languageJs = langTxt + languageJs;
+  else {
+    let langTxt = languageJs;
+    while(true) { 
+      const matches = /Prism\.languages\.extend\s*\(\s*["'](.*?)["']/.exec(langTxt);
+      if(!matches) break;
+      const extLang = matches[1];
+      langTxt = await utils.readTxt(false, 'prism', 
+                                    'languages', `prism-${extLang}.min.js`);
+      if(langTxt === null) break;
+      log(`language ${language} extends ${extLang}`);
+      languageJs = langTxt + languageJs;
+    }
   }
+  prePrismJs += `window.defstackLanguage = "${language}";\n` +
+                `window.defstackTheme    = "${theme}";\n`;
+
   const iframeJs = (prePrismJs + prismCoreJs + languageJs + 
                     keepMarkupJs + lineNumJs + keepEscJs + iframeJsIn); 
 
@@ -277,6 +274,5 @@ function symbolTypeByKind(kind) {
     21: "Null", 22: "EnumMember", 23: "Struct", 24: "Event", 25: "Operator", 26: "TypeParameter" }
   [kind+1] ?? ""};
 
-module.exports = {setTheme, sendTheme, setLanguage, sendLanguage, init, initWebviewHtml, 
-                  addEmptyBlockToView, addBlockToView, 
-                  showInWebview, markupRefs};
+module.exports = {init, setTheme, setLanguage, initWebviewHtml, 
+                  markupRefs, addEmptyBlockToView, addBlockToView, showInWebview};

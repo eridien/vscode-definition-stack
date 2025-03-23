@@ -1,7 +1,9 @@
 bugs ...
   python
+  block vibrates on certain heights
 
 to-do ... 
+  button to reload last initial block
   refresh button
   close all blocks but current
   get refs

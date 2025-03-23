@@ -16,6 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
   blocksContentEle   = document.getElementById('blocks-content');
   watchForContainerChange();
   // watchForSelectionChange();
+  const themeSelEle = document.getElementById('theme-select-hdr');
+  themeSelEle.value = window.defstackTheme;
+  const langSelEle  = document.getElementById('lang-select-hdr');
+  langSelEle.value  = window.defstackLanguage;
   send('ready', {});
 });
 
@@ -91,14 +95,6 @@ async function expand(blkId, expandBtnEle) {
   setStyle(expandBtnEle,   'display', 'none');
   setStyle(collapseBtnEle, 'display', 'inline-block');
   adjustPaddingBlockHeight();
-}
-
-async function setTheme(theme) {
-  document.getElementById('theme-select-hdr').value = theme;
-}
-
-async function setLanguage(language) {
-  document.getElementById('lang-select-hdr').value = language;
 }
 
 async function home() {
@@ -338,8 +334,6 @@ window.addEventListener('message', event => {
     case 'insertBlock': insertBlock(data.blockHtml, data.toIndex); break;
     case 'moveBlock':   moveBlock(  data.fromIndex, data.toIndex); break;
     case 'removeBlock': removeBlock(data.blockId);                 break;
-    case 'setLanguage': setLanguage(data.language);                break;
-    case 'setTheme':    setTheme(   data.theme);                   break;
   }
 });
 
