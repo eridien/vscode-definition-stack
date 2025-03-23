@@ -1,8 +1,14 @@
 bugs ...
   python
   block vibrates on certain heights
+  hilite colors unreadable in dark 
 
 to-do ... 
+  if "not in a block" then 
+      allow select lang
+      show "not a definition" in the banner
+      if small show full file 
+      else truncate or show subset with logic
   button to reload last initial block
   refresh button
   close all blocks but current
@@ -21,12 +27,7 @@ unlikely ...
   persist multiple stacks
 
 header config
-  select theme
   scale (text size +-)
-
-banner buttons ...
-  close
-  collapse/expand (1 block)
 
 add configs ...
   does file text include path
