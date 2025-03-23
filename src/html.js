@@ -96,12 +96,7 @@ async function themeSelectHtml() {
   let options = `<select id="theme-select-hdr" readonly="true">`;
   const files = await utils.readDirByRelPath('prism', 'themes');
   for(const file of files) {
-    let isMin = true;
-    let matches = /^prism-(.*)(\.min)\.css$/.exec(file);
-    if(!matches) {
-      isMin = false;
-      matches = /^prism-(.*)\.css$/.exec(file);
-    }
+    const matches = /^prism-(.*)\.css$/.exec(file);
     if(!matches) continue;
     const theme = matches[1];
     options += `<option value="${theme}">${theme}</option>\n`;
@@ -196,16 +191,18 @@ async function addBlockToView(block, fromRef, toIndex) {
 
 async function initWebviewHtml(editor) {
   const document = editor.document;
-  const prismCss = await utils.readTxt(true, 
-                                          'prism', 'themes', 'prism.css');
-                                          // 'prism', 'themes', 'prism-a11y-dark.css');
+  const prismCss = await utils.readTxt(true, 'prism', 'themes', `prism-${theme}.css`);
   const iframeCss = prismCss + lineNumCss + iframeCssIn;
+
+  const languageJs = await utils.readTxt(false, 'prism', 
+                                  'languages', `prism-${language}.min.js`);
+
 
   const langClike = await utils.readTxt(false, 
                                   'prism', 'languages', 'prism-clike.min.js');
-  const langJavascript = await utils.readTxt(false, 
-                            'prism', 'prism-javascript.js');
-  const iframeJs = (prePrismJs + prismCoreJs + langClike + langJavascript + 
+                                  
+
+  const iframeJs = (prePrismJs + prismCoreJs + languageJs + 
                     keepMarkupJs + lineNumJs + keepEscJs + iframeJsIn); 
 
   const config     = vscode.workspace.getConfiguration('editor', document.uri);
