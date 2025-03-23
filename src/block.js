@@ -244,10 +244,12 @@ async function showFirstBlock(textEditor) {
 async function showFirstBlockWhenReady(textEditor) {
   comm.registerWebviewRecv('ready', true, async () => {
     log('webview ready');
-    html.setTheme(textEditor);
-    html.setLanguage(textEditor);
+    html.sendTheme();
+    html.sendLanguage();
     await showFirstBlock(textEditor);
   });
+  html.setTheme();
+  html.setLanguage(textEditor);
   await html.initWebviewHtml(textEditor);
 }
 

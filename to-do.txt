@@ -1,7 +1,9 @@
 bugs ...
   python
 
-to-do ...
+to-do ... 
+  refresh button
+  close all blocks but current
   get refs
   add line count
   find

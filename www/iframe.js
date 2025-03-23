@@ -98,7 +98,7 @@ async function setTheme(theme) {
 }
 
 async function setLanguage(language) {
-  document.getElementById('language-select-hdr').value = language;
+  document.getElementById('lang-select-hdr').value = language;
 }
 
 async function home() {

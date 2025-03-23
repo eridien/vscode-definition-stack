@@ -52,12 +52,29 @@ async function init(contextIn, webviewIn) {
   await loadConstFiles();
 }
 
-function setLanguage(editor) {
-  const document  = editor.document;
-  const vscLangId = document.languageId;
-  language = vscLangIdToPrism[vscLangId];
-  language ??= vscLangId;
+function sendTheme() {
+  comm.send('setTheme', {theme});
+  log('send Theme:', theme);
+}
+
+function setTheme() {
+  theme = context.globalState.get('theme', 'dark');
+  log('setTheme:', theme);
+}
+
+function sendLanguage() {
   comm.send('setLanguage', {language});
+  log('send Language:', language);
+}
+
+function setLanguage(editor) {
+  language = context.globalState.get('language', 'notset');
+  if(language == 'notset') {
+    const document  = editor.document;
+    const vscLangId = document.languageId;
+    language = vscLangIdToPrism[vscLangId];
+    language ??= vscLangId;
+  }
   log('set language:', language);
 }
 
@@ -71,13 +88,6 @@ async function langSelectHtml() {
     options += `<option value="${lang}">${lang}</option>\n`;
   }
   return options + `</select>`  ;
-}
-
-function setTheme(editor) {
-  const document = editor.document;
-  theme = context.globalState.get('theme', 'dark');
-  comm.send('setTheme', {theme});
-  log('setTheme:', theme);
 }
 
 // context.globalState.update('theme', theme);
@@ -258,58 +268,6 @@ function symbolTypeByKind(kind) {
     21: "Null", 22: "EnumMember", 23: "Struct", 24: "Event", 25: "Operator", 26: "TypeParameter" }
   [kind+1] ?? ""};
 
-module.exports = {setTheme, setLanguage, init, initWebviewHtml, 
+module.exports = {setTheme, sendTheme, setLanguage, sendLanguage, init, initWebviewHtml, 
                   addEmptyBlockToView, addBlockToView, 
                   showInWebview, markupRefs};
-
-
-/*
-const themeMapping = {
-    "Dark+ (default dark)": "prism-dark",
-    "Monokai": "prism-monokai",
-    "One Dark": "prism-one-dark",
-    "Solarized Dark": "prism-solarized-dark",
-    "Dracula": "prism-dracula",
-    "Light+ (default light)": "prism-light",
-    "Solarized Light": "prism-solarized-light"
-};
-
-  function isLightTheme() {
-    const currentTheme = vscode.workspace.getConfiguration('workbench').get('colorTheme');
-    const darkThemes = [
-        'Dark+ (default dark)',
-        'Monokai',
-        'Abyss',
-        'One Dark Pro',
-        'Dracula',
-        'Night Owl',
-        'Cobalt2',
-        'Shades of Purple',
-        'One Dark',
-        'Solarized Dark',
-        'SynthWave ’84',
-        'Material Theme Darker',
-        'Nightfall',
-        'Vibrancy',
-        'Palenight',
-        'Gruvbox Dark'
-    ];
-    const lightThemes = [
-        'Light+ (default light)',
-        'Quiet Light',
-        'Solarized Light',
-        'GitHub Light',
-        'Kimbie Light',
-        'Ayu Light',
-        'Beauteous',
-        'Atom One Light',
-        'Cobalt Light',
-        'Palenight Light',
-        'Blueberry',
-        'Horizon Light',
-        'Winter Light'
-    ];
-    return lightThemes.some(theme => currentTheme.includes(theme));
-  }
-*/
-
