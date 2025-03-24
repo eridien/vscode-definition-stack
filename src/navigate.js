@@ -1,32 +1,37 @@
-const html   = require('./html.js');
-const comm   = require('./comm.js');
-const utils  = require('./utils.js');
-const log    = utils.getLog('NAVI');
+const html  = require('./html.js');
+const comm  = require('./comm.js');
+const utils = require('./utils.js');
+const log   = utils.getLog('NAVI');
 
-let blk           = null;
-let blockStack    = [];
+let blk        = null;
+let blockStack = [];
 
 function init() {
   blk = require('./block.js');
-  comm.registerWebviewRecv('refClick', refClick);
+  comm.registerWebviewRecv('refClick',          refClick);
   comm.registerWebviewRecv('deleteButtonClick', deleteButtonClick);
+  comm.registerWebviewRecv('refsupClick',       refsupClick);
   blockStack = [];
 }
 
-async function deleteBlock(stackIdx, blockId) {
-  blockStack.splice(stackIdx, 1);
-  await comm.send('deleteBlock', {blockId});
+async function refsupClick(data) {
+  const blockId = data.blkId;
+  const stackIdx = blockStack.findIndex(b => b.id === blockId);
+  if(stackIdx == -1) {
+    log('err', 'getBlockById: block not found:', blockId);
+    return null;
+  }
+  const block = blockStack[stackIdx];
+  await blk.addRefBlocks(block);
 }
 
 async function deleteButtonClick(data) {
   const blkId = data.blkId;
   // log('deleteButtonClick:', blkId);
-  const stackIdx = blockStack.findIndex(b => b.id === blkId);
-  if(stackIdx == -1) {
-    log('err', 'deleteButtonClick: block not found:', blkId);
-    return;
-  }
-  await deleteBlock(stackIdx, blkId);
+  const {stackIdx} = blockStack.findIndex(b => b.id === blkId);
+  if(!stackIdx) return;
+  blockStack.splice(stackIdx, 1);
+  await comm.send('deleteBlock', {blkId});
 }
 
 async function refClick(data) {

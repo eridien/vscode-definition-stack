@@ -170,7 +170,6 @@ async function addAllData(block) {
   await addLines(block);
   addWords(block);
   await addDefs(block);
-  // await addRefBlocks(block);
 }
 
 let uniqueBlkId = 1;
@@ -277,5 +276,5 @@ async function showFirstBlockWhenReady(textEditor) {
 
 module.exports = { 
   init, showFirstBlockWhenReady, getBlocksByRefId, getPathByBlkId,
-  showAllBlocks, showAllRefs, addAllData
+  showAllBlocks, showAllRefs, addAllData, addRefBlocks
 };

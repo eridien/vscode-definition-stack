@@ -173,10 +173,10 @@ function headerButtonClick(iconName) {
 function bannerButtonClick(ele, id, blkId, tail) {
   console.log('bannerButtonClick:', {id, blkId, tail});
   switch(tail) {
-    case 'delete': send('deleteButtonClick', {blkId}); break;
-    case 'icon-collapse': collapse(blkId, ele);        break;
-    case 'icon-expand':   expand(blkId, ele);          break;
-    case 'refsup': send('refsupClick',       {blkId}); break;
+    case 'delete': send('deleteButtonClick', {blkId});  break;
+    case 'icon-collapse': collapse(blkId, ele);         break;
+    case 'icon-expand':   expand(blkId, ele);           break;
+    case 'icon-refsup':   send('refsupClick', {blkId}); break;
   }
 }
 
