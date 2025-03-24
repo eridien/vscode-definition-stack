@@ -2,9 +2,11 @@ bugs ...
   python
   block vibrates on certain heights
   hilite colors unreadable in dark 
+  addRefBlocks test on toggleBlkGap has blocks below padding block
 
 to-do ... 
   add all ref blocks
+  click on banner expands/collapses block
   if "not in a block" then 
       allow select lang
       show "not a definition" in the banner

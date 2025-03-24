@@ -1,5 +1,3 @@
-// console.log('loading navigate module');
-
 const html   = require('./html.js');
 const comm   = require('./comm.js');
 const utils  = require('./utils.js');

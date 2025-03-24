@@ -1,5 +1,3 @@
-// console.log('loading block module');
-
 const vscode = require('vscode');
 const navi   = require('./navigate.js');
 const html   = require('./html.js');
@@ -145,20 +143,26 @@ async function addDefs(block) {
 }
 
 async function addRefBlocks(block) {
+  // return
   if(block.flags.haveRefBlocks) return;
   block.flags.haveRefBlocks = true;
   try {
     const references = await vscode.commands.executeCommand(
       'vscode.executeReferenceProvider',
-      document.uri,
-      position
+      block.location.uri,
+      block.location.range.start
     );
-    references.forEach(reference => {
-      console.log(`Reference found at ${reference.uri.fsPath}:${reference.range.start.line + 1}`);
+    references.forEach(async (reference) => {
+      // log(`Reference ${block.name} ${block.relPath}:${reference.range.start.line + 1}`);
+      log(`Reference`, block.name, reference.uri, reference.range);
+      const refBlock = await getOrMakeBlock(block.name, reference.uri, reference.range);
+      if(!refBlock) return;
+      await addAllData(refBlock);
+      await navi.addBlockToView(refBlock, null, 0);
     });
-    return references; 
+    // return references; 
   } catch (error) {
-    console.error('Error fetching references:', block.name, error.message);
+    log('err', 'Error fetching references:', block.name, error.message);
   }
 }
 
@@ -166,11 +170,13 @@ async function addAllData(block) {
   await addLines(block);
   addWords(block);
   await addDefs(block);
+  // await addRefBlocks(block);
 }
 
 let uniqueBlkId = 1;
 
 async function getOrMakeBlock(name, uri, range) {
+  // log({name, uri, range});
   const hash = JSON.stringify([name, uri.path, range]);
   const existingBlock = getBlockByHash(hash);
   if(existingBlock) return existingBlock;

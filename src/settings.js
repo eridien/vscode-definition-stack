@@ -35,7 +35,7 @@ vscode.workspace.onDidChangeConfiguration((event) => {
   if (event.affectsConfiguration('definition-stack.favoriteQuote')) 
     log('favoriteQuote changed');
   dumpSettings();
-  setTimeout(ensureLangMapInSettings, 2000);
+  // setTimeout(ensureLangMapInSettings, 2000);
 });
 
 function ensureLangMapInSettings() {

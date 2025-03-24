@@ -1,0 +1,468 @@
+{
+  "id": "ds-blk-1",
+  "name": "toggleWaiting",
+  "location": {
+    "uri": {
+      "$mid": 1,
+      "fsPath": "c:\\Users\\mark\\apps\\test-app\\src\\components\\list.vue",
+      "_sep": 1,
+      "external": "file:///c%3A/Users/mark/apps/test-app/src/components/list.vue",
+      "path": "/c:/Users/mark/apps/test-app/src/components/list.vue",
+      "scheme": "file"
+    },
+    "range": [
+      {
+        "line": 318,
+        "character": 10
+      },
+      {
+        "line": 329,
+        "character": 5
+      }
+    ]
+  },
+  "relPath": "src/components/list.vue",
+  "hash": "[\"toggleWaiting\",\"/c:/Users/mark/apps/test-app/src/components/list.vue\",[{\"line\":318,\"character\":10},{\"line\":329,\"character\":5}]]",
+  "flags": {
+    "isEntireFile": false,
+    "haveLines": true,
+    "isRoot": true,
+    "haveWords": true,
+    "haveDefs": true
+  },
+  "lines": [
+    {
+      "a": 318,
+      "b": "    const toggleWaiting = async (show) => {",
+      "c": false,
+      "startCharOfs": 0,
+      "endCharOfs": 43,
+      "words": [],
+      "html": "    const toggleWaiting = async (show) =\u0003 {"
+    },
+    {
+      "a": 319,
+      "b": "      // console.log(\"toggleWaiting\", show.Name);",
+      "c": false,
+      "startCharOfs": 0,
+      "endCharOfs": 49,
+      "words": [],
+      "html": "      // console.log(\"toggleWaiting\", show.Name);"
+    },
+    {
+      "a": 320,
+      "b": "      this.saveVisShow(show);",
+      "c": false,
+      "startCharOfs": 0,
+      "endCharOfs": 29,
+      "words": [],
+      "html": "      this.saveVisShow(show);"
+    },
+    {
+      "a": 321,
+      "b": "      if (show.Waiting) {",
+      "c": false,
+      "startCharOfs": 0,
+      "endCharOfs": 25,
+      "words": [],
+      "html": "      if (show.Waiting) {"
+    },
+    {
+      "a": 322,
+      "b": "        show.Waiting = false;",
+      "c": false,
+      "startCharOfs": 0,
+      "endCharOfs": 29,
+      "words": [],
+      "html": "        show.Waiting = false;"
+    },
+    {
+      "a": 323,
+      "b": "        srvr.addBlockedWait(show.Name);",
+      "c": false,
+      "startCharOfs": 0,
+      "endCharOfs": 39,
+      "words": [
+        {
+          "name": "srvr",
+          "startWordOfs": 8,
+          "endWordOfs": 12,
+          "defBlocks": [
+            {
+              "id": "ds-blk-2",
+              "name": "srvr",
+              "location": {
+                "uri": {
+                  "$mid": 1,
+                  "fsPath": "c:\\Users\\mark\\apps\\test-app\\src\\components\\list.vue",
+                  "_sep": 1,
+                  "external": "file:///c%3A/Users/mark/apps/test-app/src/components/list.vue",
+                  "path": "/c:/Users/mark/apps/test-app/src/components/list.vue",
+                  "scheme": "file"
+                },
+                "range": [
+                  {
+                    "line": 282,
+                    "character": 0
+                  },
+                  {
+                    "line": 282,
+                    "character": 35
+                  }
+                ]
+              },
+              "relPath": "src/components/list.vue",
+              "hash": "[\"srvr\",\"/c:/Users/mark/apps/test-app/src/components/list.vue\",[{\"line\":282,\"character\":0},{\"line\":282,\"character\":35}]]",
+              "flags": {
+                "isEntireFile": false,
+                "haveLines": true
+              },
+              "lines": [
+                {
+                  "a": 282,
+                  "b": "import * as srvr from \"../srvr.js\";",
+                  "c": false,
+                  "startCharOfs": 0,
+                  "endCharOfs": 35
+                }
+              ],
+              "srcSymbol": {
+                "name": "script",
+                "kind": "Module",
+                "location": {
+                  "uri": {
+                    "$mid": 1,
+                    "fsPath": "c:\\Users\\mark\\apps\\test-app\\src\\components\\list.vue",
+                    "_sep": 1,
+                    "external": "file:///c%3A/Users/mark/apps/test-app/src/components/list.vue",
+                    "path": "/c:/Users/mark/apps/test-app/src/components/list.vue",
+                    "scheme": "file"
+                  },
+                  "range": [
+                    {
+                      "line": 279,
+                      "character": 0
+                    },
+                    {
+                      "line": 1175,
+                      "character": 9
+                    }
+                  ]
+                },
+                "containerName": ""
+              }
+            }
+          ],
+          "id": "ds-blk-1-ref-1"
+        },
+        {
+          "name": "addBlockedWait",
+          "startWordOfs": 13,
+          "endWordOfs": 27,
+          "defBlocks": [
+            {
+              "id": "ds-blk-3",
+              "name": "addBlockedWait",
+              "location": {
+                "uri": {
+                  "$mid": 1,
+                  "external": "file:///c%3A/Users/mark/apps/test-app/src/srvr.js",
+                  "path": "/c:/Users/mark/apps/test-app/src/srvr.js",
+                  "scheme": "file"
+                },
+                "range": [
+                  {
+                    "line": 140,
+                    "character": 0
+                  },
+                  {
+                    "line": 141,
+                    "character": 50
+                  }
+                ]
+              },
+              "relPath": "src/srvr.js",
+              "hash": "[\"addBlockedWait\",\"/c:/Users/mark/apps/test-app/src/srvr.js\",[{\"line\":140,\"character\":0},{\"line\":141,\"character\":50}]]",
+              "flags": {
+                "isEntireFile": false,
+                "haveLines": true
+              },
+              "lines": [
+                {
+                  "a": 140,
+                  "b": "export function addBlockedWait(name)        ",
+                  "c": false,
+                  "startCharOfs": 0,
+                  "endCharOfs": 44
+                },
+                {
+                  "a": 141,
+                  "b": "            {return fCall('addBlockedWait', name)}",
+                  "c": false,
+                  "startCharOfs": 0,
+                  "endCharOfs": 50
+                }
+              ],
+              "srcSymbol": {
+                "name": "addBlockedWait",
+                "kind": "Function",
+                "location": {
+                  "uri": {
+                    "$mid": 1,
+                    "external": "file:///c%3A/Users/mark/apps/test-app/src/srvr.js",
+                    "path": "/c:/Users/mark/apps/test-app/src/srvr.js",
+                    "scheme": "file"
+                  },
+                  "range": [
+                    {
+                      "line": 140,
+                      "character": 0
+                    },
+                    {
+                      "line": 141,
+                      "character": 50
+                    }
+                  ]
+                },
+                "containerName": ""
+              }
+            }
+          ],
+          "id": "ds-blk-1-ref-2"
+        }
+      ],
+      "html": "        <span id=\"ds-blk-1-ref-1\" class=\"hover ref-span\">srvr</span>.<span id=\"ds-blk-1-ref-2\" class=\"hover ref-span\">addBlockedWait</span>(show.Name);"
+    },
+    {
+      "a": 324,
+      "b": "      }",
+      "c": false,
+      "startCharOfs": 0,
+      "endCharOfs": 7,
+      "words": [],
+      "html": "      }"
+    },
+    {
+      "a": 325,
+      "b": "      else if (show.WaitStr?.length > 0) {",
+      "c": false,
+      "startCharOfs": 0,
+      "endCharOfs": 42,
+      "words": [],
+      "html": "      else if (show.WaitStr?.length \u0003 0) {"
+    },
+    {
+      "a": 326,
+      "b": "        show.Waiting = true;",
+      "c": false,
+      "startCharOfs": 0,
+      "endCharOfs": 28,
+      "words": [],
+      "html": "        show.Waiting = true;"
+    },
+    {
+      "a": 327,
+      "b": "        srvr.delBlockedWait(show.Name);",
+      "c": false,
+      "startCharOfs": 0,
+      "endCharOfs": 39,
+      "words": [
+        {
+          "name": "srvr",
+          "startWordOfs": 8,
+          "endWordOfs": 12,
+          "defBlocks": [
+            {
+              "id": "ds-blk-2",
+              "name": "srvr",
+              "location": {
+                "uri": {
+                  "$mid": 1,
+                  "fsPath": "c:\\Users\\mark\\apps\\test-app\\src\\components\\list.vue",
+                  "_sep": 1,
+                  "external": "file:///c%3A/Users/mark/apps/test-app/src/components/list.vue",
+                  "path": "/c:/Users/mark/apps/test-app/src/components/list.vue",
+                  "scheme": "file"
+                },
+                "range": [
+                  {
+                    "line": 282,
+                    "character": 0
+                  },
+                  {
+                    "line": 282,
+                    "character": 35
+                  }
+                ]
+              },
+              "relPath": "src/components/list.vue",
+              "hash": "[\"srvr\",\"/c:/Users/mark/apps/test-app/src/components/list.vue\",[{\"line\":282,\"character\":0},{\"line\":282,\"character\":35}]]",
+              "flags": {
+                "isEntireFile": false,
+                "haveLines": true
+              },
+              "lines": [
+                {
+                  "a": 282,
+                  "b": "import * as srvr from \"../srvr.js\";",
+                  "c": false,
+                  "startCharOfs": 0,
+                  "endCharOfs": 35
+                }
+              ],
+              "srcSymbol": {
+                "name": "script",
+                "kind": "Module",
+                "location": {
+                  "uri": {
+                    "$mid": 1,
+                    "fsPath": "c:\\Users\\mark\\apps\\test-app\\src\\components\\list.vue",
+                    "_sep": 1,
+                    "external": "file:///c%3A/Users/mark/apps/test-app/src/components/list.vue",
+                    "path": "/c:/Users/mark/apps/test-app/src/components/list.vue",
+                    "scheme": "file"
+                  },
+                  "range": [
+                    {
+                      "line": 279,
+                      "character": 0
+                    },
+                    {
+                      "line": 1175,
+                      "character": 9
+                    }
+                  ]
+                },
+                "containerName": ""
+              }
+            }
+          ],
+          "id": "ds-blk-1-ref-3"
+        },
+        {
+          "name": "delBlockedWait",
+          "startWordOfs": 13,
+          "endWordOfs": 27,
+          "defBlocks": [
+            {
+              "id": "ds-blk-4",
+              "name": "delBlockedWait",
+              "location": {
+                "uri": {
+                  "$mid": 1,
+                  "fsPath": "c:\\Users\\mark\\apps\\test-app\\src\\srvr.js",
+                  "_sep": 1,
+                  "external": "file:///c%3A/Users/mark/apps/test-app/src/srvr.js",
+                  "path": "/c:/Users/mark/apps/test-app/src/srvr.js",
+                  "scheme": "file"
+                },
+                "range": [
+                  {
+                    "line": 142,
+                    "character": 0
+                  },
+                  {
+                    "line": 143,
+                    "character": 50
+                  }
+                ]
+              },
+              "relPath": "src/srvr.js",
+              "hash": "[\"delBlockedWait\",\"/c:/Users/mark/apps/test-app/src/srvr.js\",[{\"line\":142,\"character\":0},{\"line\":143,\"character\":50}]]",
+              "flags": {
+                "isEntireFile": false,
+                "haveLines": true
+              },
+              "lines": [
+                {
+                  "a": 142,
+                  "b": "export function delBlockedWait(name)  ",
+                  "c": false,
+                  "startCharOfs": 0,
+                  "endCharOfs": 38
+                },
+                {
+                  "a": 143,
+                  "b": "            {return fCall('delBlockedWait', name)}",
+                  "c": false,
+                  "startCharOfs": 0,
+                  "endCharOfs": 50
+                }
+              ],
+              "srcSymbol": {
+                "name": "delBlockedWait",
+                "kind": "Function",
+                "location": {
+                  "uri": {
+                    "$mid": 1,
+                    "fsPath": "c:\\Users\\mark\\apps\\test-app\\src\\srvr.js",
+                    "_sep": 1,
+                    "external": "file:///c%3A/Users/mark/apps/test-app/src/srvr.js",
+                    "path": "/c:/Users/mark/apps/test-app/src/srvr.js",
+                    "scheme": "file"
+                  },
+                  "range": [
+                    {
+                      "line": 142,
+                      "character": 0
+                    },
+                    {
+                      "line": 143,
+                      "character": 50
+                    }
+                  ]
+                },
+                "containerName": ""
+              }
+            }
+          ],
+          "id": "ds-blk-1-ref-4"
+        }
+      ],
+      "html": "        <span id=\"ds-blk-1-ref-3\" class=\"hover ref-span\">srvr</span>.<span id=\"ds-blk-1-ref-4\" class=\"hover ref-span\">delBlockedWait</span>(show.Name);"
+    },
+    {
+      "a": 328,
+      "b": "      }",
+      "c": false,
+      "startCharOfs": 0,
+      "endCharOfs": 7,
+      "words": [],
+      "html": "      }"
+    },
+    {
+      "a": 329,
+      "b": "    };",
+      "c": false,
+      "startCharOfs": 0,
+      "endCharOfs": 5,
+      "words": [],
+      "html": "    };"
+    }
+  ],
+  "srcSymbol": {
+    "name": "toggleWaiting",
+    "kind": "Variable",
+    "location": {
+      "uri": {
+        "$mid": 1,
+        "fsPath": "c:\\Users\\mark\\apps\\test-app\\src\\components\\list.vue",
+        "_sep": 1,
+        "external": "file:///c%3A/Users/mark/apps/test-app/src/components/list.vue",
+        "path": "/c:/Users/mark/apps/test-app/src/components/list.vue",
+        "scheme": "file"
+      },
+      "range": [
+        {
+          "line": 318,
+          "character": 10
+        },
+        {
+          "line": 329,
+          "character": 5
+        }
+      ]
+    },
+    "containerName": ""
+  }
+}

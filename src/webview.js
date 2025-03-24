@@ -1,5 +1,3 @@
-// console.log('loading webview module');
-
 const vscode = require('vscode');
 const blk    = require('./block.js');
 const html   = require('./html.js');
