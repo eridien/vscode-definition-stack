@@ -1,6 +1,6 @@
 const vscode = require('vscode');
 const comm   = require('./comm.js');
-const svg    = require('./svg.js');
+const svg    = require('../images/svg.js');
 const utils  = require('./utils.js');
 const log    = utils.getLog('HTML');
 
@@ -116,9 +116,10 @@ function bannerHtml(name, path, blkId, symbol) {
   const symbolType    = symbolTypeByKind(symbolTypeNum);
   return `<span class="banner">
             <div>` +
-              svg.iconHtml('close',    blkId) +
+              svg.iconHtml('delete',   blkId) +
               svg.iconHtml('expand',   blkId, 'display:none') +
               svg.iconHtml('collapse', blkId) +
+              svg.iconHtml('refsup',   blkId) +
            `</div>
             <div class="banner-text"> 
               <span class="banner-type">${symbolType}</span> 
@@ -126,6 +127,8 @@ function bannerHtml(name, path, blkId, symbol) {
                     class="hover banner-name">${name}</span> in 
               <span id=${blkId}-banner-path" 
                     class="hover banner-path">${path}</span>
+              <span id=${blkId}-banner-path" 
+                    class="hover banner-path">${blkId}</span>
             </div>
           </span>`;
 }

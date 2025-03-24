@@ -1,7 +1,7 @@
 
 //////////////// definition stack iframe script //////////////////
   
-  /* global console window document Prism ResizeObserver requestAnimationFrame */
+  /* global console window document Prism requestAnimationFrame */
 
 console.log('iframe started');
 
@@ -23,40 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
 //   const scrollContainerHeight  = scrollContainerEle.getBoundingClientRect().height;
 //   console.log('scrollContainerHeight:', scrollContainerHeight);
 // }, 1000);
-
-let lastContainerHeight = 0;
-
-function adjustPaddingBlockHeight() {
-  // // console.log('adjustPaddingBlockHeight');
-  // const paddingBlockEle = document.getElementById('padding-block');
-  // const lastRealBlock   = paddingBlockEle.previousElementSibling;
-  // if(!lastRealBlock) return;
-  // const lastRealBlockHeight    = lastRealBlock.getBoundingClientRect().height;
-  // const scrollContainerHeight  = scrollContainerEle.getBoundingClientRect().height;
-  // const bottomWhiteSpaceHeight = scrollContainerHeight - lastRealBlockHeight;
-  // const pixHgt = Math.floor(Math.max(0, bottomWhiteSpaceHeight));
-  // if(Math.abs(pixHgt - lastContainerHeight) > 2000) {
-  //   lastContainerHeight = pixHgt;
-  //   console.log('adjustPaddingBlockHeight:', 
-  //         {lastRealBlockHeight, scrollContainerHeight, pixHgt});
-  //   paddingBlockEle.style.height = `${pixHgt}px`;
-  // }
-}
-
-// function watchForContainerChange() {
-//   const observer = new ResizeObserver(entries => {
-//   // console.log('watchForContainerChange');
-//     requestAnimationFrame(() => {
-//       for(const entry of entries) {
-//         if(entry.target === scrollContainerEle) {
-//           adjustPaddingBlockHeight();
-//           break;
-//         }
-//       }
-//     });
-//   });
-//   observer.observe(scrollContainerEle);
-// }
 
 function watchForThemeSelChange() {
   const selectEle = document.getElementById("theme-select-hdr");
@@ -94,7 +60,6 @@ function collapse(blkId, collapseBtnEle) {
   setStyle(preEle,         'display', 'none');
   setStyle(collapseBtnEle, 'display', 'none');
   setStyle(expandBtnEle,   'display', 'inline-block');
-  adjustPaddingBlockHeight();
 }
 
 async function expand(blkId, expandBtnEle) {
@@ -104,7 +69,6 @@ async function expand(blkId, expandBtnEle) {
   setStyle(preEle,         'display', 'block');
   setStyle(expandBtnEle,   'display', 'none');
   setStyle(collapseBtnEle, 'display', 'inline-block');
-  adjustPaddingBlockHeight();
 }
 
 async function home() {
@@ -207,10 +171,12 @@ function headerButtonClick(iconName) {
 }
 
 function bannerButtonClick(ele, id, blkId, tail) {
+  console.log('bannerButtonClick:', {id, blkId, tail});
   switch(tail) {
-    case 'icon-collapse': collapse(blkId, ele); break;
-    case 'icon-expand':   expand(blkId, ele);   break;
-    default: send('closeButtonClick', {blkId}); break;
+    case 'delete': send('deleteButtonClick', {blkId}); break;
+    case 'icon-collapse': collapse(blkId, ele);        break;
+    case 'icon-expand':   expand(blkId, ele);          break;
+    case 'refsup': send('refsupClick',       {blkId}); break;
   }
 }
 
@@ -310,7 +276,6 @@ async function insertBlock(blockHtml, toIndex) {
   Prism.highlightAllUnder(newBlk, false, () => {
     // console.log('Prism highlight done', newBlk.id);
   });
-  adjustPaddingBlockHeight();
 }
 
 async function moveBlock(fromIndex, toIndex){
@@ -324,30 +289,27 @@ async function moveBlock(fromIndex, toIndex){
   if(toIndex == children.length) blocksContentEle.appendChild(fromEle);
   else blocksContentEle.insertBefore(fromEle, children[toIndex]);
   scrollBlockIntoView(fromEle);
-  adjustPaddingBlockHeight();
 } 
 
-async function removeBlock(blockId){
+async function deleteBlock(blockId){
   document.getElementById(blockId)?.remove();
-  adjustPaddingBlockHeight();
 }      
 
 const cmdQueue = [];
 
-async function animationLoop() {
+async function cmdLoop() {
   if(cmdQueue.length > 0) {
     const cmd = cmdQueue.shift();
     const {command, data} = cmd;
     switch (command) {
       case 'insertBlock': await insertBlock(data.blockHtml, data.toIndex); break;
       case 'moveBlock':   await moveBlock(  data.fromIndex, data.toIndex); break;
-      case 'removeBlock': await removeBlock(data.blockId);                 break;
+      case 'deleteBlock': await deleteBlock(data.blockId);                 break;
     }
   }
-  adjustPaddingBlockHeight();
-  requestAnimationFrame(animationLoop);
+  requestAnimationFrame(cmdLoop);
 }
-requestAnimationFrame(animationLoop);
+requestAnimationFrame(cmdLoop);
 
 // Listen for message from webview
 window.addEventListener('message', event => {

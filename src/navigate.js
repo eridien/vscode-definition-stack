@@ -9,24 +9,24 @@ let blockStack    = [];
 function init() {
   blk = require('./block.js');
   comm.registerWebviewRecv('refClick', refClick);
-  comm.registerWebviewRecv('closeButtonClick', closeButtonClick);
+  comm.registerWebviewRecv('deleteButtonClick', deleteButtonClick);
   blockStack = [];
 }
 
-async function closeBlock(stackIdx, blockId) {
+async function deleteBlock(stackIdx, blockId) {
   blockStack.splice(stackIdx, 1);
-  await comm.send('removeBlock', {blockId});
+  await comm.send('deleteBlock', {blockId});
 }
 
-async function closeButtonClick(data) {
+async function deleteButtonClick(data) {
   const blkId = data.blkId;
-  // log('closeButtonClick:', blkId);
+  // log('deleteButtonClick:', blkId);
   const stackIdx = blockStack.findIndex(b => b.id === blkId);
   if(stackIdx == -1) {
-    log('err', 'closeButtonClick: block not found:', blkId);
+    log('err', 'deleteButtonClick: block not found:', blkId);
     return;
   }
-  await closeBlock(stackIdx, blkId);
+  await deleteBlock(stackIdx, blkId);
 }
 
 async function refClick(data) {
