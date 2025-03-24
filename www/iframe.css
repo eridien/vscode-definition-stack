@@ -24,6 +24,7 @@ body {
   height:42px;
   margin-left:14px; 
   display:inline-block;
+  border: 1px solid #ddd;
 }
 
 #scroll-container{overflow-y:auto;}

@@ -13,7 +13,7 @@ let blocksContentEle;
 document.addEventListener('DOMContentLoaded', () => {
   scrollContainerEle = document.getElementById('scroll-container');
   blocksContentEle   = document.getElementById('blocks-content');
-  watchForContainerChange();
+  // watchForContainerChange();
   // watchForSelectionChange();
   watchForThemeSelChange();
   send('ready', {});
@@ -24,33 +24,39 @@ document.addEventListener('DOMContentLoaded', () => {
 //   console.log('scrollContainerHeight:', scrollContainerHeight);
 // }, 1000);
 
+let lastContainerHeight = 0;
+
 function adjustPaddingBlockHeight() {
-  // console.log('adjustPaddingBlockHeight');
-  const paddingBlockEle = document.getElementById('padding-block');
-  const lastRealBlock   = paddingBlockEle.previousElementSibling;
-  if(!lastRealBlock) return;
-  const lastRealBlockHeight    = lastRealBlock.getBoundingClientRect().height;
-  const scrollContainerHeight  = scrollContainerEle.getBoundingClientRect().height;
-  const bottomWhiteSpaceHeight = scrollContainerHeight - lastRealBlockHeight;
-  paddingBlockEle.style.height = `${bottomWhiteSpaceHeight}px`;
-  // console.log('adjustPaddingBlockHeight:', 
-  //     {lastRealBlockHeight, scrollContainerHeight, bottomWhiteSpaceHeight});
+  // // console.log('adjustPaddingBlockHeight');
+  // const paddingBlockEle = document.getElementById('padding-block');
+  // const lastRealBlock   = paddingBlockEle.previousElementSibling;
+  // if(!lastRealBlock) return;
+  // const lastRealBlockHeight    = lastRealBlock.getBoundingClientRect().height;
+  // const scrollContainerHeight  = scrollContainerEle.getBoundingClientRect().height;
+  // const bottomWhiteSpaceHeight = scrollContainerHeight - lastRealBlockHeight;
+  // const pixHgt = Math.floor(Math.max(0, bottomWhiteSpaceHeight));
+  // if(Math.abs(pixHgt - lastContainerHeight) > 2000) {
+  //   lastContainerHeight = pixHgt;
+  //   console.log('adjustPaddingBlockHeight:', 
+  //         {lastRealBlockHeight, scrollContainerHeight, pixHgt});
+  //   paddingBlockEle.style.height = `${pixHgt}px`;
+  // }
 }
 
-function watchForContainerChange() {
-  const observer = new ResizeObserver(entries => {
-  // console.log('watchForContainerChange');
-    requestAnimationFrame(() => {
-      for(const entry of entries) {
-        if(entry.target === scrollContainerEle) {
-          adjustPaddingBlockHeight();
-          break;
-        }
-      }
-    });
-  });
-  observer.observe(scrollContainerEle);
-}
+// function watchForContainerChange() {
+//   const observer = new ResizeObserver(entries => {
+//   // console.log('watchForContainerChange');
+//     requestAnimationFrame(() => {
+//       for(const entry of entries) {
+//         if(entry.target === scrollContainerEle) {
+//           adjustPaddingBlockHeight();
+//           break;
+//         }
+//       }
+//     });
+//   });
+//   observer.observe(scrollContainerEle);
+// }
 
 function watchForThemeSelChange() {
   const selectEle = document.getElementById("theme-select-hdr");
@@ -204,7 +210,7 @@ function bannerButtonClick(ele, id, blkId, tail) {
   switch(tail) {
     case 'icon-collapse': collapse(blkId, ele); break;
     case 'icon-expand':   expand(blkId, ele);   break;
-    default: send('closeButtonClick', {blkId});         break;
+    default: send('closeButtonClick', {blkId}); break;
   }
 }
 
@@ -318,6 +324,7 @@ async function moveBlock(fromIndex, toIndex){
   if(toIndex == children.length) blocksContentEle.appendChild(fromEle);
   else blocksContentEle.insertBefore(fromEle, children[toIndex]);
   scrollBlockIntoView(fromEle);
+  adjustPaddingBlockHeight();
 } 
 
 async function removeBlock(blockId){
@@ -325,20 +332,28 @@ async function removeBlock(blockId){
   adjustPaddingBlockHeight();
 }      
 
+const cmdQueue = [];
+
+async function animationLoop() {
+  if(cmdQueue.length > 0) {
+    const cmd = cmdQueue.shift();
+    const {command, data} = cmd;
+    switch (command) {
+      case 'insertBlock': await insertBlock(data.blockHtml, data.toIndex); break;
+      case 'moveBlock':   await moveBlock(  data.fromIndex, data.toIndex); break;
+      case 'removeBlock': await removeBlock(data.blockId);                 break;
+    }
+  }
+  adjustPaddingBlockHeight();
+  requestAnimationFrame(animationLoop);
+}
+requestAnimationFrame(animationLoop);
+
 // Listen for message from webview
 window.addEventListener('message', event => {
-  if(!blocksContentEle) {
-    send('Error, not ready', {});
-    return;
-  }
   const message = event.data;
-  console.log('iframe received message from webview:', message);
-  const {command, data} = message;
-  switch (command) {
-    case 'insertBlock': insertBlock(data.blockHtml, data.toIndex); break;
-    case 'moveBlock':   moveBlock(  data.fromIndex, data.toIndex); break;
-    case 'removeBlock': removeBlock(data.blockId);                 break;
-  }
+  // console.log('iframe, message from webview:', message);
+  cmdQueue.push(message);
 });
 
 function send(command, data) {  
