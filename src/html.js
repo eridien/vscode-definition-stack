@@ -119,7 +119,8 @@ function bannerHtml(name, path, blkId, symbol) {
               svg.iconHtml('delete',   blkId) +
               svg.iconHtml('expand',   blkId, 'display:none') +
               svg.iconHtml('collapse', blkId) +
-              svg.iconHtml('refsup',   blkId) +
+              svg.iconHtml('refsup',   blkId,
+                              "position:relative; top:-.2px;") +
            `</div>
             <div class="banner-text"> 
               <span class="banner-type">${symbolType}</span> 

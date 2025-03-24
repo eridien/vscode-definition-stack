@@ -142,7 +142,7 @@ async function addDefs(block) {
   }
 }
 
-async function addRefBlocks(block) {
+async function addRefBlocks(block, fromRefId) {
   // return
   if(block.flags.haveRefBlocks) return;
   block.flags.haveRefBlocks = true;
@@ -157,12 +157,15 @@ async function addRefBlocks(block) {
       log(`Reference`, block.name, reference.uri, reference.range);
       const refBlock = await getOrMakeBlock(block.name, reference.uri, reference.range);
       if(!refBlock) return;
+      if(reference.uri.path == block.location.uri.path &&
+         reference.range.start.line == block.location.range.start.line) 
+        return;
       await addAllData(refBlock);
-      await navi.addBlockToView(refBlock, null, 0);
+      await navi.addBlockToView(refBlock, fromRefId, 0);
     });
     // return references; 
   } catch (error) {
-    log('err', 'Error fetching references:', block.name, error.message);
+    log('err', 'Error getting references:', block.name, error.message);
   }
 }
 

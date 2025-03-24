@@ -149,15 +149,18 @@ function scrollBlockIntoView(ele) {
 
 function scrollToFromRef(fromRefId) {
   if(!fromRefId || fromRefId === 'root') return;
-  const refEle = document.getElementById(fromRefId);
-  setFromRefHighlight(refEle);
-  const refBlkId = blkIdFromId(fromRefId);
-  const refBlkEle = document.getElementById(refBlkId);
-  if(!refBlkEle) {
-    console.log('scrollToFromRef, ref block missing:', refBlkId);
-    return;
+  let refEle    = document.getElementById(fromRefId);
+  const refTail = tailFromId(fromRefId);
+  if(refTail.startsWith('ref')) {
+    setFromRefHighlight(refEle);
+    const refBlkId = blkIdFromId(fromRefId);
+    const refEle   = document.getElementById(refBlkId);
+    if(!refEle) {
+      console.log('scrollToFromRef, ref block missing:', refBlkId);
+      return;
+    }
   }
-  scrollBlockIntoView(refBlkEle);
+  scrollBlockIntoView(refEle);
 }
 
 function headerButtonClick(iconName) {
@@ -173,18 +176,21 @@ function headerButtonClick(iconName) {
 function bannerButtonClick(ele, id, blkId, tail) {
   console.log('bannerButtonClick:', {id, blkId, tail});
   switch(tail) {
-    case 'delete': send('deleteButtonClick', {blkId});  break;
-    case 'icon-collapse': collapse(blkId, ele);         break;
-    case 'icon-expand':   expand(blkId, ele);           break;
-    case 'icon-refsup':   send('refsupClick', {blkId}); break;
+    case 'delete': send('deleteButtonClick', {blkId}); break;
+    case 'icon-collapse': collapse(blkId, ele);        break;
+    case 'icon-expand': expand(blkId, ele);            break;
+    case 'icon-refsup': send('refsupClick', {blkId}); break;
   }
 }
 
 function bannerNameClick(ele, bannerNameId) {
   console.log('bannerNameClick:', bannerNameId, ele.innerText);
-  const {ele:blkEle} = findAncestorByClass(ele, 'ds-block');
+  const anc = findAncestorByClass(ele, 'ds-block');
+  if(!anc) return;
+  const {ele:blkEle} = anc;
   const fromRefId = blkEle.getAttribute('from-ref');
-  if(!fromRefId) console.log('bannerNameClick, no fromRefId:', bannerNameId);
+  if(!fromRefId) console.log(
+          'bannerNameClick, no fromRefId:', bannerNameId);
   else scrollToFromRef(fromRefId);
 }
 
@@ -204,7 +210,7 @@ function codeClick(blkEle) {
 }
 
 function setFromRefHighlight(refEle) {
-  const {ele:blkEle}    = findAncestorByClass(refEle, 'ds-block');
+  const {ele:blkEle} = findAncestorByClass(refEle, 'ds-block');
   const lastClickedEles = blkEle.querySelectorAll('.ref-last-clicked');
   for(const lastClickedEle of lastClickedEles) 
     lastClickedEle.classList.remove('ref-last-clicked');
@@ -218,6 +224,7 @@ function refClick(ele, refId) {
 }
 
 function findAncestorByClass(ele, klass) {
+  if(!ele) return null;
   ele = ele.closest(`.${klass}`);
   if(!ele) {
     console.log('findAncestorByClass, class not found:', klass);
@@ -267,7 +274,6 @@ async function insertBlock(blockHtml, toIndex) {
     return;
   }
   const newBlk = eleFromHtml(blockHtml);
-  // const fromRefId = newBlk.getAttribute('from-ref');
   if(children.length == 0 || toIndex === children.length) {
     blocksContentEle.appendChild(newBlk);
   } 

@@ -15,14 +15,14 @@ function init() {
 }
 
 async function refsupClick(data) {
-  const blockId = data.blkId;
-  const stackIdx = blockStack.findIndex(b => b.id === blockId);
+  const blockId   = data.blkId;
+  const stackIdx  = blockStack.findIndex(b => b.id === blockId);
   if(stackIdx == -1) {
     log('err', 'getBlockById: block not found:', blockId);
     return null;
   }
   const block = blockStack[stackIdx];
-  await blk.addRefBlocks(block);
+  await blk.addRefBlocks(block, data.blkId);
 }
 
 async function deleteButtonClick(data) {
