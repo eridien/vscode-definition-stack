@@ -3,11 +3,13 @@
 const vscode = require('vscode');
 const webv   = require('./webview.js');
 const blk    = require('./block.js');
+const sett   = require('./settings.js');
 const utils  = require('./utils.js');
 const log    = utils.getLog('EXTS');
 
 async function activate(context) {
   log("definition-stack activated");
+  sett.init(context);
   
 	const openWebViewCmd = 
     vscode.commands.registerCommand(

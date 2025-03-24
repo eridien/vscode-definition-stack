@@ -57,6 +57,10 @@ async function init(contextIn, webviewIn) {
   await loadConstFiles();
 }
 
+function isDarkTheme() {
+    return vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Dark;
+}
+
 function setTheme() {
   theme = context.globalState.get('theme', 'dark');
   log('setTheme:', theme);
@@ -160,7 +164,7 @@ async function addBlockToView(block, fromRef, toIndex) {
     addEmptyBlockToView(id, name, relPath, toIndex, fromRef)
     return;
   }
-  log('adding block to view:', {name, relPath, toIndex});
+  // log('adding block to view:', {name, relPath, toIndex});
   let minWsIdx = Number.MAX_VALUE;
   for(const line of lines) {
     const wsIdx = line.firstNonWhitespaceCharacterIndex;
@@ -179,7 +183,7 @@ async function addBlockToView(block, fromRef, toIndex) {
   const atEnd = (toIndex === undefined);
   if(!atEnd) data.toIndex = toIndex;
   await comm.send('insertBlock', data);
-  log(`added block ${id} with ${block.lines.length} line(s) at ${atEnd ? 'end' : toIndex}`);
+  // log(`added block ${id} with ${block.lines.length} line(s) at ${atEnd ? 'end' : toIndex}`);
 }
 
 let config = null;

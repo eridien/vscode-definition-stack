@@ -45,7 +45,35 @@
         "key": "ctrl+shift+d",
         "mac": "cmd+shift+d"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Definition Stack Settings",
+      "properties": {
+        "definition-stack.favoriteQuote": {
+          "type": "string",
+          "default": "To be or not to be",
+          "description": "Enter your favorite quote."
+        },
+        "definition-stack.enableFeature": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable or disable the feature."
+        },
+        "definition-stack.theme": {
+          "type": "string",
+          "default": "light",
+          "enum": ["light", "dark", "auto"],
+          "description": "Choose the theme for the extension."
+        },
+        "definition-stack.refreshInterval": {
+          "type": "number",
+          "default": 5,
+          "minimum": 1,
+          "maximum": 60,
+          "description": "Set the refresh interval in seconds."
+        }
+      }
+    }
   },
   "scripts": {
     "lint": "eslint .",

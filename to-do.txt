@@ -4,6 +4,7 @@ bugs ...
   hilite colors unreadable in dark 
 
 to-do ... 
+  add all ref blocks
   if "not in a block" then 
       allow select lang
       show "not a definition" in the banner
@@ -12,7 +13,6 @@ to-do ...
   button to reload last initial block
   refresh button
   close all blocks but current
-  get refs
   add line count
   find
   ctrl-c
@@ -25,18 +25,16 @@ unlikely ...
   scroll body under banner?
   vue script shows as module (list.vue/311)
   persist multiple stacks
+  order of defs/refs
 
 header config
   scale (text size +-)
 
 add configs ...
-  does file text include path
   show entire files
   max lines output
   ignorePaths
   lang id mapping
-  theme
-  order of defs/refs
 
 npm install -g @vscode/vsce
 vsce package

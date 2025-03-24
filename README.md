@@ -13,3 +13,13 @@ You start building the stack by dropping the cursor anywhere in a function and e
 
 
 
+## Settings
+
+To customize the settings for this extension, open your `settings.json` file:
+
+1. Open the Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P` on macOS).
+2. Type `Preferences: Open Settings (JSON)` and select it.
+3. Add the following lines to your `settings.json` file:
+
+```json
+"myExtension.favoriteColor": "blue"

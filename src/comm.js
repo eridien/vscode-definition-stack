@@ -34,7 +34,7 @@ async function init(contextIn, webviewIn) {
 
 async function send(command, data) {
   const message = {src:'extension', command, data};
-  log('Sending message to webview: ', command);
+  // log('Sending message to webview: ', command);
   await webview.postMessage(message);
 }
 

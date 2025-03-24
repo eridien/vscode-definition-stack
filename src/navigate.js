@@ -22,7 +22,7 @@ async function closeBlock(stackIdx, blockId) {
 
 async function closeButtonClick(data) {
   const blkId = data.blkId;
-  log('closeButtonClick:', blkId);
+  // log('closeButtonClick:', blkId);
   const stackIdx = blockStack.findIndex(b => b.id === blkId);
   if(stackIdx == -1) {
     log('err', 'closeButtonClick: block not found:', blkId);
@@ -54,7 +54,7 @@ async function refClick(data) {
 }
 
 async function addBlockToView(block, fromRefId = "root", toIndex) {
-  log('addBlockToView:', {block:block.id, toIndex});
+  // log('addBlockToView:', {block:block.id, toIndex});
   const fromIndex = blockStack.findIndex(b => b.id === block.id);
   if(fromIndex == -1) {
     if(toIndex === undefined || toIndex >= blockStack.length) {

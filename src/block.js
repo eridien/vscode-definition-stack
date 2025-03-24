@@ -144,6 +144,24 @@ async function addDefs(block) {
   }
 }
 
+async function addRefBlocks(block) {
+  if(block.flags.haveRefBlocks) return;
+  block.flags.haveRefBlocks = true;
+  try {
+    const references = await vscode.commands.executeCommand(
+      'vscode.executeReferenceProvider',
+      document.uri,
+      position
+    );
+    references.forEach(reference => {
+      console.log(`Reference found at ${reference.uri.fsPath}:${reference.range.start.line + 1}`);
+    });
+    return references; 
+  } catch (error) {
+    console.error('Error fetching references:', block.name, error.message);
+  }
+}
+
 async function addAllData(block) {
   await addLines(block);
   addWords(block);
