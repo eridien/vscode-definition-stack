@@ -121,6 +121,7 @@ function bannerHtml(name, path, blkId, symbol) {
               svg.iconHtml('collapse', blkId) +
               svg.iconHtml('refsup',   blkId,
                               "position:relative; top:-.2px;") +
+              svg.iconHtml('isolate',  blkId) +
            `</div>
             <div class="banner-text"> 
               <span class="banner-type">${symbolType}</span> 
