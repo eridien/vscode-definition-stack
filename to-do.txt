@@ -7,8 +7,11 @@ bugs ...
   samsung.js in hvac2 (module.exports = {) 
       mastertemp & guesttemp duplicate lines
   released version broken (cannot find prism files)
+  bottom block collapsed chopped off
+  get ref blks, delete show, get ref blks => old block
 
 to-do ... 
+  add show outer symbol button
   click on banner expands/collapses block
   if "not in a block" then 
       allow select lang

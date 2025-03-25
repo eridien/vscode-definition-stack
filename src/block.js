@@ -1,3 +1,5 @@
+import {forEach} from '../eslint.config.js';
+
 const vscode = require('vscode');
 const navi   = require('./navigate.js');
 const html   = require('./html.js');
@@ -158,10 +160,10 @@ async function addRefBlocks(block, fromRefId) {
       block.location.range.start
     );
     for(const reference of references) {
-      // log(`Reference`, block.name, reference.uri, reference.range);
-      const refBlock = 
-        await getOrMakeBlock(block.name, reference.uri, reference.range);
+      const refBlock = await getSurroundingBlocks(
+                                    reference.uri, reference.range);
       if(!refBlock) continue;
+      log(`refBlock`, refBlock, reference.uri, reference.range);
       if(reference.uri.path == block.location.uri.path &&
          reference.range.start.line == block.location.range.start.line) 
         continue;
@@ -204,31 +206,35 @@ async function getOrMakeBlock(name, uri, range) {
   pathByBlkId[id]   = uri.path;
   if(!block.srcSymbol) {
     const sel = new vscode.Selection(range.start, range.end);
-    block.srcSymbol = await getSurroundingBlock(uri, sel, true);
+    block.srcSymbol = await getSurroundingBlocks(uri, sel, true);
   }
   block.srcSymbol = block.srcSymbol || {name, range};
   // log('getOrMakeBlock, new block:', id, name);
   return block;
 }
 
-function getSymbolsRecursive(rootSymbol) {
-  const symbols = [];
-  function recursPush(symbol) {
-    symbols.push(symbol);
-    if (symbol.children) 
-      symbol.children.forEach(recursPush);
-  }
-  recursPush(rootSymbol);
-  return symbols;
+function getsymbolTree(selectionRange, symbolPath) {
+  if(selectionRange == null) return symbolPath;
+  const parent   = symbolPath[symbolPath.length - 1];
+  const children = parent.children;
+  if(children.length == 0) return (null, symbolPath);
+  forEach(children, (child) => {
+    if(utils.containsRange(child, selectionRange)) {
+      symbolPath.push(child);
+      return getsymbolTree(selectionRange, symbolPath);
+    }
+  });
 }
 
-async function getSurroundingBlock(uri, selectionRange, symbolOnly = false) {
+async function getSurroundingBlocks(uri, selectionRange, symbolOnly = false) {
   try {
     const docTopSymbols = await vscode.commands.executeCommand(
              'vscode.executeDocumentSymbolProvider', uri);
     if (!docTopSymbols) return null;
-    const allSymbols = docTopSymbols
-              .flatMap(symbol => getSymbolsRecursive(symbol))
+    const symbolTree = getsymbolTree([null, ...docTopSymbols]);
+    console.log('symbolTree', symbolTree);
+
+
     // Find the smallest containing symbol
     const srcSymbol = allSymbols
       .filter(sym => utils.containsRange(sym.range, selectionRange))
@@ -255,10 +261,10 @@ async function showFirstBlock(textEditor) {
   const document  = textEditor.document;
   const uri       = document.uri;
   const selection = textEditor.selection; 
-  let block = await getSurroundingBlock(uri, selection);
+  let block = await getSurroundingBlocks(uri, selection);
   if(!block) {
     await utils.sleep(2000);
-    block = await getSurroundingBlock(uri, selection);
+    block = await getSurroundingBlocks(uri, selection);
     if(!block) {
       html.showInWebview('The selection is not in a block.');
       return;
