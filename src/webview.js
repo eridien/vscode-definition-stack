@@ -62,14 +62,14 @@ function revealAndHighlightLine(editor, lineNumber) {
 }
 
 async function openEditor(data) {
-  const {blkId, lineNo} = data;
+  const {blockId, lineNo} = data;
   let viewColumn;
   if(currentColumn === vscode.ViewColumn.Two)
        viewColumn = vscode.ViewColumn.One;
   else viewColumn = vscode.ViewColumn.Two;
   try {
     const document = await vscode.workspace
-            .openTextDocument(blk.getPathByBlkId(blkId));
+            .openTextDocument(blk.getPathByBlkId(blockId));
     await vscode.window.showTextDocument(document, 
             { viewColumn, preserveFocus: false });
     if(lineNo !== undefined) {

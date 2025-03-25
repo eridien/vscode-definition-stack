@@ -1,13 +1,12 @@
 bugs ...
   python
   hilite colors unreadable in dark 
-  addRefBlocks testing has blocks below padding block
       (protect pad block)
-  addRefBlocks inside original block (getValBySortChoice, fmtSize)
-  deletes broken afetr addRefBlocks
-  coffeeScript in hvac2
+  addRefBlocks inside original block 
+       (getValBySortChoice, fmtSize)
   samsung.js in hvac2 (module.exports = {) 
       mastertemp & guesttemp duplicate lines
+  released version broken (cannot find prism files)
 
 to-do ... 
   click on banner expands/collapses block
