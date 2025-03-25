@@ -11,7 +11,23 @@ function init() {
   comm.registerWebviewRecv('refClick',          refClick);
   comm.registerWebviewRecv('deleteButtonClick', deleteButtonClick);
   comm.registerWebviewRecv('refsupClick',       refsupClick);
+  comm.registerWebviewRecv('isolateClick',      isolateClick);
   blockStack = [];
+}
+
+async function isolateClick(data) {
+  const blockIdToKeep = data.blockId;
+  let blockToKeep = blockStack.find(b => b.id === blockIdToKeep);
+  if(!blockToKeep) {
+    log('err', 'isolateClick: block not found:', blockIdToKeep);
+    return null;
+  }
+  for(const block of blockStack) {
+    const blockId = block.id;
+    if(blockId === blockIdToKeep) continue;
+    await comm.send('deleteBlock', {blockId});
+  }
+  blockStack = [blockToKeep];
 }
 
 async function refsupClick(data) {

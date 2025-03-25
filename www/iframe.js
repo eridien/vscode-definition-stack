@@ -187,6 +187,7 @@ function bannerButtonClick(ele, id, blockId, tail) {
     case 'icon-collapse': collapse(blockId, ele);               break;
     case 'icon-expand':   expand(blockId, ele);                 break;
     case 'icon-refsup':   send('refsupClick', {blockId});       break;
+    case 'icon-isolate':  send('isolateClick', {blockId});      break;
   }
 }
 
