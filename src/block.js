@@ -146,6 +146,11 @@ async function addRefBlocks(block, fromRefId) {
   // return
   if(block.flags.haveRefBlocks) return;
   block.flags.haveRefBlocks = true;
+
+  const origBlockId = block.id;
+  const blkAndIdx   = navi.getBlockById(origBlockId);
+  if(!blkAndIdx) return;
+  let {blockIdx}    = blkAndIdx;
   try {
     const references = await vscode.commands.executeCommand(
       'vscode.executeReferenceProvider',
@@ -161,8 +166,9 @@ async function addRefBlocks(block, fromRefId) {
          reference.range.start.line == block.location.range.start.line) 
         return;
       await addAllData(refBlock);
-      await navi.addBlockToView(refBlock, fromRefId, 0);
+      await navi.addBlockToView(refBlock, fromRefId, ++blockIdx);
     });
+    await comm.send('scrollToBlkId', {blockId:origBlockId});
     // return references; 
   } catch (error) {
     log('err', 'Error getting references:', block.name, error.message);

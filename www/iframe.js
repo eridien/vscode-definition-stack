@@ -147,6 +147,15 @@ function scrollBlockIntoView(ele) {
   });
 }
 
+function scrollToBlkId(blkId) {
+  let blkEle = document.getElementById(blkId);
+  if(!blkEle) {
+    console.log('scrollToBlkId, block not found:', blkId);
+    return;
+  }
+  scrollBlockIntoView(blkEle);
+}
+
 function scrollToFromRef(fromRefId) {
   if(!fromRefId || fromRefId === 'root') return;
   let refEle    = document.getElementById(fromRefId);
@@ -308,9 +317,10 @@ async function cmdLoop() {
     const cmd = cmdQueue.shift();
     const {command, data} = cmd;
     switch (command) {
-      case 'insertBlock': await insertBlock(data.blockHtml, data.toIndex); break;
-      case 'moveBlock':   await moveBlock(  data.fromIndex, data.toIndex); break;
-      case 'deleteBlock': await deleteBlock(data.blockId);                 break;
+      case 'insertBlock':   await insertBlock(data.blockHtml, data.toIndex); break;
+      case 'moveBlock':     await moveBlock(  data.fromIndex, data.toIndex); break;
+      case 'deleteBlock':   await deleteBlock(data.blockId);                 break;
+      case 'scrollToBlkId': await scrollToBlkId(data.blockId);                 break;
     }
   }
   requestAnimationFrame(cmdLoop);

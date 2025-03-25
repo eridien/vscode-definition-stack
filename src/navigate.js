@@ -56,6 +56,16 @@ async function refClick(data) {
   }
 }
 
+function getBlockById(blkId) {
+  const blockIdx = blockStack.findIndex(b => b.id === blkId);
+  if(blockIdx == -1) {
+    log('err', 'getBlockById: block not found:', blkId);
+    return null;
+  }
+  const block = blockStack[blockIdx];
+  return { block, blockIdx };
+}
+
 async function addBlockToView(block, fromRefId = "root", toIndex) {
   // log('addBlockToView:', {block:block.id, toIndex});
   const fromIndex = blockStack.findIndex(b => b.id === block.id);
@@ -76,4 +86,4 @@ async function addBlockToView(block, fromRefId = "root", toIndex) {
   }
 }
 
-module.exports = { init, addBlockToView };
+module.exports = { init, getBlockById, addBlockToView };

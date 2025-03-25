@@ -3,8 +3,10 @@ bugs ...
   block vibrates on certain heights
   hilite colors unreadable in dark 
   addRefBlocks testing has blocks below padding block
-    (protect pad block)
-    
+      (protect pad block)
+  addRefBlocks inside original block (getValBySortChoice, fmtSize)
+  deletes broken afetr addRefBlocks
+
 to-do ... 
   add all ref blocks
   click on banner expands/collapses block
