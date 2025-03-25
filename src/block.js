@@ -25,8 +25,8 @@ function getBlocksByRefId(refId) {
   return blocksByRefId[refId];
 }
 
-function getPathByBlkId(blkId) {
-  return pathByBlkId[blkId];
+function getPathByBlkId(blockId) {
+  return pathByBlkId[blockId];
 }
 
 function showAllBlocks() {
@@ -147,8 +147,8 @@ async function addRefBlocks(block, fromRefId) {
   if(block.flags.haveRefBlocks) return;
   block.flags.haveRefBlocks = true;
 
-  const origBlockId = block.id;
-  const blkAndIdx   = navi.getBlockById(origBlockId);
+  const blockId   = block.id;
+  const blkAndIdx = navi.getBlockById(blockId);
   if(!blkAndIdx) return;
   let {blockIdx}    = blkAndIdx;
   try {
@@ -157,18 +157,18 @@ async function addRefBlocks(block, fromRefId) {
       block.location.uri,
       block.location.range.start
     );
-    references.forEach(async (reference) => {
-      // log(`Reference ${block.name} ${block.relPath}:${reference.range.start.line + 1}`);
-      log(`Reference`, block.name, reference.uri, reference.range);
-      const refBlock = await getOrMakeBlock(block.name, reference.uri, reference.range);
-      if(!refBlock) return;
+    for(const reference of references) {
+      // log(`Reference`, block.name, reference.uri, reference.range);
+      const refBlock = 
+        await getOrMakeBlock(block.name, reference.uri, reference.range);
+      if(!refBlock) continue;
       if(reference.uri.path == block.location.uri.path &&
          reference.range.start.line == block.location.range.start.line) 
-        return;
+        continue;
       await addAllData(refBlock);
       await navi.addBlockToView(refBlock, fromRefId, ++blockIdx);
-    });
-    await comm.send('scrollToBlkId', {blockId:origBlockId});
+    }
+    await comm.send('scrollToBlkId', {blockId});
     // return references; 
   } catch (error) {
     log('err', 'Error getting references:', block.name, error.message);

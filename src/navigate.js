@@ -15,14 +15,14 @@ function init() {
 }
 
 async function refsupClick(data) {
-  const blockId   = data.blkId;
+  const blockId   = data.blockId;
   const stackIdx  = blockStack.findIndex(b => b.id === blockId);
   if(stackIdx == -1) {
-    log('err', 'getBlockById: block not found:', blockId);
+    log('err', 'refsupClick: block not found:', blockId);
     return null;
   }
   const block = blockStack[stackIdx];
-  await blk.addRefBlocks(block, data.blkId);
+  await blk.addRefBlocks(block, blockId);
 }
 
 async function deleteButtonClick(data) {
@@ -56,10 +56,10 @@ async function refClick(data) {
   }
 }
 
-function getBlockById(blkId) {
-  const blockIdx = blockStack.findIndex(b => b.id === blkId);
+function getBlockById(blockId) {
+  const blockIdx = blockStack.findIndex(b => b.id === blockId);
   if(blockIdx == -1) {
-    log('err', 'getBlockById: block not found:', blkId);
+    log('err', 'getBlockById: block not found:', blockId);
     return null;
   }
   const block = blockStack[blockIdx];

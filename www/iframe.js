@@ -5,8 +5,6 @@
 
 console.log('iframe started');
 
-debugger;
-
 let scrollContainerEle;
 let blocksContentEle;
 
@@ -158,12 +156,12 @@ function scrollToBlkId(blockId) {
 
 function scrollToFromRef(fromRefId) {
   if(!fromRefId || fromRefId === 'root') return;
-  let refEle    = document.getElementById(fromRefId);
+  let refEle = document.getElementById(fromRefId);
   const refTail = tailFromId(fromRefId);
   if(refTail.startsWith('ref')) {
     setFromRefHighlight(refEle);
     const refBlkId = blkIdFromId(fromRefId);
-    const refEle   = document.getElementById(refBlkId);
+    refEle = document.getElementById(refBlkId);
     if(!refEle) {
       console.log('scrollToFromRef, ref block missing:', refBlkId);
       return;
@@ -318,9 +316,9 @@ async function cmdLoop() {
     const {command, data} = cmd;
     switch (command) {
       case 'insertBlock':   await insertBlock(data.blockHtml, data.toIndex); break;
-      case 'moveBlock':     await moveBlock(  data.fromIndex, data.toIndex); break;
+      case 'moveBlock':     await moveBlock(data.fromIndex, data.toIndex);   break;
       case 'deleteBlock':   await deleteBlock(data.blockId);                 break;
-      case 'scrollToBlkId': await scrollToBlkId(data.blockId);                 break;
+      case 'scrollToBlkId': await scrollToBlkId(data.blockId);               break;
     }
   }
   requestAnimationFrame(cmdLoop);
