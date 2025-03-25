@@ -12,6 +12,8 @@ function init() {
   comm.registerWebviewRecv('deleteButtonClick', deleteButtonClick);
   comm.registerWebviewRecv('refsupClick',       refsupClick);
   comm.registerWebviewRecv('isolateClick',      isolateClick);
+  comm.registerWebviewRecv('outClick',          outClick);
+  comm.registerWebviewRecv('inClick',           inClick);
   blockStack = [];
 }
 
@@ -28,6 +30,35 @@ async function isolateClick(data) {
     await comm.send('deleteBlock', {blockId});
   }
   blockStack = [blockToKeep];
+}
+
+async function outInClick(data, out) {
+  const blockId  = data.blockId;
+  const blockIdx = blockStack.findIndex(b => b.id === blockId);
+  if(blockIdx == -1) {
+    log('err', (out ? 'outClick' : 'inClick'), 
+               'block not found:', blockId);
+    return null;
+  }
+  let block = blockStack[blockIdx];
+  let {uri, range} = block.location;
+  let {symbols, symbolIdx} = block;
+  symbolIdx += (out ? -1 : 1);
+  if(symbolIdx < 0 || symbolIdx >= symbols.length) return;
+  block = blk.getBlockFromSymbols(uri, range, symbols, symbolIdx);
+  if(!block) return;
+  block.id = blockId;
+  blockStack[blockIdx] = block;
+  const codeHtml = html.codeHtml(block.lines, blockId);
+  comm.send('replaceCode', {blockId, codeHtml});
+}
+
+async function outClick(data) {
+  outInClick(data, true);
+}
+
+async function inClick(data) {
+  outInClick(data, false);
 }
 
 async function refsupClick(data) {

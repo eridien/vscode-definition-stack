@@ -122,6 +122,8 @@ function bannerHtml(name, path, blkId, symbol) {
               svg.iconHtml('refsup',   blkId,
                               "position:relative; top:-.2px;") +
               svg.iconHtml('isolate',  blkId) +
+              svg.iconHtml('out',      blkId) +
+              svg.iconHtml('in',       blkId) +
            `</div>
             <div class="banner-text"> 
               <span class="banner-type">${symbolType}</span> 
@@ -136,7 +138,15 @@ function bannerHtml(name, path, blkId, symbol) {
 }
 
 // style doesn't work in css file(?), even with !important
-function codeHtml(lines, code, blkId) {
+function codeHtml(lines, blkId) {
+  let minWsIdx = Number.MAX_VALUE;
+  for(const line of lines) {
+    const wsIdx = line.firstNonWhitespaceCharacterIndex;
+    minWsIdx = Math.min(minWsIdx, wsIdx);
+  }
+  let code = "";
+  for(const line of lines)
+       code += ((line.html.slice(minWsIdx)) + "\n"); 
   return `<pre id="${blkId}-pre"
                style="white-space: pre-wrap; 
                       word-wrap: break-word; 
@@ -168,18 +178,10 @@ async function addBlockToView(block, fromRef, toIndex) {
     return;
   }
   // log('adding block to view:', {name, relPath, toIndex});
-  let minWsIdx = Number.MAX_VALUE;
-  for(const line of lines) {
-    const wsIdx = line.firstNonWhitespaceCharacterIndex;
-    minWsIdx = Math.min(minWsIdx, wsIdx);
-  }
-  let code = "";
-  for(const line of lines)
-    code += ((line.html.slice(minWsIdx)) + "\n");
   const blockHtml = 
-   `<div id="${id}" class="ds-block" from-ref="${fromRef}">` +
-      bannerHtml(name, relPath, id, block.srcSymbol)         +
-      codeHtml(lines, code, id)                              +
+   `<div id="${id}" class="ds-block" from-ref="${fromRef}">`        +
+      bannerHtml(name, relPath, id, block.symbols[block.symbolIdx]) +
+      codeHtml(lines, id)                                           +
    `</div>`;
   // console.log('blockHtml:', blockHtml);
   const data  = {blockHtml};
@@ -288,5 +290,5 @@ function symbolTypeByKind(kind) {
     21: "Null", 22: "EnumMember", 23: "Struct", 24: "Event", 25: "Operator", 26: "TypeParameter" }
   [kind+1] ?? ""};
 
-module.exports = {init, setTheme, setLanguage, initWebviewHtml, 
+module.exports = {init, setTheme, setLanguage, initWebviewHtml, codeHtml,
                   markupRefs, addEmptyBlockToView, addBlockToView, showInWebview};

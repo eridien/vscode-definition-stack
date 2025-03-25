@@ -186,8 +186,10 @@ function bannerButtonClick(ele, id, blockId, tail) {
     case 'icon-delete':   send('deleteButtonClick', {blockId}); break;
     case 'icon-collapse': collapse(blockId, ele);               break;
     case 'icon-expand':   expand(blockId, ele);                 break;
-    case 'icon-refsup':   send('refsupClick', {blockId});       break;
+    case 'icon-refsup':   send('refsupClick',  {blockId});      break;
     case 'icon-isolate':  send('isolateClick', {blockId});      break;
+    case 'icon-out':      send('outClick',     {blockId});      break;
+    case 'icon-in':       send('inClick',      {blockId});      break;
   }
 }
 

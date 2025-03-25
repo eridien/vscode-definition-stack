@@ -1,5 +1,3 @@
-import {forEach} from '../eslint.config.js';
-
 const vscode = require('vscode');
 const navi   = require('./navigate.js');
 const html   = require('./html.js');
@@ -160,7 +158,7 @@ async function addRefBlocks(block, fromRefId) {
       block.location.range.start
     );
     for(const reference of references) {
-      const refBlock = await getSurroundingBlocks(
+      const refBlock = await getBlockFromSymbols(
                                     reference.uri, reference.range);
       if(!refBlock) continue;
       log(`refBlock`, refBlock, reference.uri, reference.range);
@@ -196,7 +194,6 @@ async function getOrMakeBlock(name, uri, range) {
   const projIdx  = utils.getProjectIdx(document);
   const projPath = vscode.workspace.workspaceFolders[projIdx].uri.path;
   const relPath  = uri.path.slice(projPath.length+1);
-  
   const block = {id, name, location, relPath, hash};
   block.flags = {};
   block.flags.isEntireFile = 
@@ -204,53 +201,49 @@ async function getOrMakeBlock(name, uri, range) {
   await addLines(block);
   blockByHash[hash] = block;
   pathByBlkId[id]   = uri.path;
-  if(!block.srcSymbol) {
-    const sel = new vscode.Selection(range.start, range.end);
-    block.srcSymbol = await getSurroundingBlocks(uri, sel, true);
-  }
-  block.srcSymbol = block.srcSymbol || {name, range};
-  // log('getOrMakeBlock, new block:', id, name);
+  log('getOrMakeBlock, new block:', id, name);
   return block;
 }
 
-function getsymbolTree(selectionRange, symbolPath) {
-  if(selectionRange == null) return symbolPath;
-  const parent   = symbolPath[symbolPath.length - 1];
-  const children = parent.children;
-  if(children.length == 0) return (null, symbolPath);
-  forEach(children, (child) => {
-    if(utils.containsRange(child, selectionRange)) {
-      symbolPath.push(child);
-      return getsymbolTree(selectionRange, symbolPath);
+function getSymbols(selectionRange, symbols) {
+  const parent = symbols[symbols.length - 1];
+  for(const child of parent.children) {
+    if(utils.containsRange(child.range, selectionRange)) {
+      symbols.push(child);
+      return getSymbols(selectionRange, symbols);
     }
-  });
+  }
 }
 
-async function getSurroundingBlocks(uri, selectionRange, symbolOnly = false) {
+async function getBlockFromSymbols(
+                      uri, selectionRange, symbols, symbolIdx) {
   try {
-    const docTopSymbols = await vscode.commands.executeCommand(
-             'vscode.executeDocumentSymbolProvider', uri);
-    if (!docTopSymbols) return null;
-    const symbolTree = getsymbolTree([null, ...docTopSymbols]);
-    console.log('symbolTree', symbolTree);
-
-
-    // Find the smallest containing symbol
-    const srcSymbol = allSymbols
-      .filter(sym => utils.containsRange(sym.range, selectionRange))
-      .sort((a,b) => utils.getRangeSize(a.range) - 
-                     utils.getRangeSize(b.range))[0];
-    if(symbolOnly) return srcSymbol;
-    if (srcSymbol) {
-      const block = await getOrMakeBlock(
-                              srcSymbol.name, uri, srcSymbol.range);
-      block.srcSymbol = srcSymbol;
-      return block;
+    if(symbols === undefined) {
+      const topSymbols = await vscode.commands.executeCommand(
+                        'vscode.executeDocumentSymbolProvider', uri);
+      if (!topSymbols || !topSymbols.length) {
+        log('infoerr', 'No symbol found.');
+        return null;
+      }
+      symbols = [{children: topSymbols}];
+      getSymbols(selectionRange, symbols);
+      symbols.shift();
+      console.log('symbols', symbols);
+      if (!symbols.length) {
+        log('infoerr', 'No symbol found.');
+        return null;
+      }
+      symbolIdx = symbols.length - 1;
     }
-    return null;
+    const symbol = symbols[symbolIdx];
+    const block  = await getOrMakeBlock(symbol.name, uri, symbol.range);
+    block.symbols   = symbols;
+    block.symbolIdx = symbolIdx;
+    log('getBlockFromSymbols:', {id:block.id, name:block.name, symbolIdx});
+    return block;
   }
   catch (error) {
-    log('infoerr', error.message);
+    log('err', 'getBlockFromSymbols error:', error.message);
     return null;
   }
 }
@@ -261,18 +254,15 @@ async function showFirstBlock(textEditor) {
   const document  = textEditor.document;
   const uri       = document.uri;
   const selection = textEditor.selection; 
-  let block = await getSurroundingBlocks(uri, selection);
+  let block = await getBlockFromSymbols(uri, selection);
   if(!block) {
     await utils.sleep(2000);
-    block = await getSurroundingBlocks(uri, selection);
-    if(!block) {
-      html.showInWebview('The selection is not in a block.');
-      return;
-    }
+    block = await getBlockFromSymbols(uri, selection);
+    if(!block) return;
   }
   block.flags.isRoot = true;
   if(await utils.locationIsEntireFile(block.location)) {
-    html.showInWebview('Selection is the entire file. Select a smaller block.');
+    html.showInWebview('Definition is an entire file and hidden. See settings.');
     return;
   }
   await addAllData(block, false);
