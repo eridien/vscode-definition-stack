@@ -1,14 +1,15 @@
 bugs ...
   python
-  block vibrates on certain heights
   hilite colors unreadable in dark 
   addRefBlocks testing has blocks below padding block
       (protect pad block)
   addRefBlocks inside original block (getValBySortChoice, fmtSize)
   deletes broken afetr addRefBlocks
+  coffeeScript in hvac2
+  samsung.js in hvac2 (module.exports = {) 
+      mastertemp & guesttemp duplicate lines
 
 to-do ... 
-  add all ref blocks
   click on banner expands/collapses block
   if "not in a block" then 
       allow select lang
@@ -17,8 +18,7 @@ to-do ...
       else truncate or show subset with logic
   button to reload last initial block
   refresh button
-  close all blocks but current
-  add line count
+  add line count to banner
   find
   ctrl-c
   auto-copy on selection
@@ -27,6 +27,7 @@ to-do ...
   busy indicator
 
 unlikely ...
+  block vibrates on certain heights
   scroll body under banner?
   vue script shows as module (list.vue/311)
   persist multiple stacks
