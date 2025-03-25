@@ -26,12 +26,12 @@ async function refsupClick(data) {
 }
 
 async function deleteButtonClick(data) {
-  const blkId = data.blkId;
-  // log('deleteButtonClick:', blkId);
-  const {stackIdx} = blockStack.findIndex(b => b.id === blkId);
-  if(!stackIdx) return;
+  const blockId = data.blockId;
+  // log('deleteButtonClick:', blockId);
+  const stackIdx = blockStack.findIndex(b => b.id === blockId);
+  if(stackIdx == -1) return;
   blockStack.splice(stackIdx, 1);
-  await comm.send('deleteBlock', {blkId});
+  await comm.send('deleteBlock', {blockId});
 }
 
 async function refClick(data) {

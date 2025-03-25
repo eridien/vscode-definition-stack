@@ -147,10 +147,10 @@ function scrollBlockIntoView(ele) {
   });
 }
 
-function scrollToBlkId(blkId) {
-  let blkEle = document.getElementById(blkId);
+function scrollToBlkId(blockId) {
+  let blkEle = document.getElementById(blockId);
   if(!blkEle) {
-    console.log('scrollToBlkId, block not found:', blkId);
+    console.log('scrollToBlockId, block not found:', blockId);
     return;
   }
   scrollBlockIntoView(blkEle);
@@ -182,13 +182,13 @@ function headerButtonClick(iconName) {
   }
 }
 
-function bannerButtonClick(ele, id, blkId, tail) {
-  console.log('bannerButtonClick:', {id, blkId, tail});
+function bannerButtonClick(ele, id, blockId, tail) {
+  console.log('bannerButtonClick:', {id, blockId, tail});
   switch(tail) {
-    case 'delete': send('deleteButtonClick', {blkId}); break;
-    case 'icon-collapse': collapse(blkId, ele);        break;
-    case 'icon-expand': expand(blkId, ele);            break;
-    case 'icon-refsup': send('refsupClick', {blkId}); break;
+    case 'icon-delete':   send('deleteButtonClick', {blockId}); break;
+    case 'icon-collapse': collapse(blockId, ele);               break;
+    case 'icon-expand':   expand(blockId, ele);                 break;
+    case 'icon-refsup':   send('refsupClick', {blockId});       break;
   }
 }
 
@@ -204,18 +204,18 @@ function bannerNameClick(ele, bannerNameId) {
 }
 
 function bannerPathClick(ele, bannerPathId) {
-  const blkId = blkIdFromId(bannerPathId);
+  const blockId = blkIdFromId(bannerPathId);
   console.log('bannerPathClick:', bannerPathId);
-  send('openEditor', {blkId});
+  send('openEditor', {blockId});
 }
 
 function codeClick(blkEle) {
-  const blkId = blkEle.id
+  const blockId = blkEle.id
   let lineNo  = +blkEle.querySelector('pre')
                         .getAttribute('data-start');
   lineNo -= 2;
-  console.log('codeClick:', {blkId, lineNo});
-  send('openEditor', {blkId, lineNo});
+  console.log('codeClick:', {blockId, lineNo});
+  send('openEditor', {blockId, lineNo});
 }
 
 function setFromRefHighlight(refEle) {
