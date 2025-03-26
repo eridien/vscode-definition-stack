@@ -216,9 +216,10 @@ function getSymbols(selectionRange, symbols) {
 }
 
 async function getBlockFromSymbols(
-                      uri, selectionRange, symbols, symbolIdx) {
+                      uri, selectionRange, symbols, symbolIdx, blockIn) {
+  if(blockIn && blockIn.flags.haveSymbols) return;
   try {
-    if(symbols === undefined) {
+    if(!symbols) {
       const topSymbols = await vscode.commands.executeCommand(
                         'vscode.executeDocumentSymbolProvider', uri);
       if (!topSymbols || !topSymbols.length) {
@@ -234,11 +235,18 @@ async function getBlockFromSymbols(
         return null;
       }
       symbolIdx = symbols.length - 1;
+      if(blockIn !== undefined) {
+        blockIn.symbols   = symbols;
+        blockIn.symbolIdx = symbolIdx;
+        blockIn.flags.haveSymbols = true;
+        return;
+      }
     }
     const symbol = symbols[symbolIdx];
     const block  = await getOrMakeBlock(symbol.name, uri, symbol.range);
     block.symbols   = symbols;
     block.symbolIdx = symbolIdx;
+    block.flags.haveSymbols = true;
     log('getBlockFromSymbols:', {id:block.id, name:block.name, symbolIdx});
     return block;
   }
