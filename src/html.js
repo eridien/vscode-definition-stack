@@ -157,38 +157,44 @@ function preHtml(lines, blkId) {
          `</pre>`;
 }
 
-async function addEmptyBlockToView(id, name, relPath, toIndex, fromRef) {
+async function addEmptyBlockToView(blockId, name, relPath, toIndex, fromRef) {
   // log('adding empty block to view:', name, relPath);
   const blockHtml = 
-   `<div id="${id}" class="ds-block" from-ref="${fromRef}">`          +
-      bannerHtml(name, relPath, id)                                  +
+   `<div id="${blockId}" class="ds-block" from-ref="${fromRef}">`          +
+      bannerHtml(name, relPath, blockId)                                  +
      `<pre>`                                                         +
        `<code class="language-${language}">`                         +
          `Definition is an entire file and is hidden. See settings.` +
        `</code>`                                                     +
      `</pre>
     </div>`;
-  await comm.send('insertBlock', {blockHtml, toIndex});
+  if(toIndex === -1)
+       await comm.send('replaceBlock', {blockHtml, blockId});
+  else await comm.send('insertBlock', {blockHtml, toIndex});
 }
 
 async function addBlockToView(block, fromRef, toIndex) {
-  const {id, name, relPath, lines} = block;
+  const {id:blockId, name, relPath, lines} = block;
   if(block.flags.isEntireFile) {
-    addEmptyBlockToView(id, name, relPath, toIndex, fromRef)
+    addEmptyBlockToView(blockId, name, relPath, toIndex, fromRef)
     return;
   }
   // log('adding block to view:', {name, relPath, toIndex});
   const blockHtml = 
-   `<div id="${id}" class="ds-block" from-ref="${fromRef}">`        +
-      bannerHtml(name, relPath, id, block.symbols[block.symbolIdx]) +
-      preHtml(lines, id)                                           +
+   `<div id="${blockId}" class="ds-block" from-ref="${fromRef}">`        +
+      bannerHtml(name, relPath, blockId, block.symbols[block.symbolIdx]) +
+      preHtml(lines, blockId)                                            +
    `</div>`;
   // console.log('blockHtml:', blockHtml);
+  if(toIndex === -1) {
+    await comm.send('replaceBlock', {blockHtml, blockId});
+    return;
+  }
   const data  = {blockHtml};
   const atEnd = (toIndex === undefined);
   if(!atEnd) data.toIndex = toIndex;
   await comm.send('insertBlock', data);
-  // log(`added block ${id} with ${block.lines.length} line(s) at ${atEnd ? 'end' : toIndex}`);
+  // log(`added block ${blockId} with ${block.lines.length} line(s) at ${atEnd ? 'end' : toIndex}`);
 }
 
 let config = null;

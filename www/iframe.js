@@ -276,24 +276,22 @@ function eleFromHtml(html) {
   return tempDiv.content.firstChild;
 }
 
-async function replacePre(blockId, preHtml) {
+async function replaceBlock(blockId, blockHtml) {
   const blockEle = document.getElementById(blockId);
   if (!blockEle) {
     console.error(`blockEle with ID ${blockId} not found.`);
     return;
   }
-  const preEle   = blockEle.querySelector('pre');
-  if (!preEle) {
-    console.error(`preEle not found in block with ID ${blockId}.`);
-    return;
-  }
-  const newPreEle = eleFromHtml(preHtml);
-  blockEle.replaceChild(newPreEle, preEle);
+  const newBlockEle = eleFromHtml(blockHtml);
+  blocksContentEle.replaceChild(newBlockEle, blockEle);
+  Prism.highlightAllUnder(newBlockEle, false, () => {
+    // console.log('Prism highlight done', blockId);
+  });
 }
 
 async function insertBlock(blockHtml, toIndex) {
   const children = blocksContentEle.children;
-  if(toIndex === undefined) toIndex = children.length-1;
+  if(toIndex === undefined) toIndex = children.length;
   console.log('insertBlock toIndex:', toIndex);
   if (toIndex < 0 || toIndex > children.length) {
     send('error', {msg:'insertBlock bad index', index: toIndex});
@@ -334,11 +332,11 @@ async function cmdLoop() {
     const cmd = cmdQueue.shift();
     const {command, data} = cmd;
     switch (command) {
-      case 'insertBlock':   await insertBlock(data.blockHtml, data.toIndex); break;
-      case 'moveBlock':     await moveBlock(data.fromIndex, data.toIndex);   break;
-      case 'deleteBlock':   await deleteBlock(data.blockId);                 break;
-      case 'scrollToBlkId': await scrollToBlkId(data.blockId);               break;
-      case 'replacePre':   await replacePre(data.blockId, data.preHtml);  break;
+      case 'insertBlock':   await insertBlock(data.blockHtml, data.toIndex);  break;
+      case 'moveBlock':     await moveBlock(data.fromIndex, data.toIndex);    break;
+      case 'deleteBlock':   await deleteBlock(data.blockId);                  break;
+      case 'scrollToBlkId': await scrollToBlkId(data.blockId);                break;
+      case 'replaceBlock':  await replaceBlock(data.blockId, data.blockHtml); break;
     }
   }
   requestAnimationFrame(cmdLoop);

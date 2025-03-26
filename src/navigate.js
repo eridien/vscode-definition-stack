@@ -41,6 +41,7 @@ async function outInClick(data, out) {
     return null;
   }
   let block = blockStack[blockIdx];
+  const fromRef = block.fromRefId;
   let {uri, range} = block.location;
   let {symbols, symbolIdx} = block;
   symbolIdx += (out ? -1 : 1);
@@ -48,10 +49,9 @@ async function outInClick(data, out) {
   block = await blk.getBlockFromSymbols(uri, range, symbols, symbolIdx);
   if(!block) return;
   block.id = blockId;
-  blockStack[blockIdx] = block;
   await blk.addAllData(block);
-  const preHtml = html.preHtml(block.lines, blockId);
-  comm.send('replacePre', {blockId, preHtml});
+  blockStack[blockIdx] = block;
+  await html.addBlockToView(block, fromRef, -1) 
 }
 
 async function outClick(data) {
