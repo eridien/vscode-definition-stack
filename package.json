@@ -62,7 +62,11 @@
         "definition-stack.theme": {
           "type": "string",
           "default": "light",
-          "enum": ["light", "dark", "auto"],
+          "enum": [
+            "light",
+            "dark",
+            "auto"
+          ],
           "description": "Choose the theme for the extension."
         },
         "definition-stack.refreshInterval": {
@@ -81,6 +85,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
+    "@eslint/js": "^9.23.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
     "@types/vscode": "^1.97.0",

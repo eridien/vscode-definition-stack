@@ -1,49 +1,40 @@
 
 //////////////// definition stack iframe script //////////////////
   
-  /* global console window document Prism requestAnimationFrame */
+  /* global console setInterval window document Prism requestAnimationFrame */
 
 console.log('iframe started');
 
+let themeSelectEle;
 let scrollContainerEle;
 let blocksContentEle;
+let padBlockEle;
+
+let lastScrollContHeight = 0;
 
 document.addEventListener('DOMContentLoaded', () => {
+  themeSelectEle     = document.getElementById("theme-select-hdr");
   scrollContainerEle = document.getElementById('scroll-container');
   blocksContentEle   = document.getElementById('blocks-content');
-  // watchForContainerChange();
-  // watchForSelectionChange();
-  watchForThemeSelChange();
+  padBlockEle        = document.getElementById('padding-block');
+
+  themeSelectEle.addEventListener("change", function () {
+    const theme = themeSelectEle.value;
+    console.log('theme sel value change:', theme);
+    send('themeSelChange', {theme});
+  });
+
+  setInterval(() => {
+    const scrollContHeight = scrollContainerEle.getBoundingClientRect().height;
+    if(scrollContHeight == lastScrollContHeight) return;
+    lastScrollContHeight     = scrollContHeight;
+    padBlockEle.style.height = `${scrollContHeight}px`;
+    console.log('scroll container height chg:', scrollContHeight);
+  }, 50);
+
   send('ready', {});
 });
 
-// setInterval(() => {
-//   const scrollContainerHeight  = scrollContainerEle.getBoundingClientRect().height;
-//   console.log('scrollContainerHeight:', scrollContainerHeight);
-// }, 1000);
-
-function watchForThemeSelChange() {
-  const selectEle = document.getElementById("theme-select-hdr");
-  selectEle.addEventListener("change", function () {
-    console.log('themeSelChange:', selectEle.value);
-    send('themeSelChange', {theme: selectEle.value});
-  });
-}
-
-// function watchForSelectionChange() {
-//   document.addEventListener("selectionchange", async () => {
-//     const selection = window.getSelection().toString().trim();
-//     if (selection) {
-//       console.log('selection:', selection);
-//       await navigator.clipboard.writeText("Text to copy");
-//       // vscode.postMessage({
-//       //   command: "selectionChanged",
-//       //   text: selection
-//       // });
-//     }
-//   });
-// }
-  
 function blkIdFromId(id) {return id.split('-').splice(0, 3).join('-')}
 function tailFromId(id) {return id.split('-').splice(3).join('-')}
 
@@ -275,7 +266,7 @@ function eleFromHtml(html) {
 
 async function insertBlock(blockHtml, toIndex) {
   const children = blocksContentEle.children;
-  if(toIndex === undefined) toIndex = children.length;
+  if(toIndex === undefined) toIndex = children.length-1;
   console.log('insertBlock toIndex:', toIndex);
   if (toIndex < 0 || toIndex > children.length) {
     send('error', {msg:'insertBlock bad index', index: toIndex});

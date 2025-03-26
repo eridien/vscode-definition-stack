@@ -21,7 +21,7 @@ body {
 
 #iframe-header {
   position: relative; top: 10px;
-  height:42px;
+  height:36px;
   margin-left:14px; 
   display:inline-block;
   border: 1px solid #ddd;
@@ -47,7 +47,7 @@ body {
 
 .banner {
   margin: 5px 0 -10px 0; 
-  padding: 2px 15px 5px 15px;
+  padding: 2px 15px 12px 15px;
   display: block;
   background-color:#ddd; color:#444;
   display: flex; justify-content: flex-start;
