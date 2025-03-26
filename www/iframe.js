@@ -186,10 +186,8 @@ function bannerButtonClick(ele, id, blockId, tail) {
     case 'icon-delete':   send('deleteButtonClick', {blockId}); break;
     case 'icon-collapse': collapse(blockId, ele);               break;
     case 'icon-expand':   expand(blockId, ele);                 break;
-    case 'icon-refsup':   send('refsupClick',  {blockId});      break;
+    case 'icon-refsup':   send('refsupClick', {blockId});       break;
     case 'icon-isolate':  send('isolateClick', {blockId});      break;
-    case 'icon-out':      send('outClick',     {blockId});      break;
-    case 'icon-in':       send('inClick',      {blockId});      break;
   }
 }
 
@@ -206,7 +204,6 @@ function bannerNameClick(ele, bannerNameId) {
 
 function bannerPathClick(ele, bannerPathId) {
   const blockId = blkIdFromId(bannerPathId);
-  
   console.log('bannerPathClick:', bannerPathId);
   send('openEditor', {blockId});
 }
@@ -276,22 +273,9 @@ function eleFromHtml(html) {
   return tempDiv.content.firstChild;
 }
 
-async function replaceBlock(blockId, blockHtml) {
-  const blockEle = document.getElementById(blockId);
-  if (!blockEle) {
-    console.error(`blockEle with ID ${blockId} not found.`);
-    return;
-  }
-  const newBlockEle = eleFromHtml(blockHtml);
-  blocksContentEle.replaceChild(newBlockEle, blockEle);
-  Prism.highlightAllUnder(newBlockEle, false, () => {
-    // console.log('Prism highlight done', blockId);
-  });
-}
-
 async function insertBlock(blockHtml, toIndex) {
   const children = blocksContentEle.children;
-  if(toIndex === undefined) toIndex = children.length;
+  if(toIndex === undefined) toIndex = children.length-1;
   console.log('insertBlock toIndex:', toIndex);
   if (toIndex < 0 || toIndex > children.length) {
     send('error', {msg:'insertBlock bad index', index: toIndex});
@@ -332,11 +316,10 @@ async function cmdLoop() {
     const cmd = cmdQueue.shift();
     const {command, data} = cmd;
     switch (command) {
-      case 'insertBlock':   await insertBlock(data.blockHtml, data.toIndex);  break;
-      case 'moveBlock':     await moveBlock(data.fromIndex, data.toIndex);    break;
-      case 'deleteBlock':   await deleteBlock(data.blockId);                  break;
-      case 'scrollToBlkId': await scrollToBlkId(data.blockId);                break;
-      case 'replaceBlock':  await replaceBlock(data.blockId, data.blockHtml); break;
+      case 'insertBlock':   await insertBlock(data.blockHtml, data.toIndex); break;
+      case 'moveBlock':     await moveBlock(data.fromIndex, data.toIndex);   break;
+      case 'deleteBlock':   await deleteBlock(data.blockId);                 break;
+      case 'scrollToBlkId': await scrollToBlkId(data.blockId);               break;
     }
   }
   requestAnimationFrame(cmdLoop);

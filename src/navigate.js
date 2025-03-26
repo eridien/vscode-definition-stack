@@ -12,8 +12,6 @@ function init() {
   comm.registerWebviewRecv('deleteButtonClick', deleteButtonClick);
   comm.registerWebviewRecv('refsupClick',       refsupClick);
   comm.registerWebviewRecv('isolateClick',      isolateClick);
-  comm.registerWebviewRecv('outClick',          outClick);
-  comm.registerWebviewRecv('inClick',           inClick);
   blockStack = [];
 }
 
@@ -30,42 +28,6 @@ async function isolateClick(data) {
     await comm.send('deleteBlock', {blockId});
   }
   blockStack = [blockToKeep];
-}
-
-async function outInClick(data, out) {
-  const blockId  = data.blockId;
-  const blockIdx = blockStack.findIndex(b => b.id === blockId);
-  if(blockIdx == -1) {
-    log('err', (out ? 'outClick' : 'inClick'), 
-               'block not found:', blockId);
-    return null;
-  }
-  let block = blockStack[blockIdx];
-  const fromRef = block.fromRefId;
-  const blkLocation = block.location;
-  let {uri, range} = blkLocation;
-  let {symbols, symbolIdx} = block;
-  const symbol = symbols[symbolIdx];
-  const blockStart  = range.start;
-  const symbolStart = symbol.location.range.start;
-  if( symbolStart.line == blockStart.line &&
-      symbolStart.character == blockStart.character)
-    symbolIdx += (out ? -1 : 1);
-  if(symbolIdx < 0 || symbolIdx >= symbols.length) return;
-  block = await blk.getBlockFromSymbols(uri, null, symbols, symbolIdx);
-  if(!block) return;
-  block.id = blockId;
-  await blk.addAllData(block);
-  blockStack[blockIdx] = block;
-  await html.addBlockToView(block, fromRef, -1) 
-}
-
-async function outClick(data) {
-  outInClick(data, true);
-}
-
-async function inClick(data) {
-  outInClick(data, false);
 }
 
 async function refsupClick(data) {
@@ -102,7 +64,7 @@ async function refClick(data) {
   const refBlkId = utils.blkIdFromId(fromRefId);
   let refIndex   = blockStack.findIndex(b => b.id === refBlkId);
   if(refIndex == -1) {
-    log('refClick: ref block not in blockStack', refBlkId, blockStack);
+    log('err', 'refClick: ref block not in blockStack', refBlkId, blockStack);
     return;
   }
   for(const defBlock of blocks) {
@@ -124,9 +86,6 @@ function getBlockById(blockId) {
 
 async function addBlockToView(block, fromRefId = "root", toIndex) {
   // log('addBlockToView:', {block:block.id, toIndex});
-  const uri            = block.location.uri;
-  const selectionRange = block.location.range;
-  await blk.getBlockFromSymbols(uri, selectionRange, null, null, block);
   const fromIndex = blockStack.findIndex(b => b.id === block.id);
   if(fromIndex == -1) {
     if(toIndex === undefined || toIndex >= blockStack.length) {

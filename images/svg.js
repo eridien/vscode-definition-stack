@@ -37,15 +37,6 @@ function iconHtml(name, btnId, style) {
 
  case 'isolate': return iconDiv(name, btnId, style) + `
         <?xml version="1.0" ?><svg id="svg8" version="1.1" viewBox="0 0 12.7 12.7" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg"><g id="layer1" transform="translate(0,-284.29998)"><path d="m 9.8777781,289.9444 v 1.41112 H 2.8222223 v -1.41112 z" id="path4507" style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"/></g></svg></div>`;
-
- case 'plus': return iconDiv(name, btnId, style) + `
-        <?xml version="1.0" ?><!DOCTYPE svg  PUBLIC '-//W3C//DTD SVG 1.1//EN'  'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'><svg height="512px" id="Layer_1" style="enable-background:new 0 0 512 512;" version="1.1" viewBox="0 0 512 512" width="512px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M417.4,224H288V94.6c0-16.9-14.3-30.6-32-30.6c-17.7,0-32,13.7-32,30.6V224H94.6C77.7,224,64,238.3,64,256  c0,17.7,13.7,32,30.6,32H224v129.4c0,16.9,14.3,30.6,32,30.6c17.7,0,32-13.7,32-30.6V288h129.4c16.9,0,30.6-14.3,30.6-32  C448,238.3,434.3,224,417.4,224z"/></svg></div>`;
-
- case 'out': return iconDiv(name, btnId, style) + `
-        <?xml version="1.0" ?><svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg"><rect fill="none" /><polyline fill="none" points="216 100 216 40 156 40" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="24"/><line fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="24" x1="144" x2="216" y1="112" y2="40"/><path d="M184,144v64a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V80a8,8,0,0,1,8-8h64" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="24"/></svg></div>`;
-
- case 'in': return iconDiv(name, btnId, style) + `
-        <?xml version="1.0" ?><svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg"><rect fill="none" /><polyline fill="none" points="112 204 112 144 52 144" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="24"/><line fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="24" x1="40" x2="112" y1="216" y2="144"/><path d="M160,192h48a8,8,0,0,0,8-8V48a8,8,0,0,0-8-8H72a8,8,0,0,0-8,8V96" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="24"/></svg></div>`;
   }
 }
 

@@ -122,8 +122,6 @@ function bannerHtml(name, path, blkId, symbol) {
               svg.iconHtml('refsup',   blkId,
                               "position:relative; top:-.2px;") +
               svg.iconHtml('isolate',  blkId) +
-              svg.iconHtml('out',      blkId) +
-              svg.iconHtml('in',       blkId) +
            `</div>
             <div class="banner-text"> 
               <span class="banner-type">${symbolType}</span> 
@@ -138,15 +136,7 @@ function bannerHtml(name, path, blkId, symbol) {
 }
 
 // style doesn't work in css file(?), even with !important
-function preHtml(lines, blkId) {
-  let minWsIdx = Number.MAX_VALUE;
-  for(const line of lines) {
-    const wsIdx = line.firstNonWhitespaceCharacterIndex;
-    minWsIdx = Math.min(minWsIdx, wsIdx);
-  }
-  let code = "";
-  for(const line of lines)
-       code += ((line.html.slice(minWsIdx)) + "\n"); 
+function codeHtml(lines, code, blkId) {
   return `<pre id="${blkId}-pre"
                style="white-space: pre-wrap; 
                       word-wrap: break-word; 
@@ -157,44 +147,46 @@ function preHtml(lines, blkId) {
          `</pre>`;
 }
 
-async function addEmptyBlockToView(blockId, name, relPath, toIndex, fromRef) {
+async function addEmptyBlockToView(id, name, relPath, toIndex, fromRef) {
   // log('adding empty block to view:', name, relPath);
   const blockHtml = 
-   `<div id="${blockId}" class="ds-block" from-ref="${fromRef}">`          +
-      bannerHtml(name, relPath, blockId)                                  +
+   `<div id="${id}" class="ds-block" from-ref="${fromRef}">`          +
+      bannerHtml(name, relPath, id)                                  +
      `<pre>`                                                         +
        `<code class="language-${language}">`                         +
          `Definition is an entire file and is hidden. See settings.` +
        `</code>`                                                     +
      `</pre>
     </div>`;
-  if(toIndex === -1)
-       await comm.send('replaceBlock', {blockHtml, blockId});
-  else await comm.send('insertBlock', {blockHtml, toIndex});
+  await comm.send('insertBlock', {blockHtml, toIndex});
 }
 
 async function addBlockToView(block, fromRef, toIndex) {
-  const {id:blockId, name, relPath, lines} = block;
+  const {id, name, relPath, lines} = block;
   if(block.flags.isEntireFile) {
-    addEmptyBlockToView(blockId, name, relPath, toIndex, fromRef)
+    addEmptyBlockToView(id, name, relPath, toIndex, fromRef)
     return;
   }
   // log('adding block to view:', {name, relPath, toIndex});
+  let minWsIdx = Number.MAX_VALUE;
+  for(const line of lines) {
+    const wsIdx = line.firstNonWhitespaceCharacterIndex;
+    minWsIdx = Math.min(minWsIdx, wsIdx);
+  }
+  let code = "";
+  for(const line of lines)
+    code += ((line.html.slice(minWsIdx)) + "\n");
   const blockHtml = 
-   `<div id="${blockId}" class="ds-block" from-ref="${fromRef}">`        +
-      bannerHtml(name, relPath, blockId, block.symbols[block.symbolIdx]) +
-      preHtml(lines, blockId)                                            +
+   `<div id="${id}" class="ds-block" from-ref="${fromRef}">` +
+      bannerHtml(name, relPath, id, block.srcSymbol)         +
+      codeHtml(lines, code, id)                              +
    `</div>`;
   // console.log('blockHtml:', blockHtml);
-  if(toIndex === -1) {
-    await comm.send('replaceBlock', {blockHtml, blockId});
-    return;
-  }
   const data  = {blockHtml};
   const atEnd = (toIndex === undefined);
   if(!atEnd) data.toIndex = toIndex;
   await comm.send('insertBlock', data);
-  // log(`added block ${blockId} with ${block.lines.length} line(s) at ${atEnd ? 'end' : toIndex}`);
+  // log(`added block ${id} with ${block.lines.length} line(s) at ${atEnd ? 'end' : toIndex}`);
 }
 
 let config = null;
@@ -296,5 +288,5 @@ function symbolTypeByKind(kind) {
     21: "Null", 22: "EnumMember", 23: "Struct", 24: "Event", 25: "Operator", 26: "TypeParameter" }
   [kind+1] ?? ""};
 
-module.exports = {init, setTheme, setLanguage, initWebviewHtml, preHtml,
+module.exports = {init, setTheme, setLanguage, initWebviewHtml, 
                   markupRefs, addEmptyBlockToView, addBlockToView, showInWebview};
