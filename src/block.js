@@ -210,6 +210,7 @@ async function getOrMakeBlock(name, uri, range) {
   const sel = new vscode.Selection(range.start, range.end);
   block.srcSymbol = await getSurroundingBlock(uri, sel, true);
   block.srcSymbol = block.srcSymbol ?? {name, range};
+  block.location = new vscode.Location(uri, block.srcSymbol.range);
   // log('getOrMakeBlock, new block:', id, name);
   return block;
 }
@@ -222,7 +223,8 @@ function getSymbols(selectionRange, symbols) {
       return getSymbols(selectionRange, symbols);
     }
   }
-  
+}
+
 async function getSurroundingBlock(uri, selectionRange, symbolOnly = false) {
   try {
     const topSymbols = await vscode.commands.executeCommand(
@@ -231,7 +233,7 @@ async function getSurroundingBlock(uri, selectionRange, symbolOnly = false) {
       log('infoerr', 'No symbol found.');
       return null;
     }
-    symbols = [{children: topSymbols}];
+    const symbols = [{children: topSymbols}];
     getSymbols(selectionRange, symbols);
     symbols.shift();
     console.log('symbols', symbols);

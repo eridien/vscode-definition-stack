@@ -275,7 +275,7 @@ function eleFromHtml(html) {
 
 async function insertBlock(blockHtml, toIndex) {
   const children = blocksContentEle.children;
-  if(toIndex === undefined) toIndex = children.length-1;
+  if(toIndex === undefined) toIndex = children.length;
   console.log('insertBlock toIndex:', toIndex);
   if (toIndex < 0 || toIndex > children.length) {
     send('error', {msg:'insertBlock bad index', index: toIndex});
