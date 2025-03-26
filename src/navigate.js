@@ -42,11 +42,17 @@ async function outInClick(data, out) {
   }
   let block = blockStack[blockIdx];
   const fromRef = block.fromRefId;
-  let {uri, range} = block.location;
+  const blkLocation = block.location;
+  let {uri, range} = blkLocation;
   let {symbols, symbolIdx} = block;
-  symbolIdx += (out ? -1 : 1);
+  const symbol = symbols[symbolIdx];
+  const blockStart  = range.start;
+  const symbolStart = symbol.location.range.start;
+  if( symbolStart.line == blockStart.line &&
+      symbolStart.character == blockStart.character)
+    symbolIdx += (out ? -1 : 1);
   if(symbolIdx < 0 || symbolIdx >= symbols.length) return;
-  block = await blk.getBlockFromSymbols(uri, range, symbols, symbolIdx);
+  block = await blk.getBlockFromSymbols(uri, null, symbols, symbolIdx);
   if(!block) return;
   block.id = blockId;
   await blk.addAllData(block);

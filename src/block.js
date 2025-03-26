@@ -155,12 +155,13 @@ async function addRefBlocks(block, fromRefId) {
   const blockId   = block.id;
   const blkAndIdx = navi.getBlockById(blockId);
   if(!blkAndIdx) return;
-  let {blockIdx}    = blkAndIdx;
+  let {blockIdx}  = blkAndIdx;
+  const symbol = block.symbols[block.symbolIdx];
   try {
     const references = await vscode.commands.executeCommand(
       'vscode.executeReferenceProvider',
-      block.location.uri,
-      block.location.range.start
+      symbol.location.uri,
+      symbol.location.range.start
     );
     for(const reference of references) {
       const refBlock = await getBlockFromSymbols(
