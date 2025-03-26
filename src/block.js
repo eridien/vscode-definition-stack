@@ -280,6 +280,6 @@ async function showFirstBlockWhenReady(textEditor) {
 }
 
 module.exports = { 
-  init, showFirstBlockWhenReady, getBlocksByRefId, getPathByBlkId,
-  showAllBlocks, showAllRefs, addAllData, addRefBlocks
+  init, showFirstBlockWhenReady, getBlocksByRefId, getBlockFromSymbols, 
+  getPathByBlkId, showAllBlocks, showAllRefs, addAllData, addRefBlocks
 };

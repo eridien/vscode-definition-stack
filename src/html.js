@@ -138,7 +138,7 @@ function bannerHtml(name, path, blkId, symbol) {
 }
 
 // style doesn't work in css file(?), even with !important
-function codeHtml(lines, blkId) {
+function preHtml(lines, blkId) {
   let minWsIdx = Number.MAX_VALUE;
   for(const line of lines) {
     const wsIdx = line.firstNonWhitespaceCharacterIndex;
@@ -181,7 +181,7 @@ async function addBlockToView(block, fromRef, toIndex) {
   const blockHtml = 
    `<div id="${id}" class="ds-block" from-ref="${fromRef}">`        +
       bannerHtml(name, relPath, id, block.symbols[block.symbolIdx]) +
-      codeHtml(lines, id)                                           +
+      preHtml(lines, id)                                           +
    `</div>`;
   // console.log('blockHtml:', blockHtml);
   const data  = {blockHtml};
@@ -290,5 +290,5 @@ function symbolTypeByKind(kind) {
     21: "Null", 22: "EnumMember", 23: "Struct", 24: "Event", 25: "Operator", 26: "TypeParameter" }
   [kind+1] ?? ""};
 
-module.exports = {init, setTheme, setLanguage, initWebviewHtml, codeHtml,
+module.exports = {init, setTheme, setLanguage, initWebviewHtml, preHtml,
                   markupRefs, addEmptyBlockToView, addBlockToView, showInWebview};

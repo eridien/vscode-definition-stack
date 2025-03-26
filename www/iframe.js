@@ -206,6 +206,7 @@ function bannerNameClick(ele, bannerNameId) {
 
 function bannerPathClick(ele, bannerPathId) {
   const blockId = blkIdFromId(bannerPathId);
+  
   console.log('bannerPathClick:', bannerPathId);
   send('openEditor', {blockId});
 }
@@ -275,6 +276,21 @@ function eleFromHtml(html) {
   return tempDiv.content.firstChild;
 }
 
+async function replacePre(blockId, preHtml) {
+  const blockEle = document.getElementById(blockId);
+  if (!blockEle) {
+    console.error(`blockEle with ID ${blockId} not found.`);
+    return;
+  }
+  const preEle   = blockEle.querySelector('pre');
+  if (!preEle) {
+    console.error(`preEle not found in block with ID ${blockId}.`);
+    return;
+  }
+  const newPreEle = eleFromHtml(preHtml);
+  blockEle.replaceChild(newPreEle, preEle);
+}
+
 async function insertBlock(blockHtml, toIndex) {
   const children = blocksContentEle.children;
   if(toIndex === undefined) toIndex = children.length-1;
@@ -322,6 +338,7 @@ async function cmdLoop() {
       case 'moveBlock':     await moveBlock(data.fromIndex, data.toIndex);   break;
       case 'deleteBlock':   await deleteBlock(data.blockId);                 break;
       case 'scrollToBlkId': await scrollToBlkId(data.blockId);               break;
+      case 'replacePre':   await replacePre(data.blockId, data.preHtml);  break;
     }
   }
   requestAnimationFrame(cmdLoop);

@@ -45,12 +45,13 @@ async function outInClick(data, out) {
   let {symbols, symbolIdx} = block;
   symbolIdx += (out ? -1 : 1);
   if(symbolIdx < 0 || symbolIdx >= symbols.length) return;
-  block = blk.getBlockFromSymbols(uri, range, symbols, symbolIdx);
+  block = await blk.getBlockFromSymbols(uri, range, symbols, symbolIdx);
   if(!block) return;
   block.id = blockId;
   blockStack[blockIdx] = block;
-  const codeHtml = html.codeHtml(block.lines, blockId);
-  comm.send('replaceCode', {blockId, codeHtml});
+  await blk.addAllData(block);
+  const preHtml = html.preHtml(block.lines, blockId);
+  comm.send('replacePre', {blockId, preHtml});
 }
 
 async function outClick(data) {
