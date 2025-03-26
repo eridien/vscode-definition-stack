@@ -17,6 +17,11 @@ function init() {
   pathByBlkId   = {};
 }
 
+function removeBlockFromCaches(block) {
+  delete blockByHash[block.hash];
+  delete pathByBlkId[block.id];
+}
+
 function getBlockByHash(hash) {
   return blockByHash[hash];
 }
@@ -289,5 +294,6 @@ async function showFirstBlockWhenReady(textEditor) {
 
 module.exports = { 
   init, showFirstBlockWhenReady, getBlocksByRefId, getBlockFromSymbols, 
-  getPathByBlkId, showAllBlocks, showAllRefs, addAllData, addRefBlocks
+  getPathByBlkId, showAllBlocks, showAllRefs, addAllData, addRefBlocks,
+  removeBlockFromCaches
 };

@@ -9,6 +9,7 @@ bugs ...
   released version broken (cannot find prism files)
   bottom block collapsed chopped off
   get ref blks, delete show, get ref blks => old block
+  fcall get refs broken
 
 to-do ... 
   add show outer symbol button

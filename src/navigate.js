@@ -78,6 +78,8 @@ async function deleteButtonClick(data) {
   // log('deleteButtonClick:', blockId);
   const stackIdx = blockStack.findIndex(b => b.id === blockId);
   if(stackIdx == -1) return;
+  const block = blockStack[stackIdx];
+  blk.removeBlockFromCaches(block);
   blockStack.splice(stackIdx, 1);
   await comm.send('deleteBlock', {blockId});
 }
@@ -94,7 +96,7 @@ async function refClick(data) {
   const refBlkId = utils.blkIdFromId(fromRefId);
   let refIndex   = blockStack.findIndex(b => b.id === refBlkId);
   if(refIndex == -1) {
-    log('err', 'refClick: ref block not in blockStack', refBlkId, blockStack);
+    log('refClick: ref block not in blockStack', refBlkId, blockStack);
     return;
   }
   for(const defBlock of blocks) {
