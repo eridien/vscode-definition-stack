@@ -19,7 +19,7 @@ async function init(contextIn, webviewIn) {
   context = contextIn;
   const recvDisposable = webview.onDidReceiveMessage(async message => {
     const {command, data} = message;
-    log('Recv Message:', command, data);
+    // log('Recv Message:', command, data);
     const callback = registeredRecvs[command];
     if(!callback) {
       log('err', 'Recv Message command not found:', {command, data});
