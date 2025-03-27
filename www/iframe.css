@@ -72,8 +72,8 @@ banner-text {
 
 /* .ref-span    { background: var(--vscode-editor-selectionBackground); } */
 
-.ref-span         { background-color:rgb(240, 240, 128); }
-.ref-last-clicked { background-color:rgb(190, 210, 224); }
+/* .ref-span         { background-color:rgb(240, 240, 128); } */
+/* .ref-last-clicked { background-color:rgb(190, 210, 224); } */
 
 
 /*

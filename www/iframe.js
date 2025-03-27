@@ -6,6 +6,8 @@
 console.log('iframe started');
 
 let themeSelectEle;
+let colorPickerEle;
+let colorSelPickerEle;
 let scrollContainerEle;
 let blocksContentEle;
 let padBlockEle;
@@ -13,7 +15,9 @@ let padBlockEle;
 let lastScrollContHeight = 0;
 
 document.addEventListener('DOMContentLoaded', () => {
-  themeSelectEle     = document.getElementById("theme-select-hdr");
+  themeSelectEle    = document.getElementById("theme-select-hdr");
+  colorPickerEle    = document.getElementById("ref-color");
+  colorSelPickerEle = document.getElementById("ref-sel-color");
   scrollContainerEle = document.getElementById('scroll-container');
   blocksContentEle   = document.getElementById('blocks-content');
   padBlockEle        = document.getElementById('padding-block');
@@ -23,6 +27,29 @@ document.addEventListener('DOMContentLoaded', () => {
     // console.log('theme sel value change:', theme);
     send('themeSelChange', {theme});
   });
+
+  colorPickerEle.addEventListener("input", function () {
+    const colorPickerVal = colorPickerEle.value;
+    console.log('colorPickerVal value change:', colorPickerVal);
+    setRefColorsFromPickers();
+    send('colorPickerValChg', {colorPickerVal});
+  });
+
+  colorSelPickerEle.addEventListener("input", function () {
+    const colorSelPickerVal = colorSelPickerEle.value;
+    console.log('colorSelPickerVal value change:', colorSelPickerVal);
+    setRefColorsFromPickers();
+    send('colorSelPickerValChg', {colorSelPickerVal});
+  });
+
+  function setRefColorsFromPickers() {
+    const colorPickerVal = colorPickerEle.value;
+    let refEles = blocksContentEle.querySelectorAll(".ref-span");
+    for(const refEle of refEles) refEle.style.backgroundColor = colorPickerVal;
+    const colorSelPickerVal = colorSelPickerEle.value;
+    refEles = blocksContentEle.querySelectorAll(".ref-last-clicked");
+    for(const refEle of refEles) refEle.style.backgroundColor = colorSelPickerVal;
+  }
 
   setInterval(() => {
     const scrollContHeight = scrollContainerEle.getBoundingClientRect().height;
@@ -214,6 +241,7 @@ function setFromRefHighlight(refEle) {
   for(const lastClickedEle of lastClickedEles) 
     lastClickedEle.classList.remove('ref-last-clicked');
   refEle.classList.add('ref-last-clicked');
+  setRefColorsFromPickers();
 }
 
 function refClick(ele, refId) {

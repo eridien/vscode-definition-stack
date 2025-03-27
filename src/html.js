@@ -21,6 +21,7 @@ let webview, context, language, theme;
 let webviewHtml, webviewJs, iframeHtmlIn, iframeJsIn;
 let iframeCssIn, lineNumCss, prePrismJs, prismCoreJs;
 let lineNumJs, keepMarkupJs, keepEscJs;
+let colorPickerVal, colorSelPickerVal
 
 async function loadConstFiles() {
   webviewHtml = await utils.readTxt( false, 'www', 'webview.html');
@@ -51,17 +52,44 @@ async function init(contextIn, webviewIn) {
   context = contextIn;
   webview = webviewIn;
   webview.html = "";
-  comm.registerWebviewRecv('themeSelChange', themeSelChange);
+  comm.registerWebviewRecv('themeSelChange',       themeSelChange);
+  comm.registerWebviewRecv('colorPickerValChg',    colorPickerValChg);
+  comm.registerWebviewRecv('colorSelPickerValChg', colorSelPickerValChg);
   await loadConstFiles();
 }
 
 // function isDarkTheme() {
-//     return vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Dark;
+//     return vscode.window.activeColorTheme
+                       //  .kind === vscode.ColorThemeKind.Dark;
 // }
 
 function setTheme() {
   theme = context.globalState.get('theme', 'dark');
   // log('setTheme:', theme);
+}
+
+function setColorPickerVal() {
+  colorPickerVal = context.globalState
+                          .get('colorPickerVal', '#f1f28c');
+  log('setColorPickerVal:', colorPickerVal);
+}
+
+function colorPickerValChg(data) {
+  colorPickerVal = data.colorPickerVal;
+  context.globalState.update('colorPickerVal', colorPickerVal);
+  log('colorPickerValChg:', colorPickerVal);
+}
+
+function setColorSelPickerVal() {
+  colorSelPickerVal = context.globalState
+                             .get('colorSelPickerVal', '#e9cece');
+  log('setColorSelPickerVal:', colorSelPickerVal);
+}
+
+function colorSelPickerValChg(data) {
+  colorSelPickerVal = data.colorSelPickerVal;
+  context.globalState.update('colorSelPickerVal', colorSelPickerVal);
+  log('colorSelPickerValChg:', colorSelPickerVal);
 }
 
 async function themeSelChange(data) {
@@ -108,7 +136,9 @@ async function hdrHtml() {
             svg.iconHtml('collapse', "iframe-hdr") +
             svg.iconHtml('expand',   "iframe-hdr") +
             (await themeSelectHtml()) + ' ' +
-         `</div>`;
+           `<input type="color" id="ref-color"     value="${colorPickerVal}">
+            <input type="color" id="ref-sel-color" value="${colorSelPickerVal}">
+          </div>`;
 }
 
 function bannerHtml(name, path, blkId, symbol) {
@@ -271,7 +301,8 @@ function markupRefs(line) {
     const word = line.words[idx];
     const endOfs = word.endWordOfs;
     html = html.slice(0, endOfs) + '</span>' + html.slice(endOfs);
-    const span = `<span id="${word.id}" class="hover ref-span">`;
+    const span = `<span id="${word.id}" class="hover ref-span" 
+                        style="background-color: ${colorPickerVal}">`;
     const strtOfs = word.startWordOfs;
     html = html.slice(0, strtOfs) + span + html.slice(strtOfs);
   }
@@ -286,5 +317,7 @@ function symbolTypeByKind(kind) {
     21: "Null", 22: "EnumMember", 23: "Struct", 24: "Event", 25: "Operator", 26: "TypeParameter" }
   [kind+1] ?? ""};
 
-module.exports = {init, setTheme, setLanguage, initWebviewHtml, 
-                  markupRefs, addEmptyBlockToView, addBlockToView, showInWebview};
+module.exports = {
+    init, setTheme, setLanguage, setColorPickerVal, setColorSelPickerVal,
+    initWebviewHtml, markupRefs, addEmptyBlockToView, addBlockToView, showInWebview
+};

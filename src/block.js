@@ -262,6 +262,8 @@ async function showFirstBlockWhenReady(textEditor) {
     await showFirstBlock(textEditor);
   });
   html.setTheme();
+  html.setColorPickerVal();
+  html.setColorSelPickerVal();
   html.setLanguage(textEditor);
   await html.initWebviewHtml(textEditor);
 }
