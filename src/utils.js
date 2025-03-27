@@ -101,7 +101,7 @@ function containsRange(outerRange, innerRange) {
 async function locationIsEntireFile(location) {
   const document = 
     await vscode.workspace.openTextDocument(location.uri);
-  return (location.range.start.line == 0                 &&
+  return (location.range.start.line == 0                   &&
           location.range.end.line == document.lineCount-1  &&
           location.range.start.character == 0              &&
           location.range.end.character   == 0);

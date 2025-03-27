@@ -163,7 +163,7 @@ async function addEmptyBlockToView(id, name, relPath, toIndex, fromRef) {
 
 async function addBlockToView(block, fromRef, toIndex) {
   const {id, name, relPath, lines} = block;
-  if(block.flags.isEntireFile) {
+  if(block.isEntireFile) {
     await addEmptyBlockToView(id, name, relPath, toIndex, fromRef)
     return;
   }

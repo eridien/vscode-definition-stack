@@ -57,8 +57,6 @@ async function refClick(data) {
   const blocks     = blk.getBlocksByRefId(fromRefId);
   if(!blocks) {
     log('err', 'refClick: blocks not found, fromRefId:', fromRefId);
-    blk.showAllBlocks();
-    blk.showAllRefs();
     return;
   }
   const refBlkId = utils.blkIdFromId(fromRefId);

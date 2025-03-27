@@ -34,25 +34,7 @@ function getPathByBlkId(blockId) {
   return pathByBlkId[blockId];
 }
 
-function showAllBlocks() {
-  for(const block of Object.values(blockByHash)) {
-    const {id, name} = block;
-    log(id, name);
-  };
-}
-
-function showAllRefs() {
-  for(const [refId, blocks] of Object.entries(blocksByRefId)) {
-    let blocksStr = '';
-    for(const block of blocks) 
-      blocksStr += `${block.id }:${block.name}, `;
-    log(refId, blocksStr.slice(0, -2));
-  };
-}
-
 async function addDefs(block) {
-  if(block.flags.haveDefs) return;
-  block.flags.haveDefs = true;
   const blockUri = block.location.uri;
   for(const line of block.lines) {
     let words = line.words;
@@ -106,8 +88,6 @@ async function addDefs(block) {
 }
 
 async function addWords(block) {
-  if(block.flags.haveWords) return;
-  block.flags.haveWords = true;
   const {lines} = block;
   const regexString = `\\b[a-zA-Z_$][\\w$]*?\\b`;
   const wordRegex = new RegExp(regexString, 'g');
@@ -127,8 +107,6 @@ async function addWords(block) {
 }
 
 async function addLines(block) {
-  if(block.flags.haveLines) return;
-  block.flags.haveLines = true;
   const location  = block.location;
   const document  = await vscode.workspace.openTextDocument(location.uri)
   const range     = block.location.range;
@@ -149,10 +127,6 @@ async function addLines(block) {
 }
 
 async function addRefBlocks(block, fromRefId) {
-  // return
-  if(block.flags.haveRefBlocks) return;
-  block.flags.haveRefBlocks = true;
-
   const blockId   = block.id;
   const blkAndIdx = navi.getBlockById(blockId);
   if(!blkAndIdx) return;
@@ -202,16 +176,15 @@ async function getOrMakeBlock(name, uri, range) {
   const relPath  = uri.path.slice(projPath.length+1);
   
   const block = {id, name, location, relPath, hash};
-  block.flags = {};
-  block.flags.isEntireFile = 
-        await utils.locationIsEntireFile(location);
+  if(await utils.locationIsEntireFile(location))
+    block.isEntireFile = true;
   await addLines(block);
   blockByHash[hash] = block;
   pathByBlkId[id]   = uri.path;
   const sel = new vscode.Selection(range.start, range.end);
   block.srcSymbol = await getSurroundingBlock(uri, sel, true);
   block.srcSymbol = block.srcSymbol ?? {name, range};
-  block.location = new vscode.Location(uri, srcSymbol.range);
+  block.location = new vscode.Location(uri, block.srcSymbol.range);
   // log('getOrMakeBlock, new block:', id, name);
   return block;
 }
@@ -274,7 +247,6 @@ async function showFirstBlock(textEditor) {
       return;
     }
   }
-  block.flags.isRoot = true;
   if(await utils.locationIsEntireFile(block.location)) {
     html.showInWebview('Definition is an entire file and hidden. See settings.');
     return;
@@ -295,5 +267,5 @@ async function showFirstBlockWhenReady(textEditor) {
 
 module.exports = { 
   init, showFirstBlockWhenReady, getBlocksByRefId, getPathByBlkId,
-  showAllBlocks, addAllData, addRefBlocks, removeBlockFromCaches
+  addAllData, addRefBlocks, removeBlockFromCaches
 };

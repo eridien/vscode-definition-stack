@@ -8,9 +8,6 @@ bugs ...
       mastertemp & guesttemp duplicate lines
   released version broken (cannot find prism files)
 
-  get refs for fcall, delete all except orig toggle, get fcall again 
-    => get refs for fcall doesn't work second time
-
 to-do ... 
   click on banner expands/collapses block
   if "not in a block" then 
