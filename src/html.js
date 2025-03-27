@@ -55,9 +55,9 @@ async function init(contextIn, webviewIn) {
   await loadConstFiles();
 }
 
-function isDarkTheme() {
-    return vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Dark;
-}
+// function isDarkTheme() {
+//     return vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Dark;
+// }
 
 function setTheme() {
   theme = context.globalState.get('theme', 'dark');
@@ -129,8 +129,6 @@ function bannerHtml(name, path, blkId, symbol) {
                     class="hover banner-name">${name}</span> in 
               <span id=${blkId}-banner-path" 
                     class="hover banner-path">${path}</span>
-              <span id=${blkId}-banner-path" 
-                    class="hover banner-path">${blkId}</span>
             </div>
           </span>`;
 }
