@@ -35,7 +35,10 @@ function getPathByBlkId(blockId) {
 }
 
 async function addDefs(block) {
-  const blockUri = block.location.uri;
+  const blockLoc   = block.location;
+  const blockUri   = blockLoc.uri;
+  const blockRange = blockLoc.range;
+
   for(const line of block.lines) {
     let words = line.words;
     for(let idx = 0; idx < words.length; idx++) {
@@ -55,13 +58,15 @@ async function addDefs(block) {
         const defRange = definition.targetRange;
         if(defRange.start.line      == defRange.end.line  &&
            defRange.start.character == defRange.end.character) 
-          continue defloop;
-        const defUri   = definition.targetUri;
-        const defPath  = defUri.path;
-        const location = new vscode.Location(defUri, defRange);
-        if(block.location.range.start.line == defRange.start.line &&
-           block.location.range.end.line   == defRange.end.line) continue;
-        if(utils.containsLocation(block.location, location)) continue;
+          continue;
+        const blockPath = blockUri.path;
+        const defUri    = definition.targetUri;
+        const defPath   = defUri.path;
+        const defLoc    = new vscode.Location(defUri, defRange);
+        if(blockPath == defPath                         &&
+           blockRange.start.line == defRange.start.line &&
+           blockRange.end.line   == defRange.end.line) continue;
+        if(utils.containsLocation(blockLoc, defLoc)) continue;
         for(const ignorePath of ignorePaths) {
           if(defPath.includes(ignorePath)) continue defloop;
         }
@@ -76,18 +81,15 @@ async function addDefs(block) {
     }
     words = words.filter(word => word);
     line.words = words;
-    for(const word of words) {
-      const blocks = [];
-      for(const defBlock of word.defBlocks) {
-        blocks.push(defBlock);
-      }
-      blocksByRefId[word.id] = blocks;
-    }
+    for(const word of words) 
+      blocksByRefId[word.id] = [...word.defBlocks];
     html.markupRefs(line);
   }
 }
 
 async function addWordsAndDefs(block) {
+  if(block.haveWordsAndDefs) return;
+  block.haveWordsAndDefs = true;
   const {lines} = block;
   const regexString = `\\b[a-zA-Z_$][\\w$]*?\\b`;
   const wordRegex = new RegExp(regexString, 'g');
@@ -130,7 +132,7 @@ async function addRefBlocks(block, fromRefId) {
   const blockId   = block.id;
   const blkAndIdx = navi.getBlockById(blockId);
   if(!blkAndIdx) return;
-  let {blockIdx}    = blkAndIdx;
+  let {blockIdx}  = blkAndIdx;
   try {
     const references = await vscode.commands.executeCommand(
       'vscode.executeReferenceProvider',
@@ -156,7 +158,7 @@ async function addRefBlocks(block, fromRefId) {
 
 let uniqueBlkId = 1;
 
-async function getOrMakeBlock(name, uri, range) {
+async function getOrMakeBlock(name, uri, range, srcSymbol) {
   // log({name, uri, range});
   const hash = JSON.stringify([name, uri.path, range]);
   const existingBlock = getBlockByHash(hash);
@@ -174,8 +176,11 @@ async function getOrMakeBlock(name, uri, range) {
   await addLines(block);
   blockByHash[hash] = block;
   pathByBlkId[id]   = uri.path;
-  const sel = new vscode.Selection(range.start, range.end);
-  block.srcSymbol = await getSurroundingSymbol(uri, sel);
+  if(srcSymbol === undefined) {
+    const sel = new vscode.Selection(range.start, range.end);
+    srcSymbol = await getSurroundingSymbol(uri, sel, name);
+  }
+  block.srcSymbol = srcSymbol;
   block.srcSymbol = block.srcSymbol ?? {name, range};
   block.location = new vscode.Location(uri, block.srcSymbol.range);
   // log('getOrMakeBlock, new block:', id, name);
@@ -192,7 +197,7 @@ function getSymbols(selectionRange, symbols) {
   }
 }
 
-async function getSurroundingSymbol(uri, selectionRange) {
+async function getSurroundingSymbol(uri, selectionRange, name) {
   try {
     const topSymbols = await vscode.commands.executeCommand(
                       'vscode.executeDocumentSymbolProvider', uri);
@@ -204,7 +209,7 @@ async function getSurroundingSymbol(uri, selectionRange) {
     getSymbols(selectionRange, symbols);
     symbols.shift();
     if (!symbols.length) {
-      log('infoerr', 'No symbol found for selection.');
+      log('getSurroundingSymbol, No symbol found', {uri, selectionRange, name});
       return null;
     }
     if(symbols.length > 1 && 
@@ -221,9 +226,10 @@ async function getSurroundingSymbol(uri, selectionRange) {
 }
 
 async function getSurroundingBlock(uri, selectionRange) {
-  const srcSymbol = await getSurroundingSymbol(uri, selectionRange);
+  const srcSymbol = await getSurroundingSymbol(uri, selectionRange, '');
   if(!srcSymbol) return null;
-  const block = await getOrMakeBlock(srcSymbol.name, uri, srcSymbol.range);
+  const block = await getOrMakeBlock(
+                    srcSymbol.name, uri, srcSymbol.range, srcSymbol);
   // log('getSurroundingBlock:', {id:block.id, name:block.name});
   return block;
 }

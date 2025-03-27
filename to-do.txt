@@ -2,20 +2,15 @@ bugs ...
   python
   hilite colors unreadable in dark 
       (protect pad block)
-  addRefBlocks inside original block 
-       (getValBySortChoice, fmtSize)
-  samsung.js in hvac2 (module.exports = {) 
-      mastertemp & guesttemp duplicate lines
-  released version broken (cannot find prism files)
 
 to-do ... 
+  busy indicator
   click on banner expands/collapses block
   if "not in a block" then 
       allow select lang
       show "not a definition" in the banner
       if small show full file 
       else truncate or show subset with logic
-  button to reload last initial block
   refresh button
   add line count to banner
   find
@@ -23,9 +18,9 @@ to-do ...
   auto-copy on selection
   show banner positions in scrollbar
   use vscode colors in banner or steal colors from prism theme
-  busy indicator
 
 unlikely ...
+  button to reload last initial block
   block vibrates on certain heights
   scroll body under banner?
   vue script shows as module (list.vue/311)
