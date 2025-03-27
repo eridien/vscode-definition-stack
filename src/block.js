@@ -175,7 +175,7 @@ async function getOrMakeBlock(name, uri, range) {
   blockByHash[hash] = block;
   pathByBlkId[id]   = uri.path;
   const sel = new vscode.Selection(range.start, range.end);
-  block.srcSymbol = await getSurroundingBlock(uri, sel, true);
+  block.srcSymbol = await getSurroundingSymbol(uri, sel);
   block.srcSymbol = block.srcSymbol ?? {name, range};
   block.location = new vscode.Location(uri, block.srcSymbol.range);
   // log('getOrMakeBlock, new block:', id, name);
@@ -192,7 +192,7 @@ function getSymbols(selectionRange, symbols) {
   }
 }
 
-async function getSurroundingBlock(uri, selectionRange, symbolOnly = false) {
+async function getSurroundingSymbol(uri, selectionRange) {
   try {
     const topSymbols = await vscode.commands.executeCommand(
                       'vscode.executeDocumentSymbolProvider', uri);
@@ -205,7 +205,7 @@ async function getSurroundingBlock(uri, selectionRange, symbolOnly = false) {
     symbols.shift();
     console.log('symbols', symbols);
     if (!symbols.length) {
-      log('infoerr', 'No symbol found.');
+      log('infoerr', 'No symbol found for selection.');
       return null;
     }
     if(symbols.length > 1 && 
@@ -213,16 +213,20 @@ async function getSurroundingBlock(uri, selectionRange, symbolOnly = false) {
        symbols[symbols.length-2].name)) {
       symbols.pop();
     }
-    const srcSymbol = symbols[symbols.length-1];
-    if(symbolOnly) return srcSymbol;
-    const block = await getOrMakeBlock(srcSymbol.name, uri, srcSymbol.range);
-    log('getSurroundingBlock:', {id:block.id, name:block.name});
-    return block;
+    return symbols[symbols.length-1];;
   }
   catch (error) {
-    log('err', 'getSurroundingBlock error:', error.message);
+    log('err', 'getSurroundingSymbol error:', error.message);
     return null;
   }
+}
+
+async function getSurroundingBlock(uri, selectionRange) {
+  const srcSymbol = await getSurroundingSymbol(uri, selectionRange);
+  if(!srcSymbol) return null;
+  const block = await getOrMakeBlock(srcSymbol.name, uri, srcSymbol.range);
+  log('getSurroundingBlock:', {id:block.id, name:block.name});
+  return block;
 }
 
 let uniqueRefId = 1;
@@ -233,7 +237,7 @@ async function showFirstBlock(textEditor) {
   const selection = textEditor.selection; 
   let block = await getSurroundingBlock(uri, selection);
   if(!block) {
-    await utils.sleep(2000);
+    await utils.sleep(1000);
     block = await getSurroundingBlock(uri, selection);
     if(!block) {
       html.showInWebview('Definition is an entire file and hidden. See settings.');
