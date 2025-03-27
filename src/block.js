@@ -145,7 +145,6 @@ async function addRefBlocks(block, fromRefId) {
       if(reference.uri.path == block.location.uri.path &&
          reference.range.start.line == block.location.range.start.line) 
         continue;
-      await addWordsAndDefs(refBlock);
       await navi.addBlockToView(refBlock, fromRefId, ++blockIdx);
     }
     await comm.send('scrollToBlkId', {blockId});
@@ -245,7 +244,6 @@ async function showFirstBlock(textEditor) {
     html.showInWebview('Definition is an entire file and hidden. See settings.');
     return;
   }
-  await addWordsAndDefs(block);
   await navi.addBlockToView(block);
 }
 

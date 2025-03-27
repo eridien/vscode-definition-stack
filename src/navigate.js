@@ -84,6 +84,7 @@ function getBlockById(blockId) {
 
 async function addBlockToView(block, fromRefId = "root", toIndex) {
   // log('addBlockToView:', {block:block.id, toIndex});
+  await blk.addWordsAndDefs(block);
   const fromIndex = blockStack.findIndex(b => b.id === block.id);
   if(fromIndex == -1) {
     if(toIndex === undefined || toIndex >= blockStack.length) {
