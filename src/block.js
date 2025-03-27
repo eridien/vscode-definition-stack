@@ -50,48 +50,6 @@ function showAllRefs() {
   };
 }
 
-function addWords(block) {
-  if(block.flags.haveWords) return;
-  block.flags.haveWords = true;
-  const {lines} = block;
-  const regexString = `\\b[a-zA-Z_$][\\w$]*?\\b`;
-  const wordRegex = new RegExp(regexString, 'g');
-  for(const line of lines) {
-    const words = [];
-    let match;
-    const lineText = line.text.slice(line.startCharOfs, line.endCharOfs);
-    while ((match = wordRegex.exec(lineText)) !== null) {
-      const name = match[0]
-      const startWordOfs = line.startCharOfs + wordRegex.lastIndex - name.length;
-      const endWordOfs   = wordRegex.lastIndex;
-      words.push({name, startWordOfs, endWordOfs});;
-    }
-    line.words = words;
-  }
-}
-
-async function addLines(block) {
-  if(block.flags.haveLines) return;
-  block.flags.haveLines = true;
-  const location  = block.location;
-  const document  = await vscode.workspace.openTextDocument(location.uri)
-  const range     = block.location.range;
-  const startLine = range.start.line;
-  const endLine   = range.end.line;
-  const lines = [];
-  for(let lineNum = startLine; lineNum <= endLine; lineNum++) {
-    const line = document.lineAt(lineNum);
-    let startCharOfs = 0;
-    let endCharOfs   = line.text.length;
-    if(lineNum == 0)       startCharOfs = range.start.character;
-    if(lineNum == endLine) endCharOfs   = range.end.character;
-    line.startCharOfs = startCharOfs;
-    line.endCharOfs   = endCharOfs;
-    lines.push(line);
-  };
-  block.lines = lines;
-}
-
 async function addDefs(block) {
   if(block.flags.haveDefs) return;
   block.flags.haveDefs = true;
@@ -147,6 +105,49 @@ async function addDefs(block) {
   }
 }
 
+async function addWords(block) {
+  if(block.flags.haveWords) return;
+  block.flags.haveWords = true;
+  const {lines} = block;
+  const regexString = `\\b[a-zA-Z_$][\\w$]*?\\b`;
+  const wordRegex = new RegExp(regexString, 'g');
+  for(const line of lines) {
+    const words = [];
+    let match;
+    const lineText = line.text.slice(line.startCharOfs, line.endCharOfs);
+    while ((match = wordRegex.exec(lineText)) !== null) {
+      const name = match[0]
+      const startWordOfs = line.startCharOfs + wordRegex.lastIndex - name.length;
+      const endWordOfs   = wordRegex.lastIndex;
+      words.push({name, startWordOfs, endWordOfs});;
+    }
+    line.words = words;
+  }
+  await addDefs(block);
+}
+
+async function addLines(block) {
+  if(block.flags.haveLines) return;
+  block.flags.haveLines = true;
+  const location  = block.location;
+  const document  = await vscode.workspace.openTextDocument(location.uri)
+  const range     = block.location.range;
+  const startLine = range.start.line;
+  const endLine   = range.end.line;
+  const lines = [];
+  for(let lineNum = startLine; lineNum <= endLine; lineNum++) {
+    const line = document.lineAt(lineNum);
+    let startCharOfs = 0;
+    let endCharOfs   = line.text.length;
+    if(lineNum == 0)       startCharOfs = range.start.character;
+    if(lineNum == endLine) endCharOfs   = range.end.character;
+    line.startCharOfs = startCharOfs;
+    line.endCharOfs   = endCharOfs;
+    lines.push(line);
+  };
+  block.lines = lines;
+}
+
 async function addRefBlocks(block, fromRefId) {
   // return
   if(block.flags.haveRefBlocks) return;
@@ -182,7 +183,7 @@ async function addRefBlocks(block, fromRefId) {
 
 async function addAllData(block) {
   await addLines(block);
-  addWords(block);
+  await addWords(block);
   await addDefs(block);
 }
 
@@ -195,7 +196,7 @@ async function getOrMakeBlock(name, uri, range) {
   if(existingBlock) return existingBlock;
   const id = `ds-blk-${uniqueBlkId++}`;
   const location = new vscode.Location(uri, range);
-  const document = await vscode.workspace.openTextDocument(location.uri)
+  const document = await vscode.workspace.openTextDocument(uri)
   const projIdx  = utils.getProjectIdx(document);
   const projPath = vscode.workspace.workspaceFolders[projIdx].uri.path;
   const relPath  = uri.path.slice(projPath.length+1);
@@ -210,7 +211,7 @@ async function getOrMakeBlock(name, uri, range) {
   const sel = new vscode.Selection(range.start, range.end);
   block.srcSymbol = await getSurroundingBlock(uri, sel, true);
   block.srcSymbol = block.srcSymbol ?? {name, range};
-  block.location = new vscode.Location(uri, block.srcSymbol.range);
+  block.location = new vscode.Location(uri, srcSymbol.range);
   // log('getOrMakeBlock, new block:', id, name);
   return block;
 }
@@ -230,7 +231,7 @@ async function getSurroundingBlock(uri, selectionRange, symbolOnly = false) {
     const topSymbols = await vscode.commands.executeCommand(
                       'vscode.executeDocumentSymbolProvider', uri);
     if (!topSymbols || !topSymbols.length) {
-      log('infoerr', 'No symbol found.');
+      log('err', 'No topSymbols found.');
       return null;
     }
     const symbols = [{children: topSymbols}];
@@ -249,7 +250,6 @@ async function getSurroundingBlock(uri, selectionRange, symbolOnly = false) {
     const srcSymbol = symbols[symbols.length-1];
     if(symbolOnly) return srcSymbol;
     const block = await getOrMakeBlock(srcSymbol.name, uri, srcSymbol.range);
-    block.srcSymbol = srcSymbol;
     log('getSurroundingBlock:', {id:block.id, name:block.name});
     return block;
   }
@@ -279,7 +279,7 @@ async function showFirstBlock(textEditor) {
     html.showInWebview('Definition is an entire file and hidden. See settings.');
     return;
   }
-  await addAllData(block, false);
+  await addWords(block);
   await navi.addBlockToView(block);
 }
 
@@ -295,5 +295,5 @@ async function showFirstBlockWhenReady(textEditor) {
 
 module.exports = { 
   init, showFirstBlockWhenReady, getBlocksByRefId, getPathByBlkId,
-  showAllBlocks, showAllRefs, addAllData, addRefBlocks, removeBlockFromCaches
+  showAllBlocks, addAllData, addRefBlocks, removeBlockFromCaches
 };

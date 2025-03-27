@@ -72,7 +72,7 @@ async function themeSelChange(data) {
   log('theme changed:', theme);
   await utils.init(context);
   await webv.init(context);
-  initWebviewHtml();
+  await initWebviewHtml();
 }
 
 function setLanguage(editor) {
@@ -164,7 +164,7 @@ async function addEmptyBlockToView(id, name, relPath, toIndex, fromRef) {
 async function addBlockToView(block, fromRef, toIndex) {
   const {id, name, relPath, lines} = block;
   if(block.flags.isEntireFile) {
-    addEmptyBlockToView(id, name, relPath, toIndex, fromRef)
+    await addEmptyBlockToView(id, name, relPath, toIndex, fromRef)
     return;
   }
   // log('adding block to view:', {name, relPath, toIndex});
