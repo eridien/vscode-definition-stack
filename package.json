@@ -3,7 +3,7 @@
   "displayName": "Definition Stack",
   "description": "Show definitions recursively in one tab.",
   "publisher": "mark-hahn",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/mark-hahn/vscode-definition-stack"
