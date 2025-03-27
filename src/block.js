@@ -87,7 +87,7 @@ async function addDefs(block) {
   }
 }
 
-async function addWords(block) {
+async function addWordsAndDefs(block) {
   const {lines} = block;
   const regexString = `\\b[a-zA-Z_$][\\w$]*?\\b`;
   const wordRegex = new RegExp(regexString, 'g');
@@ -145,7 +145,7 @@ async function addRefBlocks(block, fromRefId) {
       if(reference.uri.path == block.location.uri.path &&
          reference.range.start.line == block.location.range.start.line) 
         continue;
-      await addAllData(refBlock);
+      await addWordsAndDefs(refBlock);
       await navi.addBlockToView(refBlock, fromRefId, ++blockIdx);
     }
     await comm.send('scrollToBlkId', {blockId});
@@ -153,12 +153,6 @@ async function addRefBlocks(block, fromRefId) {
   } catch (error) {
     log('err', 'Error getting references:', block.name, error.message);
   }
-}
-
-async function addAllData(block) {
-  await addLines(block);
-  await addWords(block);
-  await addDefs(block);
 }
 
 let uniqueBlkId = 1;
@@ -251,7 +245,7 @@ async function showFirstBlock(textEditor) {
     html.showInWebview('Definition is an entire file and hidden. See settings.');
     return;
   }
-  await addWords(block);
+  await addWordsAndDefs(block);
   await navi.addBlockToView(block);
 }
 
@@ -267,5 +261,5 @@ async function showFirstBlockWhenReady(textEditor) {
 
 module.exports = { 
   init, showFirstBlockWhenReady, getBlocksByRefId, getPathByBlkId,
-  addAllData, addRefBlocks, removeBlockFromCaches
+  addRefBlocks, removeBlockFromCaches, addWordsAndDefs
 };

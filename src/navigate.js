@@ -67,7 +67,7 @@ async function refClick(data) {
   }
   for(const defBlock of blocks) {
     defBlock.fromRefId = fromRefId;
-    await blk.addAllData(defBlock);
+    await blk.addWordsAndDefs(defBlock);
     await addBlockToView(defBlock, fromRefId, refIndex);
   }
 }
