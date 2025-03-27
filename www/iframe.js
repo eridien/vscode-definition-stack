@@ -14,6 +14,16 @@ let padBlockEle;
 
 let lastScrollContHeight = 0;
 
+function setRefColorsFromPickers() {
+  const colorPickerVal = colorPickerEle.value;
+  let refEles = blocksContentEle.querySelectorAll(".ref-span");
+  for(const refEle of refEles) refEle.style.backgroundColor = colorPickerVal;
+  const colorSelPickerVal = colorSelPickerEle.value;
+  refEles = blocksContentEle.querySelectorAll(".ref-last-clicked");
+  for(const refEle of refEles) refEle.style.backgroundColor = colorSelPickerVal;
+}
+
+
 document.addEventListener('DOMContentLoaded', () => {
   themeSelectEle    = document.getElementById("theme-select-hdr");
   colorPickerEle    = document.getElementById("ref-color");
@@ -41,15 +51,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setRefColorsFromPickers();
     send('colorSelPickerValChg', {colorSelPickerVal});
   });
-
-  function setRefColorsFromPickers() {
-    const colorPickerVal = colorPickerEle.value;
-    let refEles = blocksContentEle.querySelectorAll(".ref-span");
-    for(const refEle of refEles) refEle.style.backgroundColor = colorPickerVal;
-    const colorSelPickerVal = colorSelPickerEle.value;
-    refEles = blocksContentEle.querySelectorAll(".ref-last-clicked");
-    for(const refEle of refEles) refEle.style.backgroundColor = colorSelPickerVal;
-  }
 
   setInterval(() => {
     const scrollContHeight = scrollContainerEle.getBoundingClientRect().height;
@@ -241,13 +242,13 @@ function setFromRefHighlight(refEle) {
   for(const lastClickedEle of lastClickedEles) 
     lastClickedEle.classList.remove('ref-last-clicked');
   refEle.classList.add('ref-last-clicked');
-  setRefColorsFromPickers();
 }
 
 function refClick(ele, refId) {
   // console.log('refClick:', refId, ele.innerText);
   setFromRefHighlight(ele);
-  send('refClick', {refId});
+  send('refClick', {refId});  
+  setRefColorsFromPickers()
 }
 
 function findAncestorByClass(ele, klass) {
@@ -283,6 +284,7 @@ document.addEventListener('click', event => {
   else if (classes.contains('banner-path'))   bannerPathClick(ele, id);
   else if (classes.contains('ref-span'))      refClick(ele, id);
   else if (blkEle = ele.closest(".ds-block")) codeClick(blkEle);
+  
 });
 
 function eleFromHtml(html) {
