@@ -8,15 +8,15 @@ function init() {
   config = vscode.workspace.getConfiguration('definition-stack');
 }
 
-function dumpSettings() {
-  const enabled = config.get('enableFeature', true); 
-  const theme   = config.get('theme', 'light');
-  const refreshInterval = config.get('refreshInterval', 5);
-  const favoriteQuote   = config.get(
-         'favoriteQuote', 'To be or not to be');
-  log(`Favorite quote: ${favoriteQuote}, ` +
-        `Enabled: ${enabled}, Theme: ${theme}, Interval: ${refreshInterval}`);
-}
+// function dumpSettings() {
+//   const enabled = config.get('enableFeature', true); 
+//   const theme   = config.get('theme', 'light');
+//   const refreshInterval = config.get('refreshInterval', 5);
+//   const favoriteQuote   = config.get(
+//          'favoriteQuote', 'To be or not to be');
+//   log(`Favorite quote: ${favoriteQuote}, ` +
+//         `Enabled: ${enabled}, Theme: ${theme}, Interval: ${refreshInterval}`);
+// }
 
 async function updateSettings() {
   await config.update('favoriteQuote', 'newQuote', vscode.ConfigurationTarget.Global);
@@ -34,47 +34,47 @@ vscode.workspace.onDidChangeConfiguration((event) => {
     log('refreshInterval changed');
   if (event.affectsConfiguration('definition-stack.favoriteQuote')) 
     log('favoriteQuote changed');
-  dumpSettings();
+  // dumpSettings();
   // setTimeout(ensureLangMapInSettings, 2000);
 });
 
-function ensureLangMapInSettings() {
-  vscode.commands.executeCommand('workbench.action.openSettingsJson').then(() => {
-    const editor = vscode.window.activeTextEditor;
-    if (!editor) return;
-    const document = editor.document;
-    const text = document.getText();
-    const propertyName = 'definition-stack.languageMappings';
-    const startPos = text.indexOf(propertyName);
-    if(startPos !== -1) {
-      const startPosition = document.positionAt(startPos); 
-      const range = new vscode.Range(startPosition, startPosition);
-      editor.revealRange(range);
-      return;
-    }
-    // try {
-    //   const json = JSON.parse(text);
-    //   json[propertyName] = propertyValue;
-    //   const updatedText = JSON.stringify(json, null, 2);
-    //   editor.edit(editBuilder => {
-    //     const fullRange = new vscode.Range(
-    //       document.positionAt(0), 
-    //       document.positionAt(text.length)
-    //     );
-    //     editBuilder.replace(fullRange, updatedText);
-    //   }).then(() => {
-    //     const startPos = updatedText.indexOf(propertyName);
-    //     const startPosition = document.positionAt(startPos); 
-    //     const endPos = startPosition.translate(0, propertyName.length); 
-    //     const range = new vscode.Range(startPosition, endPos);
-    //     editor.revealRange(range);
-    //     editor.selection = new vscode.Selection(startPosition, endPos);
-    //   });
-    // } catch (error) {
-    //   log('err', 'Failed to parse JSON:', error.message); 
-    // }
-  });
-}
+// function ensureLangMapInSettings() {
+//   vscode.commands.executeCommand('workbench.action.openSettingsJson').then(() => {
+//     const editor = vscode.window.activeTextEditor;
+//     if (!editor) return;
+//     const document = editor.document;
+//     const text = document.getText();
+//     const propertyName = 'definition-stack.languageMappings';
+//     const startPos = text.indexOf(propertyName);
+//     if(startPos !== -1) {
+//       const startPosition = document.positionAt(startPos); 
+//       const range = new vscode.Range(startPosition, startPosition);
+//       editor.revealRange(range);
+//       return;
+//     }
+//     // try {
+//     //   const json = JSON.parse(text);
+//     //   json[propertyName] = propertyValue;
+//     //   const updatedText = JSON.stringify(json, null, 2);
+//     //   editor.edit(editBuilder => {
+//     //     const fullRange = new vscode.Range(
+//     //       document.positionAt(0), 
+//     //       document.positionAt(text.length)
+//     //     );
+//     //     editBuilder.replace(fullRange, updatedText);
+//     //   }).then(() => {
+//     //     const startPos = updatedText.indexOf(propertyName);
+//     //     const startPosition = document.positionAt(startPos); 
+//     //     const endPos = startPosition.translate(0, propertyName.length); 
+//     //     const range = new vscode.Range(startPosition, endPos);
+//     //     editor.revealRange(range);
+//     //     editor.selection = new vscode.Selection(startPosition, endPos);
+//     //   });
+//     // } catch (error) {
+//     //   log('err', 'Failed to parse JSON:', error.message); 
+//     // }
+//   });
+// }
 
 module.exports = { init, updateSettings };
 

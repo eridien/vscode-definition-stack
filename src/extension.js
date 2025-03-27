@@ -18,12 +18,12 @@ async function activate(context) {
         await utils.init(context);
         await webv.init(context, textEditor);
         await blk.showFirstBlockWhenReady(textEditor);
-        log('openWebViewCmd finished');  
+        // log('openWebViewCmd finished');  
       }	
   );
   
   context.subscriptions.push(openWebViewCmd);
-  log("commands registered");
+  // log("commands registered");
 }
 
 function deactivate() {}

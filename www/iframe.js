@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   themeSelectEle.addEventListener("change", function () {
     const theme = themeSelectEle.value;
-    console.log('theme sel value change:', theme);
+    // console.log('theme sel value change:', theme);
     send('themeSelChange', {theme});
   });
 
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(scrollContHeight == lastScrollContHeight) return;
     lastScrollContHeight     = scrollContHeight;
     padBlockEle.style.height = `${scrollContHeight}px`;
-    console.log('scroll container height chg:', scrollContHeight);
+    // console.log('scroll container height chg:', scrollContHeight);
   }, 50);
 
   send('ready', {});
@@ -43,7 +43,7 @@ function setStyle(ele, prop, val) {
 }
 
 function collapse(blkId, collapseBtnEle) {
-  console.log('collapse', blkId);
+  // console.log('collapse', blkId);
   const preEle       = document.getElementById(`${blkId}-pre`);
   const expandBtnEle = collapseBtnEle.previousElementSibling;
   setStyle(preEle,         'display', 'none');
@@ -52,7 +52,7 @@ function collapse(blkId, collapseBtnEle) {
 }
 
 async function expand(blkId, expandBtnEle) {
-  console.log('expand', blkId);
+  // console.log('expand', blkId);
   const preEle         = document.getElementById(`${blkId}-pre`);
   const collapseBtnEle = expandBtnEle.nextElementSibling;
   setStyle(preEle,         'display', 'block');
@@ -61,7 +61,7 @@ async function expand(blkId, expandBtnEle) {
 }
 
 async function home() {
-  console.log('header home click');
+  // console.log('header home click');
   const rootEle = document.querySelector('[from-ref = "root"]');
   scrollBlockIntoView(rootEle);
 }
@@ -85,9 +85,9 @@ function getTopElement(container, childSelector) {
 }
 
 async function up() {
-  console.log('header up  click');
+  // console.log('header up  click');
   const topRes = getTopElement(scrollContainerEle, '.ds-block');
-  if(!topRes) { console.log('up, no top element'); return; }
+  if(!topRes) { console.error('up, no top element'); return; }
   // console.log('up topRes:', topRes);
   const {topEle, distTopToTop} = topRes;
   let eleToMoveToTop;
@@ -98,9 +98,9 @@ async function up() {
 }
 
 async function down() {
-  console.log('header down  click');
+  // console.log('header down  click');
   const topRes = getTopElement(scrollContainerEle, '.ds-block');
-  if(!topRes) { console.log('down, no top element'); return; }
+  if(!topRes) { console.error('down, no top element'); return; }
   // console.log('down topRes:', topRes);
   const {topEle} = topRes;
   const eleToMoveToTop = topEle.nextElementSibling;
@@ -128,7 +128,7 @@ async function collapseAll() {
 }
 
 function scrollBlockIntoView(ele) {
-  if(!ele) { console.log('scrollBlockIntoView, ele not found'); return; }
+  if(!ele) { console.error('scrollBlockIntoView, ele not found'); return; }
   ele.scrollIntoView({
     behavior: 'auto', // 'smooth',
     block:    'start',     // Align the block with the top of the viewport
@@ -139,7 +139,7 @@ function scrollBlockIntoView(ele) {
 function scrollToBlkId(blockId) {
   let blkEle = document.getElementById(blockId);
   if(!blkEle) {
-    console.log('scrollToBlockId, block not found:', blockId);
+    console.error('scrollToBlockId, block not found:', blockId);
     return;
   }
   scrollBlockIntoView(blkEle);
@@ -154,7 +154,7 @@ function scrollToFromRef(fromRefId) {
     const refBlkId = blkIdFromId(fromRefId);
     refEle = document.getElementById(refBlkId);
     if(!refEle) {
-      console.log('scrollToFromRef, ref block missing:', refBlkId);
+      console.error('scrollToFromRef, ref block missing:', refBlkId);
       return;
     }
   }
@@ -172,7 +172,7 @@ function headerButtonClick(iconName) {
 }
 
 function bannerButtonClick(ele, id, blockId, tail) {
-  console.log('bannerButtonClick:', {id, blockId, tail});
+  // console.log('bannerButtonClick:', {id, blockId, tail});
   switch(tail) {
     case 'icon-delete':   send('deleteButtonClick', {blockId}); break;
     case 'icon-collapse': collapse(blockId, ele);               break;
@@ -183,19 +183,19 @@ function bannerButtonClick(ele, id, blockId, tail) {
 }
 
 function bannerNameClick(ele, bannerNameId) {
-  console.log('bannerNameClick:', bannerNameId, ele.innerText);
+  // console.log('bannerNameClick:', bannerNameId, ele.innerText);
   const anc = findAncestorByClass(ele, 'ds-block');
   if(!anc) return;
   const {ele:blkEle} = anc;
   const fromRefId = blkEle.getAttribute('from-ref');
-  if(!fromRefId) console.log(
+  if(!fromRefId) console.error(
           'bannerNameClick, no fromRefId:', bannerNameId);
   else scrollToFromRef(fromRefId);
 }
 
 function bannerPathClick(ele, bannerPathId) {
   const blockId = blkIdFromId(bannerPathId);
-  console.log('bannerPathClick:', bannerPathId);
+  // console.log('bannerPathClick:', bannerPathId);
   send('openEditor', {blockId});
 }
 
@@ -204,7 +204,7 @@ function codeClick(blkEle) {
   let lineNo  = +blkEle.querySelector('pre')
                         .getAttribute('data-start');
   lineNo -= 2;
-  console.log('codeClick:', {blockId, lineNo});
+  // console.log('codeClick:', {blockId, lineNo});
   send('openEditor', {blockId, lineNo});
 }
 
@@ -217,7 +217,7 @@ function setFromRefHighlight(refEle) {
 }
 
 function refClick(ele, refId) {
-  console.log('refClick:', refId, ele.innerText);
+  // console.log('refClick:', refId, ele.innerText);
   setFromRefHighlight(ele);
   send('refClick', {refId});
 }
@@ -226,7 +226,7 @@ function findAncestorByClass(ele, klass) {
   if(!ele) return null;
   ele = ele.closest(`.${klass}`);
   if(!ele) {
-    console.log('findAncestorByClass, class not found:', klass);
+    console.error('findAncestorByClass, class not found:', klass);
     return null;
   }
   const id    = ele.getAttribute('id');
@@ -239,11 +239,11 @@ document.addEventListener('click', event => {
   let   ele     = event.target;
   const tagName = ele.tagName.toLowerCase(); 
   const id      = ele.getAttribute('id');
-  console.log('click event:', tagName, id);
+  // console.log('click event:', tagName, id);
   if (["path", "svg", "polygon", "polyline"].includes(tagName)) {
     const ancestor = findAncestorByClass(event.target, 'button');
     const {ele, id, blkId, tail} = ancestor;
-    console.log('button click:', {blkId, tail});
+    // console.log('button click:', {blkId, tail});
     if(blkId == "iframe-hdr-icon")
          headerButtonClick(tail);
     else bannerButtonClick(ele, id, blkId, tail);
@@ -267,7 +267,7 @@ function eleFromHtml(html) {
 async function insertBlock(blockHtml, toIndex) {
   const children = blocksContentEle.children;
   if(toIndex === undefined) toIndex = children.length-1;
-  console.log('insertBlock toIndex:', toIndex);
+  // console.log('insertBlock toIndex:', toIndex);
   if (toIndex < 0 || toIndex > children.length) {
     send('error', {msg:'insertBlock bad index', index: toIndex});
     return;

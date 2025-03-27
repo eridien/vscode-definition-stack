@@ -61,7 +61,7 @@ function isDarkTheme() {
 
 function setTheme() {
   theme = context.globalState.get('theme', 'dark');
-  log('setTheme:', theme);
+  // log('setTheme:', theme);
 }
 
 async function themeSelChange(data) {
@@ -69,7 +69,7 @@ async function themeSelChange(data) {
   if(themeIn == theme) return;
   theme = themeIn;
   context.globalState.update('theme', theme);
-  log('theme changed:', theme);
+  // log('theme changed:', theme);
   await utils.init(context);
   await webv.init(context);
   await initWebviewHtml();
@@ -84,7 +84,7 @@ function setLanguage(editor) {
     language = vscLangIdToPrism[vscLangId];
     language ??= vscLangId;
   }
-  log('set language:', language);
+  // log('set language:', language);
 }
 
 async function themeSelectHtml() {
@@ -181,7 +181,7 @@ async function addBlockToView(block, fromRef, toIndex) {
       bannerHtml(name, relPath, id, block.srcSymbol)         +
       codeHtml(lines, code, id)                              +
    `</div>`;
-  // console.log('blockHtml:', blockHtml);
+  // log('blockHtml:', blockHtml);
   const data  = {blockHtml};
   const atEnd = (toIndex === undefined);
   if(!atEnd) data.toIndex = toIndex;
@@ -195,7 +195,7 @@ async function initWebviewHtml(editor) {
   const prismCss = await utils.readTxt(true, 'prism', 'themes', `prism-${theme}.css`);
   const iframeCss = prismCss + lineNumCss + iframeCssIn;
 
-  log(`reading language file for ${language}`);
+  // log(`reading language file for ${language}`);
   let languageJs = await utils.readTxt(false, 'prism', 
                                   'languages', `prism-${language}.min.js`);
   if(languageJs === null) {
@@ -212,7 +212,7 @@ async function initWebviewHtml(editor) {
       langTxt = await utils.readTxt(false, 'prism', 
                                     'languages', `prism-${extLang}.min.js`);
       if(langTxt === null) break;
-      log(`language ${language} extends ${extLang}`);
+      // log(`language ${language} extends ${extLang}`);
       languageJs = langTxt + languageJs;
     }
   }

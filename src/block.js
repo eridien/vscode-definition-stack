@@ -203,7 +203,6 @@ async function getSurroundingSymbol(uri, selectionRange) {
     const symbols = [{children: topSymbols}];
     getSymbols(selectionRange, symbols);
     symbols.shift();
-    console.log('symbols', symbols);
     if (!symbols.length) {
       log('infoerr', 'No symbol found for selection.');
       return null;
@@ -225,7 +224,7 @@ async function getSurroundingBlock(uri, selectionRange) {
   const srcSymbol = await getSurroundingSymbol(uri, selectionRange);
   if(!srcSymbol) return null;
   const block = await getOrMakeBlock(srcSymbol.name, uri, srcSymbol.range);
-  log('getSurroundingBlock:', {id:block.id, name:block.name});
+  // log('getSurroundingBlock:', {id:block.id, name:block.name});
   return block;
 }
 
@@ -253,7 +252,7 @@ async function showFirstBlock(textEditor) {
 
 async function showFirstBlockWhenReady(textEditor) {
   comm.registerWebviewRecv('ready', async () => {
-    log('webview ready');
+    // log('webview ready');
     await showFirstBlock(textEditor);
   });
   html.setTheme();
