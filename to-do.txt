@@ -16,10 +16,10 @@ to-do ...
   find
   ctrl-c
   auto-copy on selection
-  show banner positions in scrollbar
   use vscode colors in banner or steal colors from prism theme
 
 unlikely ...
+  show banner positions in scrollbar
   button to reload last initial block
   block vibrates on certain heights
   scroll body under banner?
