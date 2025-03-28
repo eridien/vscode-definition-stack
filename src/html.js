@@ -6,6 +6,9 @@ const log    = utils.getLog('HTML');
 
 let webv;
 
+const refWordColor = '#d4cece';
+const selWordColor = '#d3ca97';
+
 const vscLangIdToPrism = {
   "bat":           "batch",
   "dockerfile":    "docker",
@@ -70,7 +73,7 @@ function setTheme() {
 
 function setColorPickerVal() {
   colorPickerVal = context.globalState
-                          .get('colorPickerVal', '#f1f28c');
+                          .get('colorPickerVal', refWordColor);
   log('setColorPickerVal:', colorPickerVal);
 }
 
@@ -82,7 +85,7 @@ function colorPickerValChg(data) {
 
 function setColorSelPickerVal() {
   colorSelPickerVal = context.globalState
-                             .get('colorSelPickerVal', '#e9cece');
+                             .get('colorSelPickerVal', selWordColor);
   log('setColorSelPickerVal:', colorSelPickerVal);
 }
 
@@ -302,7 +305,8 @@ function markupRefs(line) {
     const endOfs = word.endWordOfs;
     html = html.slice(0, endOfs) + '</span>' + html.slice(endOfs);
     const span = `<span id="${word.id}" class="hover ref-span" 
-                        style="background-color: ${colorPickerVal}">`;
+                        style="background-color: ${colorPickerVal};
+                        text-shadow:none;">`;
     const strtOfs = word.startWordOfs;
     html = html.slice(0, strtOfs) + span + html.slice(strtOfs);
   }
