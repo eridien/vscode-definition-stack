@@ -107,15 +107,15 @@ From left to right ...
 
 ### Future
 
-- Much more user testing is needed.  Only a subset of the many languages have been tested.
+- More user testing is needed.  Only a subset of the many languages have been tested.
 
 - There is no way currently to match the language highlighting and themes to vscode ones.  This extension uses the Prism library which works quite differently than the vscode language providers.  Any ideas are welcome.
 
 - Currently this is not keyboard-jockey friendly. The mouse is used for everything.  There is no reason that keys couldn't be used but nothing has been done in this area yet.
 
-- There are many more possible buttons, like Close Above and Close Below.  The UI is already too cluttered.  There could be settings to hide sets of buttons. For example when you have picked a theme and highlight colors those pickers could be hidden.
+- When a source file is edited the blocks in the stack are not updated. Tracking changes would not be easy and not work well just like bookmarks and breakpoints. This is not a serious problem since the stack is created and used quickly unlike bookmarks and breakpoints which are expected to be persistent.
 
-- As mentioned above there is a setting for max lines in a block. The source code is truncated which is unfriendly. Smart logic to trim out groups of lines with no refs would be much better.
+- The UI is ugly.  I am not a graphics designer. Help here would be appreciated.
 
 #### Author: Mark Hahn
 
@@ -124,3 +124,5 @@ From left to right ...
 #### Original Release: April 2025
 
 #### License: MIT
+
+<sub>Icons are provided by https://www.iconfinder.com.</sub>
