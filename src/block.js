@@ -2,7 +2,7 @@ const vscode = require('vscode');
 const navi   = require('./navigate.js');
 const html   = require('./html.js');
 const comm   = require('./comm.js');
-// const sett   = require('./settings.js');
+const sett   = require('./settings.js');
 const utils  = require('./utils.js');
 const log    = utils.getLog('BLCK');
 

@@ -10,13 +10,13 @@ function init() {
 
 const settingCallbacks = {};
 
-const settings = {
-  ignorePatterns: ['node_modules'], // strings for file patterns to ignore
-  mappings:       {},  // mappings from vscode language IDs to extension IDs
-  entireFileOk: true,  // definitions that occupy an entire file should be shown
-  maxLines:       0,   // max number of lines in a block (0 means no limit)
-  size:          1.0   // text size multiplier for display
-}
+const settings = [
+  'ignorePatterns', // patterns for files to ignore
+  'mappings',       // mappings from vscode language IDs to extension IDs
+  'entireFileOk',   // definitions that occupy an entire file should be shown
+  'maxLines',       // max number of lines in a block (0 means no limit)
+  'size'            // text size multiplier for display
+]
 
 function logSettings() {
   for(const setting in settings) {
@@ -48,11 +48,18 @@ function registerSettingCallback(settingName, callback) {
   settingCallbacks[settingName] = callback;
 }
 
-for(const setting in settings) {
-  vscode.workspace.onDidChangeConfiguration((event) => {
-    log(`setting ${setting} changed`);
-    if(settingCallbacks[setting]) settingCallbacks[setting](event);
-  });
-}
+vscode.workspace.onDidChangeConfiguration((event) => {
+  for(const setting of settings) {
+    const settingName = `definition-stack.${setting}`;
+    if (event.affectsConfiguration(settingName)) {
+      const value = vscode.workspace.getConfiguration().get(settingName);
+      let prtValue = value;
+      if(typeof value === 'object')
+        prtValue = JSON.stringify(value, null, 2);
+      log(`setting ${setting} changed to: ${prtValue}`);
+      if(settingCallbacks[setting]) settingCallbacks[setting](value);
+    }
+  }
+})
 
-module.exports = { init, logSettings, updateSetting, registerSettingCallback }
+module.exports = { init, logSettings, updateSetting, registerSettingCallback };

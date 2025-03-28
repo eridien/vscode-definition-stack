@@ -49,32 +49,30 @@
     "configuration": {
       "title": "Definition Stack Settings",
       "properties": {
-        "definition-stack.favoriteQuote": {
+        "definition-stack.ignorePatterns": {
           "type": "string",
-          "default": "To be or not to be",
-          "description": "Enter your favorite quote."
+          "default": "node_modules, .d.ts",
+          "description": "Patterns of files to ignore. Seperate with commas. Regex patterns are allowed." 
         },
-        "definition-stack.enableFeature": {
+        "definition-stack.entireFileOk": {
           "type": "boolean",
           "default": true,
-          "description": "Enable or disable the feature."
+          "description": "Allow entire file contents to be shown. Not recommended if you have large files." 
         },
-        "definition-stack.theme": {
-          "type": "string",
-          "default": "light",
-          "enum": [
-            "light",
-            "dark",
-            "auto"
-          ],
-          "description": "Choose the theme for the extension."
-        },
-        "definition-stack.refreshInterval": {
+        "definition-stack.maxLines": {
           "type": "number",
-          "default": 5,
-          "minimum": 1,
-          "maximum": 60,
-          "description": "Set the refresh interval in seconds."
+          "default": 0,
+          "description": "Maximum number of lines to display in a block. Set to 0 for no limit. This is to prevent performance issues with large files." 
+        },
+        "definition-stack.size": {
+          "type": "number",
+          "default": 1.0,
+          "description": "Scale factor for text. 1.0 is size setting for text editors." 
+        },
+        "definition-stack.mappings": {
+          "type": "object",
+          "default": {"x":"y"},
+          "description": "Mappings from Vscode language IDs to extension IDs. Change in settings.json" 
         }
       }
     }
