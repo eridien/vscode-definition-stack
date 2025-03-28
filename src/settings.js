@@ -26,18 +26,18 @@ function logSettings() {
   }
 }
 
-function addPropertyToJsonString(jsonString, key, value) {
-  jsonString = jsonString.trim();
-  if (jsonString === "{}")
-      return `{"${key}": ${JSON.stringify(value)}}`;
-  let lastBraceIndex = jsonString.lastIndexOf("}");
-  if (lastBraceIndex === -1) return jsonString;
-  let hasProperties = jsonString.lastIndexOf("{") < lastBraceIndex - 1;
-  let newProperty = hasProperties ? `, "${key}": ${JSON.stringify(value)}` 
-                                  : `"${key}":   ${JSON.stringify(value)}`;
-  return jsonString.slice(0, lastBraceIndex) + newProperty 
-                              + jsonString.slice(lastBraceIndex);
-}
+// function addPropertyToJsonString(jsonString, key, value) {
+//   jsonString = jsonString.trim();
+//   if (jsonString === "{}")
+//       return `{"${key}": ${JSON.stringify(value)}}`;
+//   let lastBraceIndex = jsonString.lastIndexOf("}");
+//   if (lastBraceIndex === -1) return jsonString;
+//   let hasProperties = jsonString.lastIndexOf("{") < lastBraceIndex - 1;
+//   let newProperty = hasProperties ? `, "${key}": ${JSON.stringify(value)}` 
+//                                   : `"${key}":   ${JSON.stringify(value)}`;
+//   return jsonString.slice(0, lastBraceIndex) + newProperty 
+//                               + jsonString.slice(lastBraceIndex);
+// }
 
 async function updateSetting(name, value) {
   await config.update(name, value, vscode.ConfigurationTarget.Global);
@@ -52,7 +52,7 @@ for(const setting in settings) {
   vscode.workspace.onDidChangeConfiguration((event) => {
     log(`setting ${setting} changed`);
     if(settingCallbacks[setting]) settingCallbacks[setting](event);
-  }
+  });
 }
 
 module.exports = { init, logSettings, updateSetting, registerSettingCallback }
