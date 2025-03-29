@@ -9,7 +9,7 @@ body {
   color: var(--vscode-editorLineNumber-foreground);
 }
 .line-numbers .line-numbers-rows {
-    letter-spacing: 0px;
+    letter-spacing: 0rem;
     left: -3.4em;
     top:  -0.1em;
 }
@@ -20,11 +20,11 @@ body {
 }
 
 #iframe-header {
-  position: relative; top: 10px;
-  height:36px;
-  margin-left:14px; 
+  position: relative; top: 10rem;
+  height:36rem;
+  margin-left:14rem; 
   display:inline-block;
-  border: 1px solid #ddd;
+  border: 1rem solid #ddd;
 }
 
 #scroll-container{overflow-y:auto;}
@@ -34,36 +34,36 @@ body {
   height: 100vh; overflow: hidden;
 }
 #padding-block { 
-  width:10px;
-  height:0px;
+  width:10rem;
+  height:0rem;
 }
 
 #lang-select-hdr, #theme-select-hdr {
-  font-size:16px;
-  width: 100px;
+  font-size:16rem;
+  width: 100rem;
   text-align:center;
   background-color: #f0f0f0;
 }
 
 .banner {
-  margin: 5px 0 -10px 0; 
-  padding: 2px 15px 12px 15px;
+  margin: 5rem 0 -10rem 0; 
+  padding: 2rem 15rem 12rem 15rem;
   display: block;
   background-color:#ddd; color:#444;
   display: flex; justify-content: flex-start;
-  align-items: center; gap: 10px;
+  align-items: center; gap: 10rem;
 }
 .button {
   background-color: rgb(240, 240, 240);
   display: inline-block;
-  width:20px; height:20px;
-  position:relative; top:3px; left:-6px; 
-  margin:0 4px 0 4px;
-  border: 1px solid black; border-radius:5px;
+  width:20rem; height:20rem;
+  position:relative; top:3rem; left:-6rem; 
+  margin:0 4rem 0 4rem;
+  border: 1rem solid black; border-radius:5rem;
 }
 banner-text {
   display: inline-block;
-  position: relative; top:-2px;
+  position: relative; top:-2rem;
 }
 .banner-type { color:black; }
 .banner-name { color:#44f; }

@@ -143,7 +143,7 @@ function bannerHtml(name, path, blkId, symbol) {
               svg.iconHtml('expand',   blkId, 'display:none') +
               svg.iconHtml('collapse', blkId) +
               svg.iconHtml('refsup',   blkId,
-                              "position:relative; top:-.2px;") +
+                              "position:relative; top:-.2rem;") +
               svg.iconHtml('isolate',  blkId) +
            `</div>
             <div class="banner-text"> 
@@ -252,7 +252,7 @@ async function initWebviewHtml(editor) {
   }
   const fontFamily = ` */ font-family: ${config.fontFamily};   /* `;
   const fontWeight = ` */ font-weight: ${config.fontWeight};   /* `;
-  const fontSize   = ` */ font-size:   ${config.fontSize}px;   /* `;
+  const fontSize   = ` */ font-size:   ${config.fontSize}rem;   /* `;
   const headerHtml = ` --> ${await hdrHtml()} <!-- `;
 
   const iframeHtml = (iframeHtmlIn
@@ -277,7 +277,7 @@ function showInWebview(msg) {
     const msgHtml = // doesn't work in css file(?), even with !important
        `<div style="background: var(--vscode-editor-background);
                    color: var(--vscode-editor-foreground);
-                   font-size:16px; font-weight:bold;"> 
+                   font-size:16rem; font-weight:bold;"> 
           ${msg} 
         </div>`;
     webview.html = msgHtml;
