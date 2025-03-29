@@ -6,7 +6,7 @@ const sett   = require('./settings.js');
 const utils  = require('./utils.js');
 const log    = utils.getLog('BLCK');
 
-const ignorePaths = ['node_modules', '.d.ts'];
+let ignorePatternRegexes = [];
 
 let blockByHash   = {};
 let blocksByRefId = {};
@@ -34,6 +34,37 @@ function getBlocksByRefId(refId) {
 function getPathByBlkId(blockId) {
   return pathByBlkId[blockId];
 }
+
+function escapeRegExp(string) {
+    return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+}
+
+function parseAndSaveIgnorePatterns(strIn) {
+  const partsIn = strIn.split(',').map(part => part.trim());
+  const ignorePatterns = [];
+  for(let i=0; i < partsIn.length; i++) {
+    const part     = partsIn[i];
+    const nextPart = partsIn[i+1];
+    if(part === "") {
+      if(ignorePatterns.length > 0 && i < partsIn.length-1 && nextPart !== "") {
+        ignorePatterns[ignorePatterns.length-1] += (',' + partsIn[i+1]);
+        i++; // skip next part since it was merged
+      }
+      continue;
+    }
+    ignorePatterns.push(part);
+  }
+  ignorePatternRegexes = ignorePatterns.map( pattern => {
+    const matches = pattern.match(/^\/(.*)\/$/);
+    if(matches) return new RegExp(matches[1]);
+                return new RegExp(escapeRegExp(pattern));
+  });
+  log( 'ignorePatternRegexes', ignorePatternRegexes);
+}
+
+parseAndSaveIgnorePatterns("node_modules, /, /\\.d\\.ts$/ ");
+
+sett.registerSettingCallback('ignorePatterns', parseAndSaveIgnorePatterns);
 
 async function addDefs(block) {
   const blockLoc   = block.location;
@@ -68,8 +99,8 @@ async function addDefs(block) {
            blockRange.start.line == defRange.start.line &&
            blockRange.end.line   == defRange.end.line) continue;
         if(utils.containsLocation(blockLoc, defLoc)) continue;
-        for(const ignorePath of ignorePaths) {
-          if(defPath.includes(ignorePath)) continue defloop;
+        for(const regex of ignorePatternRegexes) {
+          if(regex.test(defPath)) continue defloop;
         }
         const defBlock = await getOrMakeBlock(name, defUri, defRange);
         word.defBlocks.push(defBlock);

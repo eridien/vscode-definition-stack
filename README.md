@@ -95,7 +95,7 @@ From left to right ...
 
 #### Settings available in the vscode settings tab.
 
-- File ignore patterns. Refs to an ignored file are not available. Patterns can be regexes. node_modules is the only default pattern.
+- File ignore patterns. Refs to an ignored file are not available. Patterns can be regexes. "node_modules" and ".d.ts" are the default patterns.
 
 - Mappings from vscode language IDs to this extension's IDs. For example CPP to C++ and Vue to JS.  (BTW, this extension works well with Vue single-page components). There is a default list of 8 mappings which probably doesn't need to be changed.
 

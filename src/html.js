@@ -9,17 +9,6 @@ let webv;
 const refWordColor = '#d4cece';
 const selWordColor = '#d3ca97';
 
-const vscLangIdToPrism = {
-  "bat":           "batch",
-  "dockerfile":    "docker",
-  "jsx-tags":      "jsx",
-  "objective-c":   "objectivec",
-  "objective-cpp": "objectivec",
-  "jade":          "pug",
-  "shellscript:":  "bash",
-  "vue":           "javascript"
-}
-
 let webview, context, language, theme;
 let webviewHtml, webviewJs, iframeHtmlIn, iframeJsIn;
 let iframeCssIn, lineNumCss, prePrismJs, prismCoreJs;
@@ -111,9 +100,10 @@ function setLanguage(editor) {
   const path = document.uri.fsPath;
   language = context.globalState.get(`lang-for-path-${path}`, 'notset');
   if(language == 'notset') {
-    const vscLangId = document.languageId;
-    language = vscLangIdToPrism[vscLangId];
-    language ??= vscLangId;
+    // const vscLangId = document.languageId;
+    // language = vscLangIdToPrism[vscLangId];
+    // language ??= vscLangId;
+    language = 'javascript'; 
   }
   // log('set language:', language);
 }
