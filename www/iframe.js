@@ -235,7 +235,7 @@ function codeClick(blkEle) {
   // console.log('codeClick:', {blockId, lineNo});
   send('openEditor', {blockId, lineNo});
 }
-
+ 
 function setFromRefHighlight(refEle) {
   const {ele:blkEle} = findAncestorByClass(refEle, 'ds-block');
   const lastClickedEles = blkEle.querySelectorAll('.ref-last-clicked');

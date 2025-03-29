@@ -15,7 +15,6 @@ const settings = [
   'mappings',       // mappings from vscode language IDs to extension IDs
   'entireFileOk',   // definitions that occupy an entire file should be shown
   'maxLines',       // max number of lines in a block (0 means no limit)
-  'size'            // text size multiplier for display
 ]
 
 function logSettings() {

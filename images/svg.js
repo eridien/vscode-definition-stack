@@ -37,6 +37,12 @@ function iconHtml(name, btnId, style) {
 
  case 'isolate': return iconDiv(name, btnId, style) + `
         <?xml version="1.0" ?><svg id="svg8" version="1.1" viewBox="0 0 12.7 12.7" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg"><g id="layer1" transform="translate(0,-284.29998)"><path d="m 9.8777781,289.9444 v 1.41112 H 2.8222223 v -1.41112 z" id="path4507" style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"/></g></svg></div>`;
+
+ case 'smallA': return iconDiv(name, btnId, style) + `
+        <?xml version="1.0" ?><svg style="position:relative; top:6rem; left:3rem;" viewBox="0 0 921 1229" xmlns="http://www.w3.org/2000/svg"><path d="M381.5 435.7l-160-384C216.6 39.78 204.9 32.01 192 32.01S167.4 39.78 162.5 51.7l-160 384c-6.797 16.31 .9062 35.05 17.22 41.84c16.38 6.828 35.08-.9219 41.84-17.22l31.8-76.31h197.3l31.8 76.31c5.109 12.28 17.02 19.7 29.55 19.7c4.094 0 8.266-.7969 12.3-2.484C380.6 470.7 388.3 452 381.5 435.7zM119.1 320L192 147.2l72 172.8H119.1z"/></svg></div>`;
+
+ case 'largeA': return iconDiv(name, btnId, style) + `
+        <?xml version="1.0" ?><svg style="position:relative; top:1rem; left:3.5rem;" viewBox="0 0 576 768" xmlns="http://www.w3.org/2000/svg"><path d="M381.5 435.7l-160-384C216.6 39.78 204.9 32.01 192 32.01S167.4 39.78 162.5 51.7l-160 384c-6.797 16.31 .9062 35.05 17.22 41.84c16.38 6.828 35.08-.9219 41.84-17.22l31.8-76.31h197.3l31.8 76.31c5.109 12.28 17.02 19.7 29.55 19.7c4.094 0 8.266-.7969 12.3-2.484C380.6 470.7 388.3 452 381.5 435.7zM119.1 320L192 147.2l72 172.8H119.1z"/></svg></div>`;
   }
 }
 

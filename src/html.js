@@ -122,7 +122,7 @@ async function themeSelectHtml() {
 }
 
 async function hdrHtml() {
-  return `<div id="iframe-header">` +
+  return `<div id="iframe-header" style="position:relative; top:0rem;">` +
             svg.iconHtml('home',     "iframe-hdr") + 
             svg.iconHtml('up-ptr',   "iframe-hdr") +
             svg.iconHtml('down-ptr', "iframe-hdr") +
@@ -130,8 +130,11 @@ async function hdrHtml() {
             svg.iconHtml('expand',   "iframe-hdr") +
             (await themeSelectHtml()) + ' ' +
            `<input type="color" id="ref-color"     value="${colorPickerVal}">
-            <input type="color" id="ref-sel-color" value="${colorSelPickerVal}">
-          </div>`;
+            <input type="color" id="ref-sel-color" value="${colorSelPickerVal}"
+                   style="margin-right:12rem;">` +
+            svg.iconHtml('smallA',   "iframe-hdr", "position:relative; top:9rem;") +
+            svg.iconHtml('largeA',   "iframe-hdr", "position:relative; top:9rem;") +
+         `</div>`;
 }
 
 function bannerHtml(name, path, blkId, symbol) {

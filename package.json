@@ -64,11 +64,6 @@
           "default": 0,
           "description": "Maximum number of lines to display in a block. Set to 0 for no limit. This is to prevent performance issues with large files." 
         },
-        "definition-stack.size": {
-          "type": "number",
-          "default": 1.0,
-          "description": "Scale factor for text. 1.0 is size setting for text editors." 
-        },
         "definition-stack.mappings": {
           "type": "object",
           "default": {
