@@ -51,8 +51,8 @@
       "properties": {
         "definition-stack.ignorePatterns": {
           "type": "string",
-          "default": "node_modules, /\\\\.d\\\\.ts$/",
-          "description": "Patterns of files to ignore. Seperate with commas. To enter a comma use two commas together. RegExp patterns are allowed and should use javascript notation, i.e. /\\\\.d\\\\.ts$/." 
+          "default": "node_modules, /\\.d\\.ts$/",
+          "description": "Patterns of files to ignore. Seperate with commas. To enter a comma use two commas together. RegExp patterns are allowed." 
         },
         "definition-stack.entireFileOk": {
           "type": "boolean",

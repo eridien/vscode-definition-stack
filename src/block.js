@@ -54,15 +54,8 @@ function parseAndSaveIgnorePatterns(strIn) {
     }
     ignorePatterns.push(part);
   }
-  ignorePatternRegexes = ignorePatterns.map( pattern => {
-    const matches = pattern.match(/^\/(.*)\/$/);
-    if(matches) return new RegExp(matches[1]);
-                return new RegExp(escapeRegExp(pattern));
-  });
-  log( 'ignorePatternRegexes', ignorePatternRegexes);
+  ignorePatternRegexes = ignorePatterns.map(pattern => RegExp(pattern));
 }
-
-parseAndSaveIgnorePatterns("node_modules, /, /\\.d\\.ts$/ ");
 
 sett.registerSettingCallback('ignorePatterns', parseAndSaveIgnorePatterns);
 
