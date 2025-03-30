@@ -9,7 +9,7 @@ let webv;
 const refWordColor = '#d4cece';
 const selWordColor = '#d3ca97';
 
-let webview, context, language, theme;
+let webview, context, language, theme, fontSize;
 let webviewHtml, webviewJs, iframeHtmlIn, iframeJsIn;
 let iframeCssIn, lineNumCss, prePrismJs, prismCoreJs;
 let lineNumJs, keepMarkupJs, keepEscJs;
@@ -47,6 +47,7 @@ async function init(contextIn, webviewIn) {
   comm.registerWebviewRecv('themeSelChange',       themeSelChange);
   comm.registerWebviewRecv('colorPickerValChg',    colorPickerValChg);
   comm.registerWebviewRecv('colorSelPickerValChg', colorSelPickerValChg);
+  comm.registerWebviewRecv('fontSizeChange',       fontSizeChange);
   await loadConstFiles();
 }
 
@@ -58,6 +59,11 @@ async function init(contextIn, webviewIn) {
 function setTheme() {
   theme = context.globalState.get('theme', 'dark');
   // log('setTheme:', theme);
+}
+
+function setFontSize() {
+  fontSize = utils.pxToNum(context.globalState.get('fontSize', '1px'));
+  log('setFontSize:', fontSize);
 }
 
 function setColorPickerVal() {
@@ -84,15 +90,28 @@ function colorSelPickerValChg(data) {
   log('colorSelPickerValChg:', colorSelPickerVal);
 }
 
+async function reloadWebview() {
+  await utils.init(context);
+  await webv.init(context);
+  await initWebviewHtml();
+}
+
 async function themeSelChange(data) {
   const themeIn = data.theme;
   if(themeIn == theme) return;
   theme = themeIn;
   context.globalState.update('theme', theme);
   // log('theme changed:', theme);
-  await utils.init(context);
-  await webv.init(context);
-  await initWebviewHtml();
+  reloadWebview();
+}
+
+async function fontSizeChange(data) {
+  const fontSizeIn = utils.pxToNum(data.fontSize);
+  if(fontSizeIn == fontSize) return;
+  fontSize = fontSizeIn;
+  context.globalState.update('fontSize', utils.numToPx(fontSize));
+  log('fontSize changed:', fontSize);
+  reloadWebview();
 }
 
 function setLanguage(editor) {
@@ -122,19 +141,19 @@ async function themeSelectHtml() {
 }
 
 async function hdrHtml() {
-  return `<div id="iframe-header" style="position:relative; top:0rem;">` +
-            svg.iconHtml('home',     "iframe-hdr") + 
-            svg.iconHtml('up-ptr',   "iframe-hdr") +
-            svg.iconHtml('down-ptr', "iframe-hdr") +
-            svg.iconHtml('collapse', "iframe-hdr") +
-            svg.iconHtml('expand',   "iframe-hdr") +
-            (await themeSelectHtml()) + ' ' +
-           `<input type="color" id="ref-color"     value="${colorPickerVal}">
-            <input type="color" id="ref-sel-color" value="${colorSelPickerVal}"
-                   style="margin-right:12rem;">` +
-            svg.iconHtml('smallA',   "iframe-hdr", "position:relative; top:9rem;") +
-            svg.iconHtml('largeA',   "iframe-hdr", "position:relative; top:9rem;") +
-         `</div>`;
+  return `<div id="iframe-header">` +
+    svg.iconHtml('home',     "iframe-hdr") + 
+    svg.iconHtml('up-ptr',   "iframe-hdr") +
+    svg.iconHtml('down-ptr', "iframe-hdr") +
+    svg.iconHtml('collapse', "iframe-hdr") +
+    svg.iconHtml('expand',   "iframe-hdr") +
+    (await themeSelectHtml()) + ' ' +
+    `<input type="color" id="ref-color"     value="${colorPickerVal}">
+    <input type="color" id="ref-sel-color" value="${colorSelPickerVal}"
+            style="margin-right:12rem;">` +
+    svg.iconHtml('smallA', "iframe-hdr", "position:relative; top:9rem;") +
+    svg.iconHtml('largeA', "iframe-hdr", "position:relative; top:9rem;") +
+  `</div>`;
 }
 
 function bannerHtml(name, path, blkId, symbol) {
@@ -246,7 +265,6 @@ async function initWebviewHtml(editor) {
   if(!editor && !config) {
     config = {};
     config.fontFamily = 'monospace';
-    config.fontSize   =  14;
     config.fontWeight = 'normal';
   }
   if(editor) {  
@@ -255,18 +273,17 @@ async function initWebviewHtml(editor) {
   }
   const fontFamily = ` */ font-family: ${config.fontFamily};   /* `;
   const fontWeight = ` */ font-weight: ${config.fontWeight};   /* `;
-  const fontSize   = ` */ font-size:   ${config.fontSize}rem;   /* `;
   const headerHtml = ` --> ${await hdrHtml()} <!-- `;
 
   const iframeHtml = (iframeHtmlIn
       .replace('**iframeCss**',  ` */ ${iframeCss} /*`)
       .replace('**iframeJs**',   iframeJs)
       .replace('**fontFamily**', fontFamily)
-      .replace('**fontSize**',   fontSize)
       .replace('**fontWeight**', fontWeight)
       .replace('**headerHtml**', headerHtml)
-      )
-      .replaceAll(/"/g, '&quot;');
+      .replace('font-size:1px', 
+               `font-size:${fontSize.toFixed(2)}px`)
+      .replaceAll(/"/g, '&quot;'));
 
   const html = webviewHtml
       .replace('**webviewJs**',  webviewJs)
@@ -315,6 +332,6 @@ function symbolTypeByKind(kind) {
   [kind+1] ?? ""};
 
 module.exports = {
-    init, setTheme, setLanguage, setColorPickerVal, setColorSelPickerVal,
+    init, setTheme, setFontSize, setLanguage, setColorPickerVal, setColorSelPickerVal,
     initWebviewHtml, markupRefs, addEmptyBlockToView, addBlockToView, showInWebview
 };

@@ -35,10 +35,6 @@ function getPathByBlkId(blockId) {
   return pathByBlkId[blockId];
 }
 
-function escapeRegExp(string) {
-    return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-}
-
 function parseAndSaveIgnorePatterns(strIn) {
   const partsIn = strIn.split(',').map(part => part.trim());
   const ignorePatterns = [];
@@ -289,6 +285,7 @@ async function showFirstBlockWhenReady(textEditor) {
   html.setTheme();
   html.setColorPickerVal();
   html.setColorSelPickerVal();
+  html.setFontSize();
   html.setLanguage(textEditor);
   await html.initWebviewHtml(textEditor);
 }

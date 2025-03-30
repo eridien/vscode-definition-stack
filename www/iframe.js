@@ -5,6 +5,7 @@
 
 console.log('iframe started');
 
+let htmlEle;
 let themeSelectEle;
 let colorPickerEle;
 let colorSelPickerEle;
@@ -25,9 +26,10 @@ function setRefColorsFromPickers() {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  themeSelectEle    = document.getElementById("theme-select-hdr");
-  colorPickerEle    = document.getElementById("ref-color");
-  colorSelPickerEle = document.getElementById("ref-sel-color");
+  htmlEle            = document.querySelector("html");
+  themeSelectEle     = document.getElementById("theme-select-hdr");
+  colorPickerEle     = document.getElementById("ref-color");
+  colorSelPickerEle  = document.getElementById("ref-sel-color");
   scrollContainerEle = document.getElementById('scroll-container');
   blocksContentEle   = document.getElementById('blocks-content');
   padBlockEle        = document.getElementById('padding-block');
@@ -155,6 +157,18 @@ async function collapseAll() {
   }
 }
 
+async function sizeIt(size) {
+  let fontSize = +htmlEle.style.fontSize.replace('px', '');
+  fontSize *= size;
+  const fontSizeStr = fontSize.toFixed(2) + 'px';
+  htmlEle.style.fontSize = fontSizeStr;
+  send('fontSizeChange',{fontSize:fontSizeStr});
+} 
+
+async function sizeAllUp()   { sizeIt(1.05); } 
+
+async function sizeAllDown() { sizeIt(0.95); } 
+
 function scrollBlockIntoView(ele) {
   if(!ele) { console.error('scrollBlockIntoView, ele not found'); return; }
   ele.scrollIntoView({
@@ -196,6 +210,8 @@ function headerButtonClick(iconName) {
     case 'down-ptr': down();        break;
     case 'expand':   expandAll();   break;
     case 'collapse': collapseAll(); break;
+    case 'smallA':   sizeAllDown(); break;
+    case 'largeA':   sizeAllUp();   break;
   }
 }
 
@@ -284,7 +300,6 @@ document.addEventListener('click', event => {
   else if (classes.contains('banner-path'))   bannerPathClick(ele, id);
   else if (classes.contains('ref-span'))      refClick(ele, id);
   else if (blkEle = ele.closest(".ds-block")) codeClick(blkEle);
-  
 });
 
 function eleFromHtml(html) {

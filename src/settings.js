@@ -11,10 +11,9 @@ function init() {
 const settingCallbacks = {};
 
 const settings = [
-  'ignorePatterns', // patterns for files to ignore
-  'mappings',       // mappings from vscode language IDs to extension IDs
-  'entireFileOk',   // definitions that occupy an entire file should be shown
-  'maxLines',       // max number of lines in a block (0 means no limit)
+  'ignoreFilePatterns',     // patterns for files to ignore
+  'languageIdMappings', // mappings from vscode language IDs to extension IDs
+  'entireFileOk'    ,   // definitions that occupy an entire file should be shown
 ]
 
 function logSettings() {

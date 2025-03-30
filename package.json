@@ -49,7 +49,7 @@
     "configuration": {
       "title": "Definition Stack Settings",
       "properties": {
-        "definition-stack.ignorePatterns": {
+        "definition-stack.ignoreFilePatterns": {
           "type": "string",
           "default": "node_modules, /\\.d\\.ts$/",
           "description": "Patterns of files to ignore. Seperate with commas. To enter a comma use two commas together. RegExp patterns are allowed." 
@@ -59,12 +59,7 @@
           "default": true,
           "description": "Allow entire file contents to be shown. Not recommended if you have large files." 
         },
-        "definition-stack.maxLines": {
-          "type": "number",
-          "default": 0,
-          "description": "Maximum number of lines to display in a block. Set to 0 for no limit. This is to prevent performance issues with large files." 
-        },
-        "definition-stack.mappings": {
+        "definition-stack.languageIdMappings": {
           "type": "object",
           "default": {
             "bat":           "batch",
@@ -76,7 +71,7 @@
             "shellscript:":  "bash",
             "vue":           "javascript"
           },
-          "description": "Mappings from Vscode language IDs to extension IDs. Change in settings.json" 
+          "description": "Mappings from Vscode language IDs to extension IDs. See prism-lang-ids.txt." 
         }
       }
     }

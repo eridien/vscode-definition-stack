@@ -144,8 +144,16 @@ function tailFromId(id) {
   return id.split('-').splice(3).join('-');
 }
 
+function pxToNum(px) {
+  return +px.replace(/px$/, '');
+}
+
+function numToPx(num) {
+  return `${num.toFixed(2)}px`;
+}
+
 module.exports = { 
   init, getLog, getTextFromDoc, fixDriveLetter, sleep, getProjectIdx,
   containsRange, containsLocation, locationIsEntireFile, getRangeSize, readTxt,
-  blkIdFromId, tailFromId, readDirByRelPath
+  blkIdFromId, tailFromId, readDirByRelPath, pxToNum, numToPx
 };

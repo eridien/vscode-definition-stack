@@ -4,6 +4,7 @@ body {
   margin: 0; padding: 0;
   background-color: var(--vscode-editor-background);
   color: var(--vscode-editor-foreground);
+  font-size:16rem;
 }
 #ds-iframe-header {
   position: sticky; top: 0;
@@ -11,7 +12,7 @@ body {
 }
 
 #iframe-header {
-  position: relative; top: 10rem;
+  position: relative; top: 0rem;
   height:36rem;
   margin-left:14rem; 
   display:inline-block;
@@ -36,7 +37,7 @@ body {
   background-color: #f0f0f0;
 }
 
-#ref-color, #ref-sel-color { width:30rem; }
+#ref-color, #ref-sel-color { border:none; width:30rem; }
 
 #scroll-container{overflow-y:auto;}
 
