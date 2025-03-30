@@ -193,12 +193,11 @@ function codeHtml(lines, code, blkId) {
 }
 
 let uniqueBlkId = 1;
-function getUniqueBlkId() { return uniqueBlkId++ }
+function getUniqueBlkId() { return `ds-blk-${uniqueBlkId++}` }
 
 async function showMsgAsBlock(msg, path, fromRef, toIndex) {
   log('showMsgAsBlock:', msg);
-  msg = `<span style="margin:20rem; font-weight:bold;"> ${msg} </span>`;
-  const blkId = `ds-blk-${getUniqueBlkId()}`;
+  const blkId = getUniqueBlkId();
   const blockHtml = 
    `<div id="${blkId}" class="ds-block" from-ref="${fromRef}">`+
        bannerHtml(null, path, blkId, {kind:0}) +
@@ -208,7 +207,6 @@ async function showMsgAsBlock(msg, path, fromRef, toIndex) {
   const atEnd = (toIndex === undefined);
   if(!atEnd) data.toIndex = toIndex;
   await comm.send('insertBlock', data);
-  // log(`added block ${id} with ${block.lines.length} line(s) at ${atEnd ? 'end' : toIndex}`);
 }
 
 function showEntireFileMsg(path, fromRef = 'root', toIndex = 0) {

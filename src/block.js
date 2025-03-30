@@ -188,7 +188,7 @@ async function getOrMakeBlock(name, uri, range, srcSymbol) {
   const hash = JSON.stringify([name, uri.path, range]);
   const existingBlock = getBlockByHash(hash);
   if(existingBlock) return existingBlock;
-  const id = `ds-blk-${html.getUniqueBlkId()}`;
+  const id = html.getUniqueBlkId();
   const location = new vscode.Location(uri, range);
   const document = await vscode.workspace.openTextDocument(uri)
   const projIdx  = utils.getProjectIdx(document);
