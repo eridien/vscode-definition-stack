@@ -86,7 +86,6 @@ function getBlockById(blockId) {
 }
 
 async function addBlockToView(block, fromRefId = "root", toIndex, noEntFilChk = false) {
-  // comm.send('startBusyInd', {});
   if(!noEntFilChk && block.isEntireFile) {
     showEntireFileMsg(block.location.uri, toIndex);
     return;
@@ -113,7 +112,6 @@ async function addBlockToView(block, fromRefId = "root", toIndex, noEntFilChk = 
 }
 
 async function addMsgBlockToView(uri, toIndex = 0, msg) {
-  // comm.send('startBusyInd', {});
   const blkId = html.getUniqueBlkId();
   const block = {
     id:               blkId,

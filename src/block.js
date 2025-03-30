@@ -7,6 +7,7 @@ const utils  = require('./utils.js');
 const log    = utils.getLog('BLCK');
 
 let ignorePatternRegexes = [];
+let entireFileOk         = true;
 
 let blockByHash   = {};
 let blocksByRefId = {};
@@ -62,8 +63,21 @@ function setIgnoreFilePatterns() {
   const ignoreFilePatternStr = config.get('ignoreFilePatterns');
   parseAndSaveIgnoreFilePatterns(ignoreFilePatternStr);
 }
-
 sett.registerSettingCallback('ignoreFilePatterns', parseAndSaveIgnoreFilePatterns);
+
+function setLanguageIdMappings() {
+  const config = vscode.workspace.getConfiguration('definition-stack');
+  html.setLanguageIdMappings(config.get('languageIdMappings'));
+}
+sett.registerSettingCallback('languageIdMappings', setLanguageIdMappings);
+
+function setEntireFileOk() {
+  const config = vscode.workspace.getConfiguration('definition-stack');
+  entireFileOk = config.get('entireFileOk');
+  log({entireFileOk});
+}
+sett.registerSettingCallback('entireFileOk', setEntireFileOk);
+
 
 async function addDefs(block) {
   const blockLoc   = block.location;
@@ -291,6 +305,7 @@ async function showFirstBlockWhenReady(textEditor) {
   html.setColorSelPickerVal();
   html.setFontSize();
   setIgnoreFilePatterns();
+  setLanguageIdMappings();
   html.setLanguage(textEditor);
   await html.initWebviewHtml(textEditor);
 }

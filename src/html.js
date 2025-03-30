@@ -9,7 +9,7 @@ let webv;
 const refWordColor = '#d4cece';
 const selWordColor = '#d3ca97';
 
-let webview, context, language, theme, fontSize;
+let webview, context, language, theme, fontSize, languageIdMappings;
 let webviewHtml, webviewJs, iframeHtmlIn, iframeJsIn;
 let iframeCssIn, lineNumCss, prePrismJs, prismCoreJs;
 let lineNumJs, keepMarkupJs, keepEscJs;
@@ -109,17 +109,15 @@ async function fontSizeChange(data) {
   reloadWebview();
 }
 
+function setLanguageIdMappings(languageIdMappingsIn) {
+  languageIdMappings = languageIdMappingsIn;
+}
 function setLanguage(editor) {
   const document = editor.document;
-  const path = document.uri.fsPath;
-  language = context.globalState.get(`lang-for-path-${path}`, 'notset');
-  if(language == 'notset') {
-    // const vscLangId = document.languageId;
-    // language = vscLangIdToPrism[vscLangId];
-    // language ??= vscLangId;
-    language = 'javascript'; 
-  }
-  // log('set language:', language);
+  const vscLangId = document.languageId;
+  language = languageIdMappings[vscLangId];
+  language ??= vscLangId;
+  log('set language:', language);
 }
 
 async function themeSelectHtml() {
@@ -211,7 +209,6 @@ let config = null;
 async function initWebviewHtml(editor) {
   const prismCss = await utils.readTxt(true, 'prism', 'themes', `prism-${theme}.css`);
   const iframeCss = prismCss + lineNumCss + iframeCssIn;
-
   // log(`reading language file for ${language}`);
   let languageJs = await utils.readTxt(false, 'prism', 
                                   'languages', `prism-${language}.min.js`);
@@ -294,6 +291,6 @@ function symbolTypeByKind(kind) {
 
 module.exports = {
     init, setTheme, setFontSize, setLanguage, setColorPickerVal, setColorSelPickerVal,
-    initWebviewHtml, markupRefs, getBlockHtml, getUniqueBlkId
+    initWebviewHtml, markupRefs, getBlockHtml, getUniqueBlkId, setLanguageIdMappings
 
 };
