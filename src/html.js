@@ -196,13 +196,14 @@ let uniqueBlkId = 1;
 function getUniqueBlkId() { return uniqueBlkId++ }
 
 async function showMsgAsBlock(msg, path, fromRef, toIndex) {
-  log('adding msg block to view top:', msg);
-  const blkId = getUniqueBlkId();
+  log('showMsgAsBlock:', msg);
+  msg = `<span style="margin:20rem; font-weight:bold;"> ${msg} </span>`;
+  const blkId = `ds-blk-${getUniqueBlkId()}`;
   const blockHtml = 
-   `<div id="ds-blk-${blkId}" class="ds-block" from-ref="${fromRef}">`+
+   `<div id="${blkId}" class="ds-block" from-ref="${fromRef}">`+
        bannerHtml(null, path, blkId, {kind:0}) +
-      `<span style="margin:20rem; font-weight:bold;"> ${msg} </span>
-   </div>`;
+       codeHtml([{lineNumber:-1}], msg, blkId) +
+   `</div>`;
   const data  = {blockHtml};
   const atEnd = (toIndex === undefined);
   if(!atEnd) data.toIndex = toIndex;
