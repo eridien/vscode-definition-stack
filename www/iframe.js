@@ -356,6 +356,7 @@ async function cmdLoop() {
       case 'moveBlock':     await moveBlock(data.fromIndex, data.toIndex);   break;
       case 'deleteBlock':   await deleteBlock(data.blockId);                 break;
       case 'scrollToBlkId': await scrollToBlkId(data.blockId);               break;
+      // case 'showInIframe':  await showInIframe(data.msg);                    break;
     }
   }
   requestAnimationFrame(cmdLoop);

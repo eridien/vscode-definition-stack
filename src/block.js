@@ -35,25 +35,31 @@ function getPathByBlkId(blockId) {
   return pathByBlkId[blockId];
 }
 
-function parseAndSaveIgnorePatterns(strIn) {
+function parseAndSaveIgnoreFilePatterns(strIn) {
   const partsIn = strIn.split(',').map(part => part.trim());
-  const ignorePatterns = [];
+  const ignoreFilePatterns = [];
   for(let i=0; i < partsIn.length; i++) {
     const part     = partsIn[i];
     const nextPart = partsIn[i+1];
     if(part === "") {
-      if(ignorePatterns.length > 0 && i < partsIn.length-1 && nextPart !== "") {
-        ignorePatterns[ignorePatterns.length-1] += (',' + partsIn[i+1]);
-        i++; // skip next part since it was merged
+      if(ignoreFilePatterns.length > 0 && i < partsIn.length-1 && nextPart !== "") {
+        ignoreFilePatterns[ignoreFilePatterns.length-1] += (',' + partsIn[i+1]);
+        i++;
       }
       continue;
     }
-    ignorePatterns.push(part);
+    ignoreFilePatterns.push(part);
   }
-  ignorePatternRegexes = ignorePatterns.map(pattern => RegExp(pattern));
+  ignorePatternRegexes = ignoreFilePatterns.map(pattern => RegExp(pattern));
 }
 
-sett.registerSettingCallback('ignorePatterns', parseAndSaveIgnorePatterns);
+function setIgnoreFilePatterns() {
+  const config = vscode.workspace.getConfiguration('definition-stack');
+  const ignoreFilePatternStr = config.get('ignoreFilePatterns');
+  parseAndSaveIgnoreFilePatterns(ignoreFilePatternStr);
+}
+
+sett.registerSettingCallback('ignoreFilePatterns', parseAndSaveIgnoreFilePatterns);
 
 async function addDefs(block) {
   const blockLoc   = block.location;
@@ -177,14 +183,12 @@ async function addRefBlocks(block, fromRefId) {
   }
 }
 
-let uniqueBlkId = 1;
-
 async function getOrMakeBlock(name, uri, range, srcSymbol) {
   // log({name, uri, range});
   const hash = JSON.stringify([name, uri.path, range]);
   const existingBlock = getBlockByHash(hash);
   if(existingBlock) return existingBlock;
-  const id = `ds-blk-${uniqueBlkId++}`;
+  const id = `ds-blk-${html.getUniqueBlkId()}`;
   const location = new vscode.Location(uri, range);
   const document = await vscode.workspace.openTextDocument(uri)
   const projIdx  = utils.getProjectIdx(document);
@@ -266,12 +270,12 @@ async function showFirstBlock(textEditor) {
     await utils.sleep(1000);
     block = await getSurroundingBlock(uri, selection);
     if(!block) {
-      html.showInWebview('Definition is an entire file and hidden. See settings.');
+      html.showEntireFileMsg();
       return;
     }
   }
   if(await utils.locationIsEntireFile(block.location)) {
-    html.showInWebview('Definition is an entire file and hidden. See settings.');
+    html.showEntireFileMsg();
     return;
   }
   await navi.addBlockToView(block);
@@ -286,6 +290,7 @@ async function showFirstBlockWhenReady(textEditor) {
   html.setColorPickerVal();
   html.setColorSelPickerVal();
   html.setFontSize();
+  setIgnoreFilePatterns();
   html.setLanguage(textEditor);
   await html.initWebviewHtml(textEditor);
 }

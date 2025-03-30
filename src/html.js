@@ -170,8 +170,10 @@ function bannerHtml(name, path, blkId, symbol) {
            `</div>
             <div class="banner-text"> 
               <span class="banner-type">${symbolType}</span> 
-              <span id="${blkId}-banner-name" 
-                    class="hover banner-name">${name}</span> in 
+              <div style="display:${name ? "inline-block" : "none"};">
+                <span id="${blkId}-banner-name" 
+                      class="hover banner-name">${name}</span> in 
+              </div>
               <span id=${blkId}-banner-path" 
                     class="hover banner-path">${path}</span>
             </div>
@@ -190,24 +192,32 @@ function codeHtml(lines, code, blkId) {
          `</pre>`;
 }
 
-async function addEmptyBlockToView(id, name, relPath, toIndex, fromRef) {
-  // log('adding empty block to view:', name, relPath);
+let uniqueBlkId = 1;
+function getUniqueBlkId() { return uniqueBlkId++ }
+
+async function showMsgAsBlock(msg, path, fromRef, toIndex) {
+  log('adding msg block to view top:', msg);
+  const blkId = getUniqueBlkId();
   const blockHtml = 
-   `<div id="${id}" class="ds-block" from-ref="${fromRef}">`          +
-      bannerHtml(name, relPath, id)                                  +
-     `<pre>`                                                         +
-       `<code class="language-${language}">`                         +
-         `Definition is an entire file and is hidden. See settings.` +
-       `</code>`                                                     +
-     `</pre>
-    </div>`;
-  await comm.send('insertBlock', {blockHtml, toIndex});
+   `<div id="ds-blk-${blkId}" class="ds-block" from-ref="${fromRef}">`+
+       bannerHtml(null, path, blkId, {kind:0}) +
+      `<span style="margin:20rem; font-weight:bold;"> ${msg} </span>
+   </div>`;
+  const data  = {blockHtml};
+  const atEnd = (toIndex === undefined);
+  if(!atEnd) data.toIndex = toIndex;
+  await comm.send('insertBlock', data);
+  // log(`added block ${id} with ${block.lines.length} line(s) at ${atEnd ? 'end' : toIndex}`);
+}
+
+function showEntireFileMsg(path, fromRef = 'root', toIndex = 0) {
+  showMsgAsBlock('Definition is an entire file and hidden. See settings.', path, fromRef, toIndex);
 }
 
 async function addBlockToView(block, fromRef, toIndex) {
   const {id, name, relPath, lines} = block;
   if(block.isEntireFile) {
-    await addEmptyBlockToView(id, name, relPath, toIndex, fromRef)
+    showEntireFileMsg(block.relPath, fromRef, toIndex);
     return;
   }
   // log('adding block to view:', {name, relPath, toIndex});
@@ -292,19 +302,6 @@ async function initWebviewHtml(editor) {
   webview.html = html;
 }
 
-function showInWebview(msg) {
-  if(webview) {
-    const msgHtml = // doesn't work in css file(?), even with !important
-       `<div style="background: var(--vscode-editor-background);
-                   color: var(--vscode-editor-foreground);
-                   font-size:16rem; font-weight:bold;"> 
-          ${msg} 
-        </div>`;
-    webview.html = msgHtml;
-  }
-  else log('info', msg);
-}
-
 function markupRefs(line) {
   let html = line.text;
   html = html.replaceAll(/&/g, "\u0001")
@@ -324,7 +321,7 @@ function markupRefs(line) {
 }
 
 function symbolTypeByKind(kind) {
-  return {
+  return { 0: "File",
     1: "File", 2: "Module", 3: "Namespace", 4: "Package", 5: "Class", 6: "Method", 7: "Property",
     8: "Field", 9: "Constructor", 10: "Enum", 11: "Interface", 12: "Function", 13: "Variable",
     14: "Constant", 15: "String", 16: "Number", 17: "Boolean", 18: "Array", 19: "Object", 20: "Key",
@@ -333,5 +330,6 @@ function symbolTypeByKind(kind) {
 
 module.exports = {
     init, setTheme, setFontSize, setLanguage, setColorPickerVal, setColorSelPickerVal,
-    initWebviewHtml, markupRefs, addEmptyBlockToView, addBlockToView, showInWebview
+    initWebviewHtml, markupRefs, addBlockToView, showEntireFileMsg, getUniqueBlkId
+
 };
