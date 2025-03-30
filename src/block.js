@@ -190,11 +190,7 @@ async function getOrMakeBlock(name, uri, range, srcSymbol) {
   if(existingBlock) return existingBlock;
   const id = html.getUniqueBlkId();
   const location = new vscode.Location(uri, range);
-  const document = await vscode.workspace.openTextDocument(uri)
-  const projIdx  = utils.getProjectIdx(document);
-  const projPath = vscode.workspace.workspaceFolders[projIdx].uri.path;
-  const relPath  = uri.path.slice(projPath.length+1);
-  
+  const relPath  = vscode.workspace.asRelativePath(uri.path);
   const block = {id, name, location, relPath, hash};
   if(await utils.locationIsEntireFile(location))
     block.isEntireFile = true;
@@ -270,12 +266,12 @@ async function showFirstBlock(textEditor) {
     await utils.sleep(1000);
     block = await getSurroundingBlock(uri, selection);
     if(!block) {
-      html.showEntireFileMsg();
+      await navi.showEntireFileMsg(uri);
       return;
     }
   }
   if(await utils.locationIsEntireFile(block.location)) {
-    html.showEntireFileMsg();
+    await navi.showEntireFileMsg(uri);
     return;
   }
   await navi.addBlockToView(block);

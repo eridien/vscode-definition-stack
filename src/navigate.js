@@ -1,7 +1,8 @@
-const html  = require('./html.js');
-const comm  = require('./comm.js');
-const utils = require('./utils.js');
-const log   = utils.getLog('NAVI');
+const vscode = require('vscode');
+const html   = require('./html.js');
+const comm   = require('./comm.js');
+const utils  = require('./utils.js');
+const log    = utils.getLog('NAVI');
 
 let blk        = null;
 let blockStack = [];
@@ -82,18 +83,23 @@ function getBlockById(blockId) {
   return { block, blockIdx };
 }
 
-async function addBlockToView(block, fromRefId = "root", toIndex) {
-  // log('addBlockToView:', {block:block.id, toIndex});
+async function addBlockToView(block, fromRefId = "root", toIndex, noEntFilChk = false) {
+  if(!noEntFilChk && block.isEntireFile) {
+    showEntireFileMsg(block.location.uri, fromRefId, toIndex);
+    return;
+  }
   await blk.addWordsAndDefs(block);
   const fromIndex = blockStack.findIndex(b => b.id === block.id);
   if(fromIndex == -1) {
     if(toIndex === undefined || toIndex >= blockStack.length) {
       blockStack.push(block);
-      await html.addBlockToView(block, fromRefId);
+      const blockHtml = await html.getBlockHtml(block, fromRefId);
+      await comm.send('insertBlock', {blockHtml});
       return;
     }
     else blockStack.splice(toIndex, 0, block);
-    await html.addBlockToView(block, fromRefId, toIndex);
+    const blockHtml = await html.getBlockHtml(block, fromRefId);
+    await comm.send('insertBlock', {blockHtml, toIndex});
   }
   else {
     const fromBlock = blockStack[fromIndex];
@@ -103,4 +109,18 @@ async function addBlockToView(block, fromRefId = "root", toIndex) {
   }
 }
 
-module.exports = { init, getBlockById, addBlockToView };
+async function showEntireFileMsg(uri, fromRef = 'root', toIndex = 0) {
+  const block = {
+    id:               html.getUniqueBlkId(),
+    relPath:          vscode.workspace.asRelativePath(uri.path),
+    fromRefId:        fromRef,
+    srcSymbol:        {kind:0},
+    haveWordsAndDefs: true,
+    lines: [{html: 'Definition is an entire file and hidden. ' +
+                   'See settings'}],
+  };
+  await addBlockToView(block, fromRef, toIndex, true);
+}
+
+
+module.exports = { init, getBlockById, addBlockToView, showEntireFileMsg };

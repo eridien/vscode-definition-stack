@@ -195,31 +195,8 @@ function codeHtml(lines, code, blkId) {
 let uniqueBlkId = 1;
 function getUniqueBlkId() { return `ds-blk-${uniqueBlkId++}` }
 
-async function showMsgAsBlock(msg, path, fromRef, toIndex) {
-  log('showMsgAsBlock:', msg);
-  const blkId = getUniqueBlkId();
-  const blockHtml = 
-   `<div id="${blkId}" class="ds-block" from-ref="${fromRef}">`+
-       bannerHtml(null, path, blkId, {kind:0}) +
-       codeHtml([{lineNumber:-1}], msg, blkId) +
-   `</div>`;
-  const data  = {blockHtml};
-  const atEnd = (toIndex === undefined);
-  if(!atEnd) data.toIndex = toIndex;
-  await comm.send('insertBlock', data);
-}
-
-function showEntireFileMsg(path, fromRef = 'root', toIndex = 0) {
-  showMsgAsBlock('Definition is an entire file and hidden. See settings.', path, fromRef, toIndex);
-}
-
-async function addBlockToView(block, fromRef, toIndex) {
+async function getBlockHtml(block, fromRef) {
   const {id, name, relPath, lines} = block;
-  if(block.isEntireFile) {
-    showEntireFileMsg(block.relPath, fromRef, toIndex);
-    return;
-  }
-  // log('adding block to view:', {name, relPath, toIndex});
   let minWsIdx = Number.MAX_VALUE;
   for(const line of lines) {
     const wsIdx = line.firstNonWhitespaceCharacterIndex;
@@ -228,17 +205,10 @@ async function addBlockToView(block, fromRef, toIndex) {
   let code = "";
   for(const line of lines)
     code += ((line.html.slice(minWsIdx)) + "\n");
-  const blockHtml = 
-   `<div id="${id}" class="ds-block" from-ref="${fromRef}">` +
-      bannerHtml(name, relPath, id, block.srcSymbol)         +
-      codeHtml(lines, code, id)                              +
-   `</div>`;
-  // log('blockHtml:', blockHtml);
-  const data  = {blockHtml};
-  const atEnd = (toIndex === undefined);
-  if(!atEnd) data.toIndex = toIndex;
-  await comm.send('insertBlock', data);
-  // log(`added block ${id} with ${block.lines.length} line(s) at ${atEnd ? 'end' : toIndex}`);
+  return `<div id="${id}" class="ds-block" from-ref="${fromRef}">` +
+            bannerHtml(name, relPath, id, block.srcSymbol)         +
+            codeHtml(lines, code, id)                              +
+        `</div>`;
 }
 
 let config = null;
@@ -329,6 +299,6 @@ function symbolTypeByKind(kind) {
 
 module.exports = {
     init, setTheme, setFontSize, setLanguage, setColorPickerVal, setColorSelPickerVal,
-    initWebviewHtml, markupRefs, addBlockToView, showEntireFileMsg, getUniqueBlkId
+    initWebviewHtml, markupRefs, getBlockHtml, getUniqueBlkId
 
 };
