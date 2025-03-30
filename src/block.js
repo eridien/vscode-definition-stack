@@ -35,6 +35,10 @@ function getPathByBlkId(blockId) {
   return pathByBlkId[blockId];
 }
 
+function setPathByBlkId(blockId, path) {
+  pathByBlkId[blockId] = path;
+}
+
 function parseAndSaveIgnoreFilePatterns(strIn) {
   const partsIn = strIn.split(',').map(part => part.trim());
   const ignoreFilePatterns = [];
@@ -184,7 +188,6 @@ async function addRefBlocks(block, fromRefId) {
 }
 
 async function getOrMakeBlock(name, uri, range, srcSymbol) {
-  // log({name, uri, range});
   const hash = JSON.stringify([name, uri.path, range]);
   const existingBlock = getBlockByHash(hash);
   if(existingBlock) return existingBlock;
@@ -258,6 +261,7 @@ async function getSurroundingBlock(uri, selectionRange) {
 let uniqueRefId = 1;
 
 async function showFirstBlock(textEditor) {
+  comm.send('startBusyInd', {});
   const document  = textEditor.document;
   const uri       = document.uri;
   const selection = textEditor.selection; 
@@ -292,6 +296,7 @@ async function showFirstBlockWhenReady(textEditor) {
 }
 
 module.exports = { 
-  init, showFirstBlockWhenReady, getBlocksByRefId, getPathByBlkId,
+  init, showFirstBlockWhenReady, getBlocksByRefId, 
+  getPathByBlkId, setPathByBlkId,
   addRefBlocks, removeBlockFromCaches, addWordsAndDefs
 };

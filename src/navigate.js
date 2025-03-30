@@ -57,7 +57,7 @@ async function refClick(data) {
   const fromRefId  = data.refId;
   const blocks     = blk.getBlocksByRefId(fromRefId);
   if(!blocks) {
-    log('err', 'refClick: blocks not found, fromRefId:', fromRefId);
+    log('err', 'refClick: blocks not found fromRefId:', fromRefId);
     return;
   }
   const refBlkId = utils.blkIdFromId(fromRefId);
@@ -66,11 +66,13 @@ async function refClick(data) {
     log('err', 'refClick: ref block not in blockStack', refBlkId, blockStack);
     return;
   }
+  comm.send('startBusyInd', {});
   for(const defBlock of blocks) {
     defBlock.fromRefId = fromRefId;
     await blk.addWordsAndDefs(defBlock);
     await addBlockToView(defBlock, fromRefId, refIndex);
   }
+  comm.send('stopBusyInd', {});
 }
 
 function getBlockById(blockId) {
@@ -84,8 +86,9 @@ function getBlockById(blockId) {
 }
 
 async function addBlockToView(block, fromRefId = "root", toIndex, noEntFilChk = false) {
+  // comm.send('startBusyInd', {});
   if(!noEntFilChk && block.isEntireFile) {
-    showEntireFileMsg(block.location.uri, fromRefId, toIndex);
+    showEntireFileMsg(block.location.uri, toIndex);
     return;
   }
   await blk.addWordsAndDefs(block);
@@ -109,18 +112,23 @@ async function addBlockToView(block, fromRefId = "root", toIndex, noEntFilChk = 
   }
 }
 
-async function showEntireFileMsg(uri, fromRef = 'root', toIndex = 0) {
+async function addMsgBlockToView(uri, toIndex = 0, msg) {
+  // comm.send('startBusyInd', {});
+  const blkId = html.getUniqueBlkId();
   const block = {
-    id:               html.getUniqueBlkId(),
+    id:               blkId,
     relPath:          vscode.workspace.asRelativePath(uri.path),
-    fromRefId:        fromRef,
     srcSymbol:        {kind:0},
+    lines:            [{html: msg}],
     haveWordsAndDefs: true,
-    lines: [{html: 'Definition is an entire file and hidden. ' +
-                   'See settings'}],
   };
-  await addBlockToView(block, fromRef, toIndex, true);
+  blk.setPathByBlkId(blkId, uri.path);
+  await addBlockToView(block, '', toIndex, true);
 }
 
+async function showEntireFileMsg(uri, toIndex) {
+  addMsgBlockToView(uri, toIndex, 
+        'Definition is an entire file and hidden. See settings');
+}
 
 module.exports = { init, getBlockById, addBlockToView, showEntireFileMsg };

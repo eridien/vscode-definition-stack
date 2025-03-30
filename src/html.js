@@ -51,11 +51,6 @@ async function init(contextIn, webviewIn) {
   await loadConstFiles();
 }
 
-// function isDarkTheme() {
-//     return vscode.window.activeColorTheme
-                       //  .kind === vscode.ColorThemeKind.Dark;
-// }
-
 function setTheme() {
   theme = context.globalState.get('theme', 'dark');
   // log('setTheme:', theme);

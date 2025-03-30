@@ -6,6 +6,7 @@
 console.log('iframe started');
 
 let htmlEle;
+let iframeHeaderEle;
 let themeSelectEle;
 let colorPickerEle;
 let colorSelPickerEle;
@@ -27,6 +28,7 @@ function setRefColorsFromPickers() {
 
 document.addEventListener('DOMContentLoaded', () => {
   htmlEle            = document.querySelector("html");
+  iframeHeaderEle    = document.getElementById("iframe-header");
   themeSelectEle     = document.getElementById("theme-select-hdr");
   colorPickerEle     = document.getElementById("ref-color");
   colorSelPickerEle  = document.getElementById("ref-sel-color");
@@ -309,6 +311,26 @@ function eleFromHtml(html) {
   return tempDiv.content.firstChild;
 }
 
+let bkgndAnimation = null;
+
+function startBusyInd() {
+  if(bkgndAnimation) return;
+  const color = iframeHeaderEle.style.backgroundColor;
+  bkgndAnimation = iframeHeaderEle.animate(
+     [{ backgroundColor: "color" }, { backgroundColor: "yellow" }],
+      { duration: 500, iterations: Infinity, direction: "alternate" });
+  bkgndAnimation.finished.then(() => {
+    iframeHeaderEle.style.backgroundColor = color;
+    bkgndAnimation = null;
+  });
+}
+function stopBusyInd() {
+  if(bkgndAnimation) {
+    bkgndAnimation.cancel();
+    bkgndAnimation = null;
+  }
+}
+
 async function insertBlock(blockHtml, toIndex) {
   const children = blocksContentEle.children;
   if(toIndex === undefined) toIndex = children.length-1;
@@ -326,6 +348,7 @@ async function insertBlock(blockHtml, toIndex) {
   Prism.highlightAllUnder(newBlk, false, () => {
     // console.log('Prism highlight done', newBlk.id);
   });
+  stopBusyInd();
 }
 
 async function moveBlock(fromIndex, toIndex){
@@ -339,6 +362,7 @@ async function moveBlock(fromIndex, toIndex){
   if(toIndex == children.length) blocksContentEle.appendChild(fromEle);
   else blocksContentEle.insertBefore(fromEle, children[toIndex]);
   scrollBlockIntoView(fromEle);
+  stopBusyInd();
 } 
 
 async function deleteBlock(blockId){
@@ -356,7 +380,7 @@ async function cmdLoop() {
       case 'moveBlock':     await moveBlock(data.fromIndex, data.toIndex);   break;
       case 'deleteBlock':   await deleteBlock(data.blockId);                 break;
       case 'scrollToBlkId': await scrollToBlkId(data.blockId);               break;
-      // case 'showInIframe':  await showInIframe(data.msg);                    break;
+      case 'stopBusyInd':   await stopBusyInd();                             break;
     }
   }
   requestAnimationFrame(cmdLoop);
@@ -367,6 +391,7 @@ requestAnimationFrame(cmdLoop);
 window.addEventListener('message', event => {
   const message = event.data;
   // console.log('iframe, message from webview:', message);
+  if(message.command == 'startBusyInd') startBusyInd(); 
   cmdQueue.push(message);
 });
 
