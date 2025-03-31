@@ -101,7 +101,7 @@ async function addBlockToView(block, fromRefId = "root", toIndex, noEntFilChk = 
   await blk.addWordsAndDefs(block);
   const fromIndex = blockStack.findIndex(b => b.id === block.id);
   if(fromIndex == -1) {
-    if(toIndex === undefined || toIndex >= blockStack.length) {
+    if(toIndex == -1 || toIndex === undefined || toIndex >= blockStack.length) {
       blockStack.push(block);
       const blockHtml = await html.getBlockHtml(block, fromRefId);
       await comm.send('insertBlock', {blockHtml});

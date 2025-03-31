@@ -336,6 +336,7 @@ async function insertBlock(blockHtml, toIndex) {
   if(toIndex === undefined) toIndex = children.length-1;
   // console.log('insertBlock toIndex:', toIndex);
   if (toIndex < 0 || toIndex > children.length) {
+    stopBusyInd(); // stop any busy indicator
     send('error', {msg:'insertBlock bad index', index: toIndex});
     return;
   }
