@@ -226,7 +226,7 @@ async function initWebviewHtml(editor) {
   else {
     let langTxt = languageJs;
     while(true) { 
-      const matches = /Prism\.languages\.extend\s*\(\s*["'](.*?)["']/.exec(langTxt);
+      const matches = /\.languages\.extend\s*\(\s*["'](.*?)["']/.exec(langTxt);
       if(!matches) break;
       const extLang = matches[1];
       langTxt = await utils.readTxt(false, 'prism', 
