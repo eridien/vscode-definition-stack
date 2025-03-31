@@ -7,7 +7,6 @@ const utils  = require('./utils.js');
 const log    = utils.getLog('BLCK');
 
 let ignorePatternRegexes = [];
-let entireFileOk         = true;
 
 let blockByHash   = {};
 let blocksByRefId = {};
@@ -57,27 +56,13 @@ function parseAndSaveIgnoreFilePatterns(strIn) {
   }
   ignorePatternRegexes = ignoreFilePatterns.map(pattern => RegExp(pattern));
 }
+sett.registerSettingCallback('ignoreFilePatterns', parseAndSaveIgnoreFilePatterns);
 
 function setIgnoreFilePatterns() {
   const config = vscode.workspace.getConfiguration('definition-stack');
   const ignoreFilePatternStr = config.get('ignoreFilePatterns');
   parseAndSaveIgnoreFilePatterns(ignoreFilePatternStr);
 }
-sett.registerSettingCallback('ignoreFilePatterns', parseAndSaveIgnoreFilePatterns);
-
-function setLanguageIdMappings() {
-  const config = vscode.workspace.getConfiguration('definition-stack');
-  html.setLanguageIdMappings(config.get('languageIdMappings'));
-}
-sett.registerSettingCallback('languageIdMappings', setLanguageIdMappings);
-
-function setEntireFileOk() {
-  const config = vscode.workspace.getConfiguration('definition-stack');
-  entireFileOk = config.get('entireFileOk');
-  log({entireFileOk});
-}
-sett.registerSettingCallback('entireFileOk', setEntireFileOk);
-
 
 async function addDefs(block) {
   const blockLoc   = block.location;
@@ -284,13 +269,12 @@ async function showFirstBlock(textEditor) {
     await utils.sleep(1000);
     block = await getSurroundingBlock(uri, selection);
     if(!block) {
-      await navi.showEntireFileMsg(uri);
+      await navi.showEntireFileMsg(uri, -1);
       return;
     }
   }
   if(await utils.locationIsEntireFile(block.location)) {
-    await navi.showEntireFileMsg(uri);
-    return;
+    if(!(await navi.showEntireFileMsg(uri))) return;
   }
   await navi.addBlockToView(block);
 }
@@ -305,7 +289,8 @@ async function showFirstBlockWhenReady(textEditor) {
   html.setColorSelPickerVal();
   html.setFontSize();
   setIgnoreFilePatterns();
-  setLanguageIdMappings();
+  html.setLanguageIdMappings();
+  navi.setEntireFileOk();
   html.setLanguage(textEditor);
   await html.initWebviewHtml(textEditor);
 }

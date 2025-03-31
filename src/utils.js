@@ -100,10 +100,24 @@ function containsRange(outerRange, innerRange) {
 
 async function locationIsEntireFile(location) {
   const document = 
-    await vscode.workspace.openTextDocument(location.uri);
-  return (location.range.start.line == 0                   &&
-          location.range.end.line == document.lineCount-1  &&
-          location.range.start.character == 0              &&
+          await vscode.workspace.openTextDocument(location.uri);
+  let docStrtNonBlnkLn = 0;
+  for(; docStrtNonBlnkLn < document.lineCount; docStrtNonBlnkLn++) {
+    const line = document.lineAt(docStrtNonBlnkLn).text.trim();
+    if(line.length > 0) break;
+  }
+  let docEndNonBlnkLn = document.lineCount-1;
+  for(; docEndNonBlnkLn >= 0; docEndNonBlnkLn--) {
+    const line = document.lineAt(docEndNonBlnkLn).text.trim();
+    if(line.length > 0) break;
+  }
+  const docStartLine = docStrtNonBlnkLn;
+  const docEndLine   = docEndNonBlnkLn;
+  const locStartLine = location.range.start.line;
+  const locEndLine   = location.range.end.line;
+  return (locStartLine <= docStartLine         &&
+          locEndLine   >= docEndLine           &&
+          location.range.start.character == 0  &&
           location.range.end.character   == 0);
 }
 

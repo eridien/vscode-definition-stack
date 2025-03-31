@@ -1,5 +1,6 @@
 const vscode = require('vscode');
 const comm   = require('./comm.js');
+const sett   = require('./settings.js');
 const svg    = require('../images/svg.js');
 const utils  = require('./utils.js');
 const log    = utils.getLog('HTML');
@@ -109,9 +110,12 @@ async function fontSizeChange(data) {
   reloadWebview();
 }
 
-function setLanguageIdMappings(languageIdMappingsIn) {
-  languageIdMappings = languageIdMappingsIn;
+function setLanguageIdMappings() {
+  const config = vscode.workspace.getConfiguration('definition-stack');
+  languageIdMappings = config.get('languageIdMappings');
 }
+sett.registerSettingCallback('languageIdMappings', setLanguageIdMappings);
+
 function setLanguage(editor) {
   const document = editor.document;
   const vscLangId = document.languageId;

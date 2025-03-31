@@ -1,11 +1,13 @@
 const vscode = require('vscode');
 const html   = require('./html.js');
+const sett   = require('./settings.js');
 const comm   = require('./comm.js');
 const utils  = require('./utils.js');
 const log    = utils.getLog('NAVI');
 
-let blk        = null;
-let blockStack = [];
+let blk          = null;
+let blockStack   = [];
+let entireFileOk = true;
 
 function init() {
   blk = require('./block.js');
@@ -15,6 +17,12 @@ function init() {
   comm.registerWebviewRecv('isolateClick',      isolateClick);
   blockStack = [];
 }
+
+function setEntireFileOk() {
+  const config = vscode.workspace.getConfiguration('definition-stack');
+  entireFileOk = config.get('entireFileOk');
+}
+sett.registerSettingCallback('entireFileOk', setEntireFileOk);
 
 async function isolateClick(data) {
   const blockIdToKeep = data.blockId;
@@ -86,7 +94,7 @@ function getBlockById(blockId) {
 }
 
 async function addBlockToView(block, fromRefId = "root", toIndex, noEntFilChk = false) {
-  if(!noEntFilChk && block.isEntireFile) {
+  if(!entireFileOk && !noEntFilChk && block.isEntireFile) {
     showEntireFileMsg(block.location.uri, toIndex);
     return;
   }
@@ -125,8 +133,12 @@ async function addMsgBlockToView(uri, toIndex = 0, msg) {
 }
 
 async function showEntireFileMsg(uri, toIndex) {
-  addMsgBlockToView(uri, toIndex, 
-        'Definition is an entire file and hidden. See settings');
+  if(entireFileOk && toIndex != -1) return true;
+  await addMsgBlockToView(uri, toIndex, 
+        'Definition is an entire file and hidden.' +
+        (toIndex == -1 ? '' : ' See settings'));
+  return false;
 }
 
-module.exports = { init, getBlockById, addBlockToView, showEntireFileMsg };
+module.exports = { init, getBlockById, addBlockToView, 
+                   showEntireFileMsg, setEntireFileOk };
