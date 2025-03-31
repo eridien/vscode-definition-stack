@@ -153,9 +153,10 @@ async function hdrHtml() {
   `</div>`;
 }
 
-function bannerHtml(name, path, blkId, symbol) {
+function bannerHtml(name, path, blkId, symbol, lineCount) {
   const symbolTypeNum = symbol?.kind;
   const symbolType    = symbolTypeByKind(symbolTypeNum);
+  const lineCountTxt = lineCount > 50 ? ` ${lineCount}Ln ` : '';  
   return `<span class="banner">
             <div>` +
               svg.iconHtml('delete',   blkId) +
@@ -169,10 +170,10 @@ function bannerHtml(name, path, blkId, symbol) {
               <span class="banner-type">${symbolType}</span> 
               <div style="display:${name ? "inline-block" : "none"};">
                 <span id="${blkId}-banner-name" 
-                      class="hover banner-name">${name}</span> in 
+                      class="hover banner-name">${name + lineCountTxt}</span> in 
               </div>
               <span id=${blkId}-banner-path" 
-                    class="hover banner-path">${path}</span>
+                    class="hover banner-path">${`${path}`}</span>
             </div>
           </span>`;
 }
@@ -199,11 +200,12 @@ async function getBlockHtml(block, fromRef) {
     const wsIdx = line.firstNonWhitespaceCharacterIndex;
     minWsIdx = Math.min(minWsIdx, wsIdx);
   }
+  const lineCount = lines.length;
   let code = "";
   for(const line of lines)
     code += ((line.html.slice(minWsIdx)) + "\n");
   return `<div id="${id}" class="ds-block" from-ref="${fromRef}">` +
-            bannerHtml(name, relPath, id, block.srcSymbol)         +
+            bannerHtml(name, relPath, id, block.srcSymbol, lineCount)         +
             codeHtml(lines, code, id)                              +
         `</div>`;
 }
