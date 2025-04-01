@@ -85,12 +85,12 @@ async function addDefs(block) {
       word.defBlocks = [];
       defloop:
       for(const definition of definitions) {
-        const defRange = definition.targetRange;
+        const defRange = definition.targetRange ?? definition.range;
         if(defRange.start.line      == defRange.end.line  &&
            defRange.start.character == defRange.end.character) 
           continue;
         const blockPath = blockUri.path;
-        const defUri    = definition.targetUri;
+        const defUri    = definition.targetUri ?? definition.uri;
         const defPath   = defUri.path;
         const defLoc    = new vscode.Location(defUri, defRange);
         if(blockPath == defPath                         &&
