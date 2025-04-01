@@ -8,7 +8,7 @@ This is a screenshot with a source file on the left and the stack on the right.
 
 ![Logo](./images/screenshots/intro.png)
 
-A single command `Definition Stack:Open` is available. You place a cursor in a function in a source file and execute this command. A stack appears in a side column with a block containing a copy of the selected function.  In that block all symbols that have a definition available are highlighted. A single click on a highlighted symbol brings up the definition code for that symbol in a new block above. You can continue this to create a stack of references and definitions.
+A single command **Definition Stack:Open** is available. You place a cursor in a function in a source file and execute this command. A stack appears in a side column with a block containing a copy of the selected function.  In that block all symbols that have a definition available are highlighted. A single click on a highlighted symbol brings up the definition code for that symbol in a new block above. You can continue this to create a stack of references and definitions.
 
 ### Why this is useful
 
@@ -26,7 +26,7 @@ You can follow the code logic without thinking about source files. Not having to
 
 - There are 44 light and dark themes to choose from.
 
-- Themes and ref highlight color settings are set directly from the header of the stack allowing you to see the results of the setting changes in real time.
+- Themes, ref highlight color settings, and text size are set directly from the header of the stack allowing you to see the results of the setting changes in real time.
 
 - The code is positioned to the left for minimum width and makes sense for isolated code. Indentation is otherwise maintained.
 
@@ -36,7 +36,7 @@ You can follow the code logic without thinking about source files. Not having to
 
 ### Usage Instructions
 
-#### There is a single header at the top of the stack. These are the settings that change things in real time.
+#### There is a single header at the top of the stack.
 
 ![Logo](./images/screenshots/header.png)
 
@@ -53,7 +53,7 @@ From left to right ...
 - The left color picker picks the color for the background 
 highlighting of ref symbols.
 
-- The right picker is the highlight color of the last symbol clicked. You can delete a block and use this for easy traversal of the tree.
+- The right picker is the highlight color of the last symbol clicked. You can use this for easy traversal of the tree.
 
 - The letters scale everything up and down.
 
@@ -93,19 +93,19 @@ From left to right ...
 
 ### More Settings
 
-#### Settings available in the vscode settings tab.
+#### These are available in the vscode settings tab.
 
 - **Entire File Ok:** Option to hide or show definitions that occupy an entire file.  If you work with large files the stack can grow excessively tall. The default is to show them.
 
-- **Ignore File Patterns:** Defs to a file that matches a pattern are ignored.  Patterns can be regexes. "node_modules" and ".d.ts" are the default patterns.
+- **Ignore File Patterns:** Defs in a file whose path  matches a pattern are ignored.  Patterns can be regexes. "node_modules" and ".d.ts" are the default patterns.
 
 ### Future
 
-- Only Javascript and Typescript files are supported because they are the only ones with a vscode ref/def language provider. Hopefully support will be expanded.
+- Only Javascript and Typescript files are supported because they are the only ones with a vscode ref/def language provider. Hopefully support will be expanded to other languages.
 
-- There is no way currently to match the language highlighting and themes to vscode ones.  This extension uses the Prism library which works quite differently than the vscode language providers.  Any ideas are welcome.
+- There is no way to match the themes to vscode ones.  This extension uses the Prism library which works quite differently than the vscode language providers.
 
-- Currently this is not keyboard-jockey friendly. The mouse is used for everything.  There is no reason that keys couldn't be used but nothing has been done in this area yet.
+- Currently this is not keyboard-jockey friendly. The mouse is used for everything.  There is no reason that keyboard shortcuts couldn't be implemented but nothing has been done in this area yet.
 
 - When a source file is edited the blocks in the stack are not updated. Tracking changes would not be easy and not work well just like bookmarks and breakpoints. This is not a serious problem since the stack is created and used quickly unlike bookmarks and breakpoints which are expected to be persistent.
 
