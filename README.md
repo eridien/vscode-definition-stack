@@ -2,7 +2,7 @@
 
 ### Overview
 
-Definition Stack is a unique vscode extension. It is a tool for reading code, especially unfamiliar code. The complete source code of definitions and references are shown in a stack for fast review. Functions appear in isolation in blocks.
+Definition Stack is a unique vscode extension. It is a tool for reading Javascript and Typescript code, especially unfamiliar code. The complete source code of definitions and references are shown in a stack for fast review. Functions appear in isolation in blocks.
 
 This is a screenshot with a source file on the left and the stack on the right.
 
@@ -24,8 +24,6 @@ You can follow the code logic without thinking about source files. Not having to
 
 - Blocks are usually functions but they can also be other symbol types like Variables and even Modules. There are 26 types total.
 
-- Code highlighting supports all current vscode languages. 
-
 - There are 44 light and dark themes to choose from.
 
 - Themes and ref highlight color settings are set directly from the header of the stack allowing you to see the results of the setting changes in real time.
@@ -38,7 +36,7 @@ You can follow the code logic without thinking about source files. Not having to
 
 ### Usage Instructions
 
-#### There is a single header at the top of the stack.
+#### There is a single header at the top of the stack. These are the settings that change things in real time.
 
 ![Logo](./images/screenshots/header.png)
 
@@ -56,6 +54,8 @@ From left to right ...
 highlighting of ref symbols.
 
 - The right picker is the highlight color of the last symbol clicked. You can delete a block and use this for easy traversal of the tree.
+
+- The letters scale everything up and down.
 
 ####  Each block has a banner at the top.
 
@@ -89,25 +89,19 @@ From left to right ...
 
 - Some refs are not highlighted.  Ones with the def in the same block are not.  If they were, the code would be virtually covered.  Also there are some not shown because they match ignore patterns in settings.  Ignoring node_modules is recommended.
 
-- The yellow highlights the last ref clicked.  Please don't judge my highlight color choices.  You can easily change them.  The color even changes as the picker is moused around.
+- The yellow highlights the last ref clicked.  Please don't judge my highlight color choices.  You can easily change them. 
 
 ### More Settings
 
 #### Settings available in the vscode settings tab.
 
-- File ignore patterns. Refs to an ignored file are not available. Patterns can be regexes. "node_modules" and ".d.ts" are the default patterns.
+- **Entire File Ok:** Option to hide or show definitions that occupy an entire file.  If you work with large files the stack can grow excessively tall. The default is to show them.
 
-- Mappings from vscode language IDs to this extension's IDs. For example CPP to C++ and Vue to JS.  (BTW, this extension works well with Vue single-page components). There is a default list of 8 mappings which probably doesn't need to be changed.
-
-- Option to hide or show definitions that occupy an entire file.  If you work with large files the stack can grow excessively tall. The default is to show them.
-
-- Option to set the max number of lines in a block.  This is another attempt to limit the stack height. The source code is truncated but there are plans for a smart trimming of sections without refs.  The default is no limitation.
-
-- Text size.  This defaults to the setting for the text editors but themes vary in scaling so this is sometimes needed.
+- **Ignore File Patterns:** Defs to a file that matches a pattern are ignored.  Patterns can be regexes. "node_modules" and ".d.ts" are the default patterns.
 
 ### Future
 
-- More user testing is needed.  Only a subset of the many languages have been tested.
+- Only Javascript and Typescript files are supported because they are the only ones with a vscode ref/def language provider. Hopefully support will be expanded.
 
 - There is no way currently to match the language highlighting and themes to vscode ones.  This extension uses the Prism library which works quite differently than the vscode language providers.  Any ideas are welcome.
 
