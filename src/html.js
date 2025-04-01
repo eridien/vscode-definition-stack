@@ -111,7 +111,14 @@ async function fontSizeChange(data) {
 }
 
 function setLanguage(editor) {
-  language = editor.document.languageId;
+  let docLang = editor.document.languageId.toLowerCase();
+  if(docLang == "vue") docLang = "javascript";
+  if(docLang != 'javascript' && docLang != 'typescript' ) {
+    log('info', 'Unsupported language:', docLang);
+    return false
+  }
+  language = docLang;
+  return true;
 }
 
 async function themeSelectHtml() {
@@ -146,7 +153,7 @@ async function hdrHtml() {
 function bannerHtml(name, path, blkId, symbol, lineCount) {
   const symbolTypeNum = symbol?.kind;
   const symbolType    = symbolTypeByKind(symbolTypeNum);
-  const lineCountTxt = lineCount > 50 ? ` ${lineCount}Ln ` : '';  
+  const lineCountTxt = lineCount > 100 ? ` (${lineCount} Lines) ` : '';  
   return `<span class="banner">
             <div>` +
               svg.iconHtml('delete',   blkId) +
@@ -209,9 +216,8 @@ async function initWebviewHtml(editor) {
   let languageJs = await utils.readTxt(false, 'prism', 
                                   'languages', `prism-${language}.min.js`);
   if(languageJs === null) {
-    log('errinfo', 'Unknown language, select one.');
-    languageJs = '';
-    language   = 'unknown';
+    log('err', 'error reading language file:', language);
+    return;
   }
   else {
     let langTxt = languageJs;
@@ -221,7 +227,10 @@ async function initWebviewHtml(editor) {
       const extLang = matches[1];
       langTxt = await utils.readTxt(false, 'prism', 
                                     'languages', `prism-${extLang}.min.js`);
-      if(langTxt === null) break;
+      if(langTxt === null) {
+        log('err', 'error reading language file:', language);
+        return;
+      }
       // log(`language ${language} extends ${extLang}`);
       languageJs = langTxt + languageJs;
     }

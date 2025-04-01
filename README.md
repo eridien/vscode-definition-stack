@@ -2,7 +2,7 @@
 
 ### Overview
 
-Definition Stack is a unique vscode extension. It is a tool for reading Javascript and Typescript code, especially unfamiliar code. The complete source code of definitions and references are shown in a stack for fast review. Functions appear in isolation in blocks.
+Definition Stack is a unique vscode extension. It is a tool for reading Javascript and Typescript code, especially unfamiliar code. The source code of definitions and references are shown in a stack for fast review. Functions appear in isolation in blocks.
 
 This is a screenshot with a source file on the left and the stack on the right.
 
@@ -101,7 +101,7 @@ From left to right ...
 
 ### Future
 
-- Only Javascript and Typescript files are supported because they are the only ones with a vscode ref/def language provider. Hopefully support will be expanded to other languages.
+- Only Javascript and Typescript files are supported because they are the only ones with a vscode ref/def language provider. Hopefully support will be expanded to other languages. (Note: Vue is treated as javascript and single page files work well).
 
 - There is no way to match the themes to vscode ones.  This extension uses the Prism library which works quite differently than the vscode language providers.
 

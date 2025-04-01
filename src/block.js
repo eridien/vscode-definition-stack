@@ -280,18 +280,18 @@ async function showFirstBlock(textEditor) {
 }
 
 async function showFirstBlockWhenReady(textEditor) {
-  comm.registerWebviewRecv('ready', async () => {
-    // log('webview ready');
-    await showFirstBlock(textEditor);
-  });
+  const langOk = html.setLanguage(textEditor);
+  if(!langOk) return;
   html.setTheme();
   html.setColorPickerVal();
   html.setColorSelPickerVal();
   html.setFontSize();
   setIgnoreFilePatterns();
   navi.setEntireFileOk();
-  html.setLanguage(textEditor);
   await html.initWebviewHtml(textEditor);
+  comm.registerWebviewRecv('ready', async () => {
+    await showFirstBlock(textEditor);
+  });
 }
 
 module.exports = { 
