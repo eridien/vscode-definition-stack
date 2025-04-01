@@ -26,24 +26,11 @@
         "title": "Definition Stack: Open"
       }
     ],
-    "menus": {
-      "editor/title": [
-        {
-          "command": "definition-stack.openwebview",
-          "group": "navigation"
-        }
-      ],
-      "commandPalette": [
-        {
-          "command": "definition-stack.openwebview"
-        }
-      ]
-    },
     "keybindings": [
       {
         "command": "definition-stack.openwebview",
-        "key": "ctrl+shift+d",
-        "mac": "cmd+shift+d"
+        "key": "ctrl+shift+alt+p",
+        "mac": "cmd+shift+alt+p"
       }
     ],
     "configuration": {
@@ -51,27 +38,13 @@
       "properties": {
         "definition-stack.ignoreFilePatterns": {
           "type": "string",
-          "default": "node_modules, /\\.d\\.ts$/",
+          "default": "node_modules, \\.d\\.ts$",
           "description": "Patterns of files to ignore. Seperate with commas. To enter a comma use two commas together. RegExp patterns are allowed." 
         },
         "definition-stack.entireFileOk": {
           "type": "boolean",
           "default": true,
           "description": "Allow entire file contents to be shown. Not recommended if you have large files." 
-        },
-        "definition-stack.languageIdMappings": {
-          "type": "object",
-          "default": {
-            "bat":           "batch",
-            "dockerfile":    "docker",
-            "jsx-tags":      "jsx",
-            "objective-c":   "objectivec",
-            "objective-cpp": "objectivec",
-            "jade":          "pug",
-            "shellscript:":  "bash",
-            "vue":           "javascript"
-          },
-          "description": "Mappings from Vscode language IDs to extension IDs. See prism-lang-ids.txt." 
         }
       }
     }

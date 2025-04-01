@@ -289,7 +289,6 @@ async function showFirstBlockWhenReady(textEditor) {
   html.setColorSelPickerVal();
   html.setFontSize();
   setIgnoreFilePatterns();
-  html.setLanguageIdMappings();
   navi.setEntireFileOk();
   html.setLanguage(textEditor);
   await html.initWebviewHtml(textEditor);

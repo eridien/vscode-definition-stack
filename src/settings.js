@@ -11,9 +11,8 @@ function init() {
 const settingCallbacks = {};
 
 const settings = [
-  'ignoreFilePatterns', // patterns for files to ignore
-  'languageIdMappings', // mappings from vscode language IDs to extension IDs
-  'entireFileOk'    ,   // definitions that occupy an entire file should be shown
+  'ignoreFilePatterns',
+  'entireFileOk',      
 ]
 
 function logSettings() {

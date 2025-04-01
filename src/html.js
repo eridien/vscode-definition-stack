@@ -10,7 +10,7 @@ let webv;
 const refWordColor = '#d4cece';
 const selWordColor = '#d3ca97';
 
-let webview, context, language, theme, fontSize, languageIdMappings;
+let webview, context, language, theme, fontSize;
 let webviewHtml, webviewJs, iframeHtmlIn, iframeJsIn;
 let iframeCssIn, lineNumCss, prePrismJs, prismCoreJs;
 let lineNumJs, keepMarkupJs, keepEscJs;
@@ -110,18 +110,8 @@ async function fontSizeChange(data) {
   reloadWebview();
 }
 
-function setLanguageIdMappings() {
-  const config = vscode.workspace.getConfiguration('definition-stack');
-  languageIdMappings = config.get('languageIdMappings');
-}
-sett.registerSettingCallback('languageIdMappings', setLanguageIdMappings);
-
 function setLanguage(editor) {
-  const document = editor.document;
-  const vscLangId = document.languageId;
-  language = languageIdMappings[vscLangId];
-  language ??= vscLangId;
-  log('set language:', language);
+  language = editor.document.languageId;
 }
 
 async function themeSelectHtml() {
@@ -297,6 +287,6 @@ function symbolTypeByKind(kind) {
 
 module.exports = {
     init, setTheme, setFontSize, setLanguage, setColorPickerVal, setColorSelPickerVal,
-    initWebviewHtml, markupRefs, getBlockHtml, getUniqueBlkId, setLanguageIdMappings
+    initWebviewHtml, markupRefs, getBlockHtml, getUniqueBlkId
 
 };
