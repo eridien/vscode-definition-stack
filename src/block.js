@@ -269,12 +269,13 @@ async function showFirstBlock(textEditor) {
     await utils.sleep(1000);
     block = await getSurroundingBlock(uri, selection);
     if(!block) {
-      await navi.showEntireFileMsg(uri, -1);
+      await navi.addMsgBlockToView(uri, 0, 'Cursor must be in a function.');
       return;
     }
   }
   if(await utils.locationIsEntireFile(block.location)) {
-    if(!(await navi.showEntireFileMsg(uri))) return;
+    await navi.addMsgBlockToView(uri, 0, 'Cursor must be in a function.');
+    return;
   }
   await navi.addBlockToView(block);
 }

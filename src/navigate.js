@@ -93,11 +93,7 @@ function getBlockById(blockId) {
   return { block, blockIdx };
 }
 
-async function addBlockToView(block, fromRefId = "root", toIndex, noEntFilChk = false) {
-  if(!entireFileOk && !noEntFilChk && block.isEntireFile) {
-    showEntireFileMsg(block.location.uri, toIndex);
-    return;
-  }
+async function addBlockToView(block, fromRefId = "root", toIndex) {
   await blk.addWordsAndDefs(block);
   const fromIndex = blockStack.findIndex(b => b.id === block.id);
   if(fromIndex == -1) {
@@ -129,16 +125,8 @@ async function addMsgBlockToView(uri, toIndex = 0, msg) {
     haveWordsAndDefs: true,
   };
   blk.setPathByBlkId(blkId, uri.path);
-  await addBlockToView(block, '', toIndex, true);
-}
-
-async function showEntireFileMsg(uri, toIndex) {
-  if(entireFileOk && toIndex != -1) return true;
-  await addMsgBlockToView(uri, toIndex, 
-        'Definition is an entire file and hidden.' +
-        (toIndex == -1 ? '' : ' See settings'));
-  return false;
+  await addBlockToView(block, '', toIndex);
 }
 
 module.exports = { init, getBlockById, addBlockToView, 
-                   showEntireFileMsg, setEntireFileOk };
+                   addMsgBlockToView, setEntireFileOk };
