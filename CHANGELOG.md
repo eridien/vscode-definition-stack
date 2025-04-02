@@ -1,3 +1,3 @@
 ## Change Log
 
-- Initial release 4/15/2025
+- 1.0.3 - Initial release 4/1/2025

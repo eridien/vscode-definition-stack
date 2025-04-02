@@ -113,7 +113,7 @@ From left to right ...
 
 #### Author: Mark Hahn
 
-#### Repo: https://github.com/mark-hahn/vscode-definition-stack
+#### Repo: https://github.com/eridien/vscode-definition-stack
 
 #### Original Release: April 2025
 
