@@ -1,5 +1,5 @@
 
-## ![Logo](./images/eri-32x32.png) **Definition Stack by eridien**
+## ![Logo](./images/eri-32x32.png) <div style="display:inline-block; position:relative; top:-5px;">**Definition Stack by eridien**<div>
 
 ### Overview
 
@@ -7,7 +7,7 @@ Definition Stack is a unique vscode extension. It is a tool for reading Javascri
 
 This is a screenshot with a source file on the left and the stack on the right.
 
-![Intro](./images/screenshots/intro.png)
+![Intro](./images/intro.png)
 
 A single command **Definition Stack:Open** is available. You place a cursor in a function in a source file and execute this command. A stack appears in a side column with a block containing a copy of the selected function.  In that block all symbols that have a definition available are highlighted. A single click on a highlighted symbol brings up the definition code for that symbol in a new block above. You can continue this to create a stack of references and definitions.
 
@@ -39,7 +39,7 @@ You can follow the code logic without thinking about source files. Not having to
 
 #### There is a single header at the top of the stack.
 
-![Logo](./images/screenshots/header.png)
+![Logo](./images/header.png)
 
 From left to right ...
 
@@ -60,7 +60,7 @@ highlighting of ref symbols.
 
 ####  Each block has a banner at the top.
 
-![Logo](./images/screenshots/banner.png)
+![Logo](./images/banner.png)
 
 From left to right ...
 
@@ -80,7 +80,7 @@ From left to right ...
 
 #### This is a complete block, including the banner described above.
 
-![Logo](./images/screenshots/block.png)
+![Logo](./images/block.png)
 
 - Note the language highlighting. This is Material Dark.
 
