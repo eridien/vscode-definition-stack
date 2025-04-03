@@ -1,4 +1,5 @@
-## Definition Stack
+
+## ![Logo](./images/eri-32x32.png) **Definition Stack by eridien**
 
 ### Overview
 
@@ -6,7 +7,7 @@ Definition Stack is a unique vscode extension. It is a tool for reading Javascri
 
 This is a screenshot with a source file on the left and the stack on the right.
 
-![Logo](./images/screenshots/intro.png)
+![Intro](./images/screenshots/intro.png)
 
 A single command **Definition Stack:Open** is available. You place a cursor in a function in a source file and execute this command. A stack appears in a side column with a block containing a copy of the selected function.  In that block all symbols that have a definition available are highlighted. A single click on a highlighted symbol brings up the definition code for that symbol in a new block above. You can continue this to create a stack of references and definitions.
 
@@ -111,7 +112,7 @@ From left to right ...
 
 - The UI is ugly.  I am not a graphics designer. Help here would be appreciated.
 
-#### Author: Mark Hahn
+#### Author: Mark Hahn @ Eridien
 
 #### Repo: https://github.com/eridien/vscode-definition-stack
 
